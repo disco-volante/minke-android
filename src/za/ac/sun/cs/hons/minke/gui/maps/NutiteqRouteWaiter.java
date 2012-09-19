@@ -66,7 +66,6 @@ public class NutiteqRouteWaiter implements DirectionsWaiter {
 		routeLine.setStyle(new LineStyle(lineColors[routingService],2)); // set non-default style for the route
 	
 		map.addLine(routeLine);
-        System.out.println("line added");
 
 		Log.info("total distance="+route.getRouteSummary().getDistance().toString());
 
@@ -90,7 +89,6 @@ public class NutiteqRouteWaiter implements DirectionsWaiter {
 	        // start details view
 	        Intent i = new Intent(context, RouteList.class);
 	        context.startActivity(i);
-	        System.out.println("RouteList");
         }
 	}
 	

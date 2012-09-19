@@ -56,7 +56,6 @@ public class ScanActivity extends Activity {
 		@Override
 		protected Void doInBackground(Double... params) {
 			RPCUtils.retrieveBranches(params[0], params[1]);
-			System.out.println(params[0] + "  " + params[1]);
 			return null;
 
 		}
@@ -412,9 +411,8 @@ public class ScanActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
-							double price = (Double
-									.parseDouble(updatePriceText.getText()
-											.toString()));
+							double price = (Double.parseDouble(updatePriceText
+									.getText().toString()));
 							found.setDate(new Date());
 							found.setPrice(price);
 							UpdateProductTask task = new UpdateProductTask();

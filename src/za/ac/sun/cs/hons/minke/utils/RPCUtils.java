@@ -131,7 +131,6 @@ public class RPCUtils {
 		try {
 			List<IsEntity> searched = ObjectParsers.parseResponse(response,
 					suffix);
-			System.out.println(searched);
 			SearchUtils.setSearched(searched);
 			EntityUtils.setBranchProducts(searched);
 		} catch (SAXException e) {
@@ -175,7 +174,6 @@ public class RPCUtils {
 		String url = URL_BASE + REQUEST_BASE + suffix;
 		String response = HTTPUtils.doGetWithResponse(url, httpClient,
 				latitude, longitude);
-		System.out.println(response);
 		try {
 			EntityUtils.setBranches(ObjectParsers.parseResponse(response,
 					suffix));
@@ -257,7 +255,6 @@ public class RPCUtils {
 					suffix);
 			EntityUtils.setBranchProducts(holder);
 			BrowseUtils.setBranchProducts(holder);
-			System.out.println(((BranchProduct) holder.get(0)).getPrice());
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

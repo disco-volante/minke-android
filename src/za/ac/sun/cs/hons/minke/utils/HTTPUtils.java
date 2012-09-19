@@ -57,7 +57,6 @@ public class HTTPUtils {
 			}
 			mUrl = addParams(mUrl, params);
 		}
-		System.out.println(mUrl);
 		HttpGet getMethod = new HttpGet(mUrl);
 		try {
 			response = httpClient.execute(getMethod);
@@ -107,7 +106,6 @@ public class HTTPUtils {
 		mUrl = addParams(mUrl, Arrays.asList(new NameValuePair[] {
 				new BasicNameValuePair("id", String.valueOf(id)),
 				new BasicNameValuePair("price", String.valueOf(price)) }));
-		System.out.println(mUrl);
 		HttpGet getMethod = new HttpGet(mUrl);
 		String ret = null;
 		try {
@@ -137,7 +135,6 @@ public class HTTPUtils {
 						new BasicNameValuePair("barcode", String
 								.valueOf(barcode)) }));
 		mUrl = addParams(mUrl, formatEntity(entity));
-		System.out.println(mUrl);
 		HttpGet getMethod = new HttpGet(mUrl);
 		String ret = null;
 		try {
