@@ -17,6 +17,7 @@ import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.Location;
@@ -256,30 +257,37 @@ public class ScanActivity extends Activity {
 	}
 
 	protected void scan() {
-		/*
-		 * AlertDialog dialog; downloading = false; if ((dialog =
-		 * IntentIntegrator.initiateScan(this)) != null) { downloading = true;
-		 * dialog.setOnCancelListener(new OnCancelListener() {
-		 * 
-		 * @Override public void onCancel(DialogInterface dialog) { downloading
-		 * = false; onActivityResult(RESULT_CANCELED, 0, null); }
-		 * 
-		 * }); dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-		 * .setOnClickListener(new View.OnClickListener() {
-		 * 
-		 * @Override public void onClick(View arg0) { downloading = false;
-		 * onActivityResult(RESULT_CANCELED, 0, null); }
-		 * 
-		 * });
-		 * 
-		 * }
-		 */
+		AlertDialog dialog;
+		downloading = false;
+		if ((dialog = IntentIntegrator.initiateScan(this)) != null) {
+			downloading = true;
+			dialog.setOnCancelListener(new OnCancelListener() {
 
-		Intent data = new Intent();
-		data.putExtra("SCAN_RESULT", "2991");
-		data.putExtra("SCAN_RESULT_FORMAT", "BARCODE");
-		onActivityResult(IntentIntegrator.REQUEST_CODE, Activity.RESULT_OK,
-				data);
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					downloading = false;
+					onActivityResult(RESULT_CANCELED, 0, null);
+				}
+
+			});
+			dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+					.setOnClickListener(new View.OnClickListener() {
+
+						@Override
+						public void onClick(View arg0) {
+							downloading = false;
+							onActivityResult(RESULT_CANCELED, 0, null);
+						}
+
+					});
+
+		}
+		/*
+		 * Intent data = new Intent(); data.putExtra("SCAN_RESULT", "2991");
+		 * data.putExtra("SCAN_RESULT_FORMAT", "BARCODE");
+		 * onActivityResult(IntentIntegrator.REQUEST_CODE, Activity.RESULT_OK,
+		 * data);
+		 */
 
 	}
 
