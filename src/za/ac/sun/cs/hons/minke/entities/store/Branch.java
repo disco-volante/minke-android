@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.Location;
-import za.ac.sun.cs.hons.minke.util.GPSArea;
+import za.ac.sun.cs.hons.minke.utils.GPSArea;
 
 /**
  * DB Entity used to store data about a specific store's branch, e.g. Spar - Die

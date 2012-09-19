@@ -20,6 +20,9 @@ public class BrowseUtils {
 	}
 
 	public static ArrayList<IsEntity> getBranchProducts() {
+		if(branchProducts == null){
+			branchProducts = new  ArrayList<IsEntity>();
+		}
 		return branchProducts;
 	}
 

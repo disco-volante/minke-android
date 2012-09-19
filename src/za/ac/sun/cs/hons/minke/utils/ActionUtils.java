@@ -5,14 +5,13 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.browse.BrowseActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
+import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
-import za.ac.sun.cs.hons.minke.gui.scan.ScanActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.view.View;
 import android.widget.Toast;
 
@@ -61,8 +60,8 @@ public class ActionUtils {
 				R.drawable.browse_40);
 	}
 
-	public static Action getScanAction(Context context) {
-		return new IntentAction(context, IntentUtils.getScanIntent(context),
+	public static Action getNewProductAction(Context context) {
+		return new IntentAction(context, IntentUtils.getNewProductIntent(context),
 				R.drawable.scan_40);
 	}
 
@@ -103,9 +102,9 @@ public class ActionUtils {
 			return new IntentAction(activity,
 					IntentUtils.getStoreIntent(activity), R.drawable.refresh_40);
 		}
-		if (activity instanceof ScanActivity) {
+		if (activity instanceof NewProductActivity) {
 			return new IntentAction(activity,
-					IntentUtils.getScanIntent(activity), R.drawable.refresh_40);
+					IntentUtils.getNewProductIntent(activity), R.drawable.refresh_40);
 		}
 		if (activity instanceof ShopActivity) {
 			return new IntentAction(activity,
@@ -158,5 +157,6 @@ public class ActionUtils {
 		}
 		return null;
 	}
+
 
 }

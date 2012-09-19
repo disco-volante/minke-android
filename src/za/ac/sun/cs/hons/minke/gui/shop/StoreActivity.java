@@ -6,6 +6,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.BranchListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -16,7 +17,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,17 +30,20 @@ public class StoreActivity extends Activity {
 	private BranchListAdapter branchListAdapter;
 	private ArrayList<IsEntity> branches;
 	protected Branch branch;
-	class FindBranchesTask extends AsyncTask<Void, Void, Void> {
-		@Override
-		protected Void doInBackground(Void... params) {
-			RPCUtils.retrieveBranches(ShopUtils.getAddedProducts(false));
-			return null;
-
+	class FindBranchesTask extends ProgressTask {
+		public FindBranchesTask() {
+			super(StoreActivity.this, 1, "Searching", "Searching for branches...", true);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
+			super.onPostExecute(v);
 			showData();
+		}
+
+		@Override
+		protected void retrieve(int counter) {
+			RPCUtils.retrieveBranches(ShopUtils.getAddedProducts(false));		
 		}
 	}
 	@Override

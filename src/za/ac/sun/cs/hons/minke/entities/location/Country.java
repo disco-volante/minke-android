@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.entities.location;
 
-import za.ac.sun.cs.hons.minke.util.GPSArea;
+import za.ac.sun.cs.hons.minke.utils.GPSArea;
 public class Country extends Location {
 
 	public Country() {

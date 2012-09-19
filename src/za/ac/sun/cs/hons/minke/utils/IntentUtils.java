@@ -4,9 +4,9 @@ import za.ac.sun.cs.hons.minke.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.BrowseActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
+import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
-import za.ac.sun.cs.hons.minke.gui.scan.ScanActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import android.content.Context;
@@ -38,8 +38,8 @@ public class IntentUtils {
 		return browse;
 	}
 
-	public static Intent getScanIntent(Context context) {
-		Intent scan = new Intent(context, ScanActivity.class);
+	public static Intent getNewProductIntent(Context context) {
+		Intent scan = new Intent(context, NewProductActivity.class);
 		scan.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return scan;
 	}

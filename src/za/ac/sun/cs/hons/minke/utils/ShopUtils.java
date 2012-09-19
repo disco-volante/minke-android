@@ -1,19 +1,16 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
 public class ShopUtils {
 	private static ArrayList<IsEntity> addedProducts;
 	private static ArrayList<BranchProduct> searched;
 	private static boolean productsActive;
-	private static HashMap<Branch, List<IsEntity>> branchProducts = new HashMap<Branch, List<IsEntity>>();
 
 	public static ArrayList<IsEntity> getAddedProducts(boolean reset) {
 		if (reset || addedProducts == null) {

@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.util;
+package za.ac.sun.cs.hons.minke.utils;
 
 public class GPSArea {
 	private double minLat, maxLat, minLong, maxLong;

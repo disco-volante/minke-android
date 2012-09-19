@@ -5,6 +5,7 @@ import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
@@ -12,7 +13,6 @@ import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,20 +34,23 @@ public class ProductSearchActivity extends Activity {
 	private ItemListAdapter<IsEntity> categoryListAdapter;
 	private ListView searchList;
 
-	class SearchTask extends AsyncTask<Void, Void, Void> {
-		@Override
-		protected Void doInBackground(Void... params) {
-			RPCUtils.retrieveBranchProducts(SearchUtils.isProductsActive());
-			return null;
-
+	class SearchTask extends ProgressTask {
+		public SearchTask() {
+			super(ProductSearchActivity.this, 1, "Searching...", "Searching for products", true);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
+			super.onPostExecute(v);
 			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
 			BrowseUtils.setStoreBrowse(false);
 			startActivity(IntentUtils
 					.getBrowseIntent(ProductSearchActivity.this));
+		}
+
+		@Override
+		protected void retrieve(int counter) {
+			RPCUtils.retrieveBranchProducts(SearchUtils.isProductsActive());
 		}
 	}
 

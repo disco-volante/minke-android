@@ -14,6 +14,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -40,13 +41,11 @@ import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import android.util.Log;
 
 public class HTTPUtils {
-	private static final String LOG_TAG = "GET";
+	private static final String LOG_TAG = "HTTPUtils";
 
 	public static String doGetWithResponse(String mUrl,
-			DefaultHttpClient httpClient, List<IsEntity>... entities) {
+			List<IsEntity>... entities) {
 		mUrl = addAuth(mUrl);
-		String ret = null;
-		HttpResponse response = null;
 		NameValuePair found = null;
 		if (entities.length > 0) {
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -57,9 +56,17 @@ public class HTTPUtils {
 			}
 			mUrl = addParams(mUrl, params);
 		}
+		return attempt(mUrl);
+
+	}
+
+	public static String attempt(String mUrl) {
+		Log.i(LOG_TAG, "URL= " + mUrl);
+		String ret = "failed";
 		HttpGet getMethod = new HttpGet(mUrl);
+		DefaultHttpClient httpClient = getClient();
 		try {
-			response = httpClient.execute(getMethod);
+			HttpResponse response = httpClient.execute(getMethod);
 			Log.i(LOG_TAG,
 					"STATUS CODE: "
 							+ String.valueOf(response.getStatusLine()
@@ -67,11 +74,13 @@ public class HTTPUtils {
 			if (null != response) {
 				ret = getResponseBody(response);
 			}
-		} catch (Exception e) {
+		} catch (ClientProtocolException e) {
 			e.printStackTrace();
-		} finally {
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return ret;
+
 	}
 
 	private static String addAuth(String mUrl) {
@@ -80,53 +89,37 @@ public class HTTPUtils {
 						"authority", "c5f4486abc034369842fc16a7b744085") }));
 	}
 
-	public static String doGetWithResponse(String url,
-			DefaultHttpClient httpClient, long code, List<IsEntity>... entities) {
+	public static String doGetWithResponse(String url, long code,
+			List<IsEntity>... entities) {
 		url = addParams(url,
 				Arrays.asList(new NameValuePair[] { new BasicNameValuePair(
 						"barcode", String.valueOf(code)) }));
-		return doGetWithResponse(url, httpClient, entities);
+		return doGetWithResponse(url, entities);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static String doGetWithResponse(String url,
-			DefaultHttpClient httpClient, double latitude, double longitude) {
+	public static String doGetWithResponse(String url, double latitude,
+			double longitude) {
 		url = addParams(url,
 				Arrays.asList(new NameValuePair[] {
 						new BasicNameValuePair("latitude", String
 								.valueOf(latitude)),
 						new BasicNameValuePair("longitude", String
 								.valueOf(longitude)) }));
-		return doGetWithResponse(url, httpClient);
+		return doGetWithResponse(url);
 	}
 
-	public static String doPostWithResponse(String mUrl,
-			DefaultHttpClient httpClient, long id, double price) {
+	public static String doPostWithResponse(String mUrl, long id, double price) {
 		mUrl = addAuth(mUrl);
 		mUrl = addParams(mUrl, Arrays.asList(new NameValuePair[] {
 				new BasicNameValuePair("id", String.valueOf(id)),
 				new BasicNameValuePair("price", String.valueOf(price)) }));
-		HttpGet getMethod = new HttpGet(mUrl);
-		String ret = null;
-		try {
-			HttpResponse response = httpClient.execute(getMethod);
-			Log.i(LOG_TAG,
-					"STATUS CODE: "
-							+ String.valueOf(response.getStatusLine()
-									.getStatusCode()));
-			if (null != response) {
-				ret = getResponseBody(response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-		}
-		return ret;
+		return attempt(mUrl);
+
 	}
 
-	public static String doPostWithResponse(String mUrl,
-			DefaultHttpClient httpClient, long barcode, long branchcode,
-			IsEntity entity) {
+	public static String doPostWithResponse(String mUrl, long barcode,
+			long branchcode, IsEntity entity) {
 		mUrl = addAuth(mUrl);
 		mUrl = addParams(mUrl,
 				Arrays.asList(new NameValuePair[] {
@@ -135,22 +128,7 @@ public class HTTPUtils {
 						new BasicNameValuePair("barcode", String
 								.valueOf(barcode)) }));
 		mUrl = addParams(mUrl, formatEntity(entity));
-		HttpGet getMethod = new HttpGet(mUrl);
-		String ret = null;
-		try {
-			HttpResponse response = httpClient.execute(getMethod);
-			Log.i(LOG_TAG,
-					"STATUS CODE: "
-							+ String.valueOf(response.getStatusLine()
-									.getStatusCode()));
-			if (null != response) {
-				ret = getResponseBody(response);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-		}
-		return ret;
+		return attempt(mUrl);
 	}
 
 	private static List<NameValuePair> formatEntity(IsEntity entity) {
@@ -163,9 +141,8 @@ public class HTTPUtils {
 			type = new BasicNameValuePair("entity_type", "branchproduct");
 			name = new BasicNameValuePair("product", bp.getProduct());
 			brand = new BasicNameValuePair("brand", bp.getBrand());
-			size = new BasicNameValuePair("size", String.valueOf(bp.getSize()));
-			price = new BasicNameValuePair("price", String.valueOf(bp
-					.getPrice()));
+			size = new BasicNameValuePair("size", bp.getSize() + "");
+			price = new BasicNameValuePair("price", bp.getPrice() + "");
 			measure = new BasicNameValuePair("measure", bp.getMeasurement());
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 			nvps.add(type);
@@ -212,7 +189,11 @@ public class HTTPUtils {
 		}
 		for (IsEntity entity : entities) {
 			if (entity != null) {
-				value += "," + entity.getID();
+				if (value.equals("")) {
+					value += entity.getID();
+				} else {
+					value += "," + entity.getID();
+				}
 			}
 		}
 		NameValuePair param = new BasicNameValuePair(key, value);

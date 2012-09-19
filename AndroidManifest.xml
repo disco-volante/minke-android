@@ -34,7 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".gui.scan.ScanActivity" />
+        <activity android:name=".gui.create.NewProductActivity" />
         <activity android:name=".gui.shop.ShopActivity" />
         <activity android:name=".gui.shop.StoreActivity" />
         <activity android:name=".gui.shop.ShopListActivity" />

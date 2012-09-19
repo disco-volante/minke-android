@@ -15,6 +15,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.util.Log;
+
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Country;
@@ -25,7 +27,6 @@ import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.util.GPSArea;
 
 public class ObjectParsers {
 	static class EntityHandler extends DefaultHandler {
@@ -440,6 +441,7 @@ public class ObjectParsers {
 
 	public static List<IsEntity> parseResponse(String response, String type)
 			throws SAXException, IOException, ParserConfigurationException {
+		Log.v("RESPONSE", response);
 		if (type.endsWith("locations")) {
 			return parseLocationResponse(response);
 		} else if (type.endsWith("branchproducts")
