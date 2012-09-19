@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_shop"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        app:title="@string/shop" />
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        style="@style/InnerLayout" >
+
+        <LinearLayout
+            android:id="@+id/holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/shopTitle"
+                style="@style/HeaderFont"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="45dip"
+                android:text="@string/enter_shopping" />
+
+            <Button
+                android:id="@+id/storeBtn"
+                style="@style/WrappedSize"
+                android:layout_marginLeft="10dip"
+                android:background="@drawable/button_background"
+                android:drawableBottom="@drawable/store_128"
+                android:onClick="findStores"
+                android:text="@string/find_stores" />
+        </LinearLayout>
+
+        <AutoCompleteTextView
+            android:id="@+id/shoppingAutoComplete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/holder"
+            android:completionThreshold="1" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+
+        <ListView
+            android:id="@+id/shoppingList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/shoppingAutoComplete" >
+        </ListView>
+    </RelativeLayout>
+
+</LinearLayout>

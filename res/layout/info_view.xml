@@ -1,0 +1,68 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/InnerLayout" >
+
+    <TextView
+        android:id="@+id/brand_lbl"
+        style="@style/LeftWrapped"
+        android:text="@string/brand" />
+
+    <TextView
+        android:id="@+id/brand_text"
+        style="@style/LeftWrapped"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@+id/brand_lbl" />
+
+    <TextView
+        android:id="@+id/store_lbl"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/brand_lbl"
+        android:text="@string/store" />
+
+    <TextView
+        android:id="@+id/store_text"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/brand_text"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@+id/store_lbl" />
+
+    <TextView
+        android:id="@+id/size_lbl"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/store_lbl"
+        android:text="@string/size" />
+
+    <TextView
+        android:id="@+id/size_text"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/store_text"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@+id/size_lbl" />
+
+    <TextView
+        android:id="@+id/price_lbl"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/size_lbl"
+        android:text="@string/price" />
+
+    <TextView
+        android:id="@+id/price_text"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/size_text"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@+id/price_lbl" />
+
+    <TextView
+        android:id="@+id/date_lbl"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/price_lbl"
+        android:text="@string/date" />
+
+    <TextView
+        android:id="@+id/date_text"
+        style="@style/LeftWrapped"
+        android:layout_below="@+id/price_text"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@+id/date_lbl" />
+
+</RelativeLayout>

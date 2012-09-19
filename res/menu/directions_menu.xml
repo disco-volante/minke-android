@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_launcher_40"
+        android:title="@string/home"/>
+    <item
+        android:id="@+id/shop"
+        android:icon="@drawable/shop_40"
+        android:title="@string/shop"/>
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/refresh_40"
+        android:title="@string/refresh"/>
+
+</menu>

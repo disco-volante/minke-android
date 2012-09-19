@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_product_search"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/product_search" />
+
+    <RelativeLayout style="@style/InnerLayout" >
+
+        <TextView
+            android:id="@+id/searchTitle"
+            style="@style/HeaderFont"
+            android:text="@string/filter_product" />
+
+        <LinearLayout
+            android:id="@+id/holder"
+            style="@style/WrappedSize"
+            android:layout_below="@+id/searchTitle" >
+
+            <RadioGroup
+                android:id="@+id/searchGroup"
+                style="@style/WrappedSize"
+                android:layout_marginLeft="10dip" >
+
+                <RadioButton
+                    android:id="@+id/productRadio"
+                    style="@style/HeaderFont"
+                    android:checked="true"
+                    android:onClick="setProducts"
+                    android:text="@string/product" />
+
+                <RadioButton
+                    android:id="@+id/categoryRadio"
+                    style="@style/HeaderFont"
+                    android:onClick="setCategories"
+                    android:text="@string/category" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/browseBtn"
+                style="@style/WrappedSize"
+                android:layout_marginLeft="30dip"
+                android:background="@drawable/button_background"
+                android:drawableBottom="@drawable/browse_100"
+                android:onClick="getProducts"
+                android:text="@string/get_products" />
+        </LinearLayout>
+
+        <AutoCompleteTextView
+            android:id="@+id/searchBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/holder"
+            android:layout_marginTop="10dip"
+            android:completionThreshold="1"
+            android:imeOptions="actionDone" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/searchBox" >
+
+            <ListView
+                android:id="@+id/search_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

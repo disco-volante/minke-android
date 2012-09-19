@@ -1,0 +1,114 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="ActionBarItem" parent="@style/WrappedSize">
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:layout_margin">0px</item>
+    </style>
+
+    <style name="ActionBarProgressBar" parent="@android:style/Widget.ProgressBar.Small.Inverse"></style>
+
+    <style name="HeaderFont" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">@color/text</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="MinkeButton" parent="@android:style/Widget.Button">
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:padding">10dip</item>
+    </style>
+    
+
+    <style name="MinkeImageButton" parent="@android:style/Widget.ImageButton">
+        <item name="android:background">@color/background_1</item>
+        <item name="android:padding">5dip</item>
+    </style>
+
+    <style name="RowItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">5dip</item>
+    </style>
+
+    <style name="MinkeEditText" parent="@android:style/Widget.EditText">
+        <item name="android:ems">10</item>
+        <item name="android:background">@color/cream</item>
+    </style>
+
+    <style name="MinkeAutoComplete" parent="@android:style/Widget.AutoCompleteTextView">
+        <item name="android:ems">10</item>
+        <item name="android:background">@color/cream</item>
+    </style>
+
+    <style name="MinkeTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+    <style name="WrappedSize">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="LeftWrapped" parent="@style/WrappedSize">
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="RightWrapped" parent="@style/WrappedSize">
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="RowView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/row_background</item>
+    </style>
+
+    <style name="InnerLayout" parent="@style/OuterLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/background_1</item>
+    </style>
+
+    <style name="OuterLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/background_1</item>
+    </style>
+
+    <style name="MinkeDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:bottomBright">@color/background_1</item>
+        <item name="android:bottomDark">@color/background_1</item>
+        <item name="android:bottomMedium">@color/background_1</item>
+        <item name="android:centerBright">@color/background_1</item>
+        <item name="android:centerDark">@color/background_1</item>
+        <item name="android:centerMedium">@color/background_1</item>
+        <item name="android:fullBright">@color/background_1</item>
+        <item name="android:fullDark">@color/background_1</item>
+        <item name="android:topBright">@color/background_1</item>
+        <item name="android:topDark">@color/background_1</item>
+        <item name="android:textAppearance">@style/MinkeTextAppearance</item>
+    </style>
+
+    <style name="MinkeTheme" parent="android:Theme.Light">
+        <item name="android:alertDialogStyle">@style/MinkeDialog</item>
+        <item name="android:buttonStyle">@style/MinkeButton</item>
+        <item name="android:imageButtonStyle">@style/MinkeImageButton</item>
+        <item name="android:textAppearance">@style/MinkeTextAppearance</item>
+        <item name="android:editTextStyle">@style/MinkeEditText</item>
+        <item name="android:autoCompleteTextViewStyle">@style/MinkeAutoComplete</item>
+        <item name="android:colorBackground">@color/background_1</item>
+    </style>
+
+</resources>

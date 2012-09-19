@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_location_search"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/location_search" />
+
+    <RelativeLayout style="@style/InnerLayout" >
+
+        <LinearLayout
+            android:id="@+id/holder"
+            style="@style/WrappedSize" >
+
+            <TextView
+                android:id="@+id/locationSearchTitle"
+                style="@style/HeaderFont"
+                android:text="@string/filter_location" />
+
+            <Button
+                android:id="@+id/browseBtn"
+                style="@style/WrappedSize"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/button_background"
+                android:onClick="getProductSearch"
+                android:text="@string/next" />
+        </LinearLayout>
+
+        <AutoCompleteTextView
+            android:id="@+id/locationBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/holder"
+            android:completionThreshold="1"
+            android:imeOptions="actionDone" >
+
+            <requestFocus />
+        </AutoCompleteTextView>
+
+        <LinearLayout
+            android:id="@+id/list_holder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/locationBox" >
+
+            <ListView
+                android:id="@+id/location_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

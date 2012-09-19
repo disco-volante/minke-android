@@ -1,0 +1,49 @@
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_home"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/app_name" />
+
+    <RelativeLayout style="@style/InnerLayout" >
+
+        <Button
+            android:id="@+id/goScanBtn"
+            style="@style/WrappedSize"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/scan"
+            android:drawableBottom="@drawable/scan_128"
+            android:onClick="scan"
+            android:text="@string/scan" />
+
+        <Button
+            android:id="@+id/goShopBtn"
+            style="@style/WrappedSize"
+            android:layout_below="@+id/goScanBtn"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/shop"
+            android:drawableBottom="@drawable/shop_128"
+            android:onClick="shop"
+            android:text="@string/shop" />
+
+        <Button
+            android:id="@+id/goSearchBtn"
+            style="@style/WrappedSize"
+            android:layout_alignLeft="@+id/goShopBtn"
+            android:layout_below="@+id/goShopBtn"
+            android:layout_marginTop="10dp"
+            android:contentDescription="@string/search"
+            android:drawableBottom="@drawable/location_search_128"
+            android:onClick="search"
+            android:text="@string/search" />
+    </RelativeLayout>
+
+</LinearLayout>

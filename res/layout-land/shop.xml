@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background = "@color/background_1" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_shop"
+        style="@style/ActionBar"
+        app:title="@string/shop" />
+
+    <AutoCompleteTextView
+        android:id="@+id/shoppingAutoComplete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/actionbar_shop"  
+        />
+
+
+    <ListView
+        android:id="@+id/shoppingList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/shoppingAutoComplete" >
+    </ListView>
+
+</RelativeLayout>

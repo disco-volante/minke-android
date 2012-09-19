@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_1" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_search"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/search" />
+
+    <TextView
+        android:id="@+id/searchTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/actionbar_search"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical|right"
+        android:text="@string/filter_location"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/locationLbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchTitle"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="70dp"
+        android:text="@string/location"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <RadioGroup
+        android:id="@+id/searchGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchTitle"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/locationLbl" >
+
+        <RadioButton
+            android:id="@+id/productRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/product"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <RadioButton
+            android:id="@+id/categoryRadio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </RadioGroup>
+
+    <AutoCompleteTextView
+        android:id="@+id/locationBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/locationLbl"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:completionThreshold="1"
+        android:ems="8" />
+
+    <AutoCompleteTextView
+        android:id="@+id/searchBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchGroup"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/locationBox"
+        android:completionThreshold="1"
+        android:ems="8" />
+
+    <Button
+        android:id="@+id/browseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_toRightOf="@+id/searchGroup"
+        android:background="@drawable/button_background"
+        android:drawableBottom="@drawable/browse_128"
+        android:onClick="getProducts"
+        android:padding="10dip"
+        android:text="@string/get_products" />
+
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_graph"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        app:title="@string/app_name" />
+
+    <LinearLayout
+        android:id="@+id/graph_holder"
+        style="@style/OuterLayout" />
+
+</LinearLayout>

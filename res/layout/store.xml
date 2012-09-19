@@ -1,0 +1,40 @@
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res/za.ac.sun.cs.hons.minke"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/OuterLayout" >
+
+    <com.markupartist.android.widget.ActionBar
+        android:id="@+id/actionbar_store"
+        style="@style/ActionBar"
+        android:layout_width="match_parent"
+        app:title="@string/store" />
+
+    <RelativeLayout style="@style/InnerLayout" >
+
+        <LinearLayout
+            android:id="@+id/headerHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/storeHeader"
+                style="@style/HeaderFont"
+                android:text="@string/store_list" />
+
+            <ImageButton
+                android:id="@+id/mapBtn"
+                style="@style/WrappedSize"
+                android:layout_marginLeft="130dp"
+                android:contentDescription="@string/directions"
+                android:onClick="showDirections"
+                android:src="@drawable/map_40" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/store_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/headerHolder" />
+    </RelativeLayout>
+
+</LinearLayout>
