@@ -35,6 +35,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".gui.create.NewProductActivity" />
+        <activity android:name=".gui.create.NewBranchActivity" />
         <activity android:name=".gui.shop.ShopActivity" />
         <activity android:name=".gui.shop.StoreActivity" />
         <activity android:name=".gui.shop.ShopListActivity" />

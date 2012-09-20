@@ -174,15 +174,14 @@ public class ObjectParsers {
 					bprovince = !bprovince;
 					if (!bprovince) {
 						Province p = new Province(name, countryName,
-								new GPSArea(latitude, longitude));
+								null);
 						p.setID(id);
 						entities.add(p);
 					}
 				} else if (qName.equalsIgnoreCase("COUNTRY")) {
 					bcountry = !bcountry;
 					if (!bcountry) {
-						Country c = new Country(name, new GPSArea(latitude,
-								longitude));
+						Country c = new Country(name, null);
 						c.setID(id);
 						entities.add(c);
 					}
@@ -447,11 +446,11 @@ public class ObjectParsers {
 		} else if (type.endsWith("branchproducts")
 				|| type.endsWith("branchproduct")) {
 			return parseBranchProductResponse(response);
-		} else if (type.endsWith("products")) {
+		} else if (type.endsWith("products") || type.endsWith("product")) {
 			return parseProductResponse(response);
-		} else if (type.endsWith("categories")) {
+		} else if (type.endsWith("categories") || type.endsWith("category")) {
 			return parseCategoryResponse(response);
-		} else if (type.endsWith("branches")) {
+		} else if (type.endsWith("branches") || (type.endsWith("branch"))) {
 			return parseBranchResponse(response);
 		} else if (type.endsWith("brands")) {
 			return parseBrandResponse(response);

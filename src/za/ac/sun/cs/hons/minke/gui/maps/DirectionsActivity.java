@@ -52,8 +52,8 @@ public class DirectionsActivity extends Activity implements LocationListener {
 			for (IsEntity b : MapUtils.getBranches()) {
 				PlaceLabel branchLabel = new PlaceLabel(b.toString());
 				Place p = new Place(1, branchLabel, branchIcon, ((Branch) b)
-						.getCoords().getMinLongitude(), ((Branch) b)
-						.getCoords().getMinLatitude());
+						.getCoords().getLongitude(), ((Branch) b)
+						.getCoords().getLatitude());
 				mapComponent.addPlace(p);
 			}
 			locationManager = (LocationManager) this

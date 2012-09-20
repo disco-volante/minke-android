@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,10 +36,11 @@ public class HomeActivity extends Activity {
 	protected int selectedBranch;
 	private boolean downloading;
 	private long code;
-	private Branch branch;
+
 	private class InitTask extends ProgressTask {
 		public InitTask() {
-			super(HomeActivity.this, 6,"Loading", "Loading data, please wait...", false);
+			super(HomeActivity.this, 6, "Loading",
+					"Loading data, please wait...", false);
 		}
 
 		protected void retrieve(int counter) {
@@ -58,11 +60,12 @@ public class HomeActivity extends Activity {
 			}
 		}
 	}
+
 	class FindProductTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			RPCUtils.getBranchProduct(code, branch);
+			RPCUtils.getBranchProduct(code, EntityUtils.getUserBranch());
 			return null;
 
 		}
@@ -105,7 +108,9 @@ public class HomeActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(!EntityUtils.isLoaded()){
+		if (IntentUtils.scan()) {
+			scan();
+		} else if (!EntityUtils.isLoaded()) {
 			InitTask task = new InitTask();
 			task.execute();
 			EntityUtils.setLoaded(true);
@@ -124,7 +129,7 @@ public class HomeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.scan:
-			scan(this.getCurrentFocus());
+			confirmLocation(this.getCurrentFocus());
 			return true;
 		case R.id.search:
 			search(this.getCurrentFocus());
@@ -157,8 +162,8 @@ public class HomeActivity extends Activity {
 				.getLocationSearchIntent(getApplicationContext()));
 	}
 
-	public void scan(View view) {
-		AlertDialog dialog;
+	public void scan() {
+		final AlertDialog dialog;
 		downloading = false;
 		if ((dialog = IntentIntegrator.initiateScan(this)) != null) {
 			downloading = true;
@@ -169,6 +174,7 @@ public class HomeActivity extends Activity {
 						public void onClick(View arg0) {
 							downloading = false;
 							onActivityResult(RESULT_CANCELED, 0, null);
+							dialog.cancel();
 						}
 
 					});
@@ -184,7 +190,8 @@ public class HomeActivity extends Activity {
 			if (scanResult != null) {
 				try {
 					code = Long.parseLong(scanResult.getContents());
-					confirmLocation();
+					FindProductTask task = new FindProductTask();
+					task.execute();
 					return;
 				} catch (NumberFormatException nfe) {
 					nfe.printStackTrace();
@@ -197,7 +204,7 @@ public class HomeActivity extends Activity {
 			failed.setPositiveButton("Retry",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							scan(null);
+							scan();
 							dialog.cancel();
 						}
 					});
@@ -211,8 +218,8 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	private void confirmLocation() {
-		if (EntityUtils.getBranches() != null) {
+	public void confirmLocation(View view) {
+		if (EntityUtils.getBranches() == null) {
 			return;
 		}
 		final int size = Math.min(EntityUtils.getBranches().size(), 10);
@@ -241,10 +248,9 @@ public class HomeActivity extends Activity {
 						if (selectedBranch == size) {
 							editLocation();
 						} else {
-							branch = (Branch) EntityUtils.getBranches().get(
-									selectedBranch);
-							FindProductTask task = new FindProductTask();
-							task.execute();
+							EntityUtils.setUserBranch((Branch) EntityUtils
+									.getBranches().get(selectedBranch));
+							scan();
 						}
 					}
 				});
@@ -259,6 +265,8 @@ public class HomeActivity extends Activity {
 	}
 
 	protected void editLocation() {
+		Log.v("LOCATION", MapUtils.getLocation().toString());
+		startActivity(IntentUtils.getNewBranchIntent(this));
 	}
 
 	private void updatePrice(final BranchProduct found) {

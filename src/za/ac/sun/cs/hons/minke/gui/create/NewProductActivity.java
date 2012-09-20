@@ -64,7 +64,7 @@ public class NewProductActivity extends Activity {
 	}
 
 	private void initGUI() {
-		setContentView(R.layout.scanned);
+		setContentView(R.layout.new_product);
 		nameText = (EditText) findViewById(R.id.nameText);
 		nameText.addTextChangedListener(new TextErrorWatcher(nameText, false));
 		brandText = (AutoCompleteTextView) findViewById(R.id.brandText);
@@ -87,7 +87,7 @@ public class NewProductActivity extends Activity {
 		SpinnerAdapter units = new ArrayAdapter<String>(this,
 				R.layout.dropdown_item, getMeasures());
 		unitSpinner.setAdapter(units);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_scan);
+		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_newproduct);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
 		actionBar.addAction(ActionUtils.getBrowseAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
@@ -101,7 +101,7 @@ public class NewProductActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.scan_menu, menu);
+		getMenuInflater().inflate(R.menu.newproduct_menu, menu);
 		return true;
 	}
 
@@ -114,24 +114,11 @@ public class NewProductActivity extends Activity {
 		case R.id.home:
 			startActivity(IntentUtils.getHomeIntent(this));
 			return true;
-		case R.id.browse:
-			startActivity(IntentUtils.getBrowseIntent(this));
-			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	/*
-	 * Intent data = new Intent(); data.putExtra("SCAN_RESULT", "2991");
-	 * data.putExtra("SCAN_RESULT_FORMAT", "BARCODE");
-	 * onActivityResult(IntentIntegrator.REQUEST_CODE, Activity.RESULT_OK,
-	 * data);
-	 */
-
-	protected void editLocation() {
-
-	}
 
 	private void showErrorMessage() {
 

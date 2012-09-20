@@ -4,6 +4,7 @@ import za.ac.sun.cs.hons.minke.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.BrowseActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
+import za.ac.sun.cs.hons.minke.gui.create.NewBranchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
@@ -13,6 +14,8 @@ import android.content.Context;
 import android.content.Intent;
 
 public class IntentUtils {
+	private static boolean scan;
+
 	public static Intent createShareIntent() {
 		final Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
@@ -73,5 +76,19 @@ public class IntentUtils {
 		store.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return store;
 	}
+
+	public static Intent getNewBranchIntent(Context context) {
+		Intent store = new Intent(context, NewBranchActivity.class);
+		store.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return store;
+	}
+
+	public static boolean scan() {
+		return scan;
+	}
+	public static void setScan(boolean _scan) {
+		scan = _scan;
+	}
+
 
 }

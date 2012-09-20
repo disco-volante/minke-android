@@ -118,39 +118,55 @@ public class HTTPUtils {
 
 	}
 
-	public static String doPostWithResponse(String mUrl, long barcode,
-			long branchcode, IsEntity entity) {
+	public static String doPostWithResponse(String mUrl, IsEntity entity) {
 		mUrl = addAuth(mUrl);
-		mUrl = addParams(mUrl,
-				Arrays.asList(new NameValuePair[] {
-						new BasicNameValuePair("branchcode", String
-								.valueOf(branchcode)),
-						new BasicNameValuePair("barcode", String
-								.valueOf(barcode)) }));
 		mUrl = addParams(mUrl, formatEntity(entity));
 		return attempt(mUrl);
+	}
+
+	public static String doPostWithResponse(String mUrl, IsEntity entity,
+			long barcode, long branchcode) {
+		mUrl = addParams(
+				mUrl,
+				Arrays.asList(new NameValuePair[] {
+						new BasicNameValuePair("branchcode", branchcode + ""),
+						new BasicNameValuePair("barcode", barcode + "") }));
+		return doPostWithResponse(mUrl, entity);
+	}
+
+	public static String doPostWithResponse(String mUrl, IsEntity entity,
+			String province, String country) {
+		mUrl = addParams(
+				mUrl,
+				Arrays.asList(new NameValuePair[] {
+						new BasicNameValuePair("province", province),
+						new BasicNameValuePair("country", country) }));
+		return doPostWithResponse(mUrl, entity);
 	}
 
 	private static List<NameValuePair> formatEntity(IsEntity entity) {
 		if (entity == null) {
 			return null;
 		}
-		NameValuePair type, name, brand, size, price, measure;
 		if (entity instanceof BranchProduct) {
 			BranchProduct bp = (BranchProduct) entity;
-			type = new BasicNameValuePair("entity_type", "branchproduct");
-			name = new BasicNameValuePair("product", bp.getProduct());
-			brand = new BasicNameValuePair("brand", bp.getBrand());
-			size = new BasicNameValuePair("size", bp.getSize() + "");
-			price = new BasicNameValuePair("price", bp.getPrice() + "");
-			measure = new BasicNameValuePair("measure", bp.getMeasurement());
-			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-			nvps.add(type);
-			nvps.add(name);
-			nvps.add(brand);
-			nvps.add(size);
-			nvps.add(price);
-			nvps.add(measure);
+			List<NameValuePair> nvps = Arrays.asList(new NameValuePair[] {
+					new BasicNameValuePair("product", bp.getProduct()),
+					new BasicNameValuePair("brand", bp.getBrand()),
+					new BasicNameValuePair("size", bp.getSize() + ""),
+					new BasicNameValuePair("price", bp.getPrice() + ""),
+					new BasicNameValuePair("measure", bp.getMeasurement()) });
+			return nvps;
+		} else if (entity instanceof Branch) {
+			Branch b = (Branch) entity;
+			List<NameValuePair> nvps = Arrays.asList(new NameValuePair[] {
+					new BasicNameValuePair("name", b.getName()),
+					new BasicNameValuePair("store", b.getStore()),
+					new BasicNameValuePair("city", b.getCity() + ""),
+					new BasicNameValuePair("latitude", b.getCoords()
+							.getLatitude() + ""),
+					new BasicNameValuePair("longitude", b.getCoords()
+							.getLongitude() + "") });
 			return nvps;
 		}
 		return null;

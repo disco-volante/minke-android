@@ -14,7 +14,7 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
 public class RPCUtils {
-	private static String URL_BASE = "http://shop-minke.appspot.com";//"http://10.0.2.2:5000"
+	private static String URL_BASE = "http://10.0.2.2:5000";// "http://backend.shop-minke.appspot.com"
 
 	private static String REQUEST_BASE = "/entityRequestServlet?type=";
 
@@ -170,8 +170,7 @@ public class RPCUtils {
 	public static void retrieveBranches(List<IsEntity> products) {
 		String suffix = "product_branches";
 		String url = URL_BASE + REQUEST_BASE + suffix;
-		String response = HTTPUtils
-				.doGetWithResponse(url, products);
+		String response = HTTPUtils.doGetWithResponse(url, products);
 		if (response.equals("failed")) {
 			return;
 		}
@@ -190,8 +189,7 @@ public class RPCUtils {
 	public static void retrieveBranches(double latitude, double longitude) {
 		String suffix = "coords_branches";
 		String url = URL_BASE + REQUEST_BASE + suffix;
-		String response = HTTPUtils.doGetWithResponse(url,
-				latitude, longitude);
+		String response = HTTPUtils.doGetWithResponse(url, latitude, longitude);
 		if (response.equals("failed")) {
 			return;
 		}
@@ -212,8 +210,7 @@ public class RPCUtils {
 		String suffix = "branch_branchproduct";
 		String url = URL_BASE + REQUEST_BASE + suffix;
 		List<IsEntity> holder = Arrays.asList(new IsEntity[] { branch });
-		String response = HTTPUtils.doGetWithResponse(url, code,
-				holder);
+		String response = HTTPUtils.doGetWithResponse(url, code, holder);
 		if (response.equals("failed")) {
 			return;
 		}
@@ -258,8 +255,8 @@ public class RPCUtils {
 			long branchcode) {
 		String suffix = "branchproduct_branchproduct";
 		String url = URL_BASE + REQUEST_BASE + suffix;
-		String response = HTTPUtils.doPostWithResponse(url,
-				barcode, branchcode, bp);
+		String response = HTTPUtils.doPostWithResponse(url, bp, barcode,
+				branchcode);
 		if (response.equals("failed")) {
 			return;
 		}
@@ -280,8 +277,8 @@ public class RPCUtils {
 	public static void updateBranchProduct(BranchProduct bp) {
 		String suffix = "price_branchproduct";
 		String url = URL_BASE + REQUEST_BASE + suffix;
-		String response = HTTPUtils.doPostWithResponse(url,
-				bp.getID(), bp.getPrice());
+		String response = HTTPUtils.doPostWithResponse(url, bp.getID(),
+				bp.getPrice());
 		if (response.equals("failed")) {
 			return;
 		}
@@ -297,6 +294,27 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 
+		}
+	}
+
+	public static void addBranch(Branch branch, String province, String country) {
+		String suffix = "branch_branch";
+		String url = URL_BASE + REQUEST_BASE + suffix;
+		String response = HTTPUtils.doPostWithResponse(url, branch, province,
+				country);
+		if (response.equals("failed")) {
+			return;
+		}
+		try {
+			List<IsEntity> holder = ObjectParsers.parseResponse(response,
+					suffix);
+			EntityUtils.setUserBranch((Branch) holder.get(0));
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
 		}
 	}
 

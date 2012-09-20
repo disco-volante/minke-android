@@ -5,6 +5,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.browse.BrowseActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
+import za.ac.sun.cs.hons.minke.gui.create.NewBranchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
@@ -105,6 +106,10 @@ public class ActionUtils {
 		if (activity instanceof NewProductActivity) {
 			return new IntentAction(activity,
 					IntentUtils.getNewProductIntent(activity), R.drawable.refresh_40);
+		}
+		if (activity instanceof NewBranchActivity) {
+			return new IntentAction(activity,
+					IntentUtils.getNewBranchIntent(activity), R.drawable.refresh_40);
 		}
 		if (activity instanceof ShopActivity) {
 			return new IntentAction(activity,

@@ -49,8 +49,8 @@ public class MapUtils {
 
 	public static void setDestination(int position) {
 		Branch b = (Branch) branches.get(position);
-		destination = new WgsPoint(b.getCoords().getMinLongitude(), b
-				.getCoords().getMinLatitude());
+		destination = new WgsPoint(b.getCoords().getLongitude(), b
+				.getCoords().getLatitude());
 	}
 
 	public static void setBranches(ArrayList<IsEntity> branches) {
