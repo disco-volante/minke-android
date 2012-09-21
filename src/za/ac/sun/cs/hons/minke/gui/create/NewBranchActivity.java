@@ -4,9 +4,11 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.GPSArea;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -14,8 +16,8 @@ import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.Menu;
@@ -38,6 +40,7 @@ public class NewBranchActivity extends Activity {
 
 	class AddBranchTask extends ProgressTask {
 		private Branch branch;
+		private int error;
 
 		public AddBranchTask(Branch branch) {
 			super(NewBranchActivity.this, 1, "Adding...",
@@ -48,14 +51,26 @@ public class NewBranchActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void v) {
 			super.onPostExecute(v);
-			setBranch(null);
+			if (error == Constants.SUCCESS) {
+				setBranch(null);
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(
+						NewBranchActivity.this, error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								createLocation(null);
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				startActivity(IntentUtils.getHomeIntent(NewBranchActivity.this));
+			}
 		}
 
 		@Override
 		protected void retrieve(int counter) {
-			RPCUtils.addBranch(branch, province, country);
-			setBranch(null);
-
+			error = RPCUtils.addBranch(branch, province, country);
 		}
 	}
 

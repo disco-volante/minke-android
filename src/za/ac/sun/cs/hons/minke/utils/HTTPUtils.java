@@ -41,7 +41,6 @@ import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import android.util.Log;
 
 public class HTTPUtils {
-	private static final String LOG_TAG = "HTTPUtils";
 
 	public static String doGetWithResponse(String mUrl,
 			List<IsEntity>... entities) {
@@ -61,16 +60,22 @@ public class HTTPUtils {
 	}
 
 	public static String attempt(String mUrl) {
-		Log.i(LOG_TAG, "URL= " + mUrl);
+		Log.i(Constants.HTTP_TAG, "URL= " + mUrl);
 		String ret = "failed";
 		HttpGet getMethod = new HttpGet(mUrl);
 		DefaultHttpClient httpClient = getClient();
 		try {
 			HttpResponse response = httpClient.execute(getMethod);
-			Log.i(LOG_TAG,
+			Log.i(Constants.HTTP_TAG,
 					"STATUS CODE: "
 							+ String.valueOf(response.getStatusLine()
 									.getStatusCode()));
+			if ((int)(response.getStatusLine().getStatusCode() / 100 )== 4) {
+				return Constants.CLIENT;
+			}
+			if ((int)(response.getStatusLine().getStatusCode() / 100 )== 5) {
+				return Constants.SERVER;
+			}
 			if (null != response) {
 				ret = getResponseBody(response);
 			}

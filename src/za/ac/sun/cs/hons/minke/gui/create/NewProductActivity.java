@@ -4,14 +4,17 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -35,6 +38,7 @@ public class NewProductActivity extends Activity {
 
 	class AddProductTask extends ProgressTask {
 		private BranchProduct branchProduct;
+		private int error;
 
 		public AddProductTask(BranchProduct branchProduct) {
 			super(NewProductActivity.this, 1, "Adding...",
@@ -45,14 +49,29 @@ public class NewProductActivity extends Activity {
 		@Override
 		protected void onPostExecute(Void v) {
 			super.onPostExecute(v);
-			startActivity(IntentUtils
-					.getBrowseIntent(NewProductActivity.this));
+			if (error == Constants.SUCCESS) {
+				startActivity(IntentUtils
+						.getBrowseIntent(NewProductActivity.this));
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(
+						NewProductActivity.this, error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								addProduct(null);
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				startActivity(IntentUtils
+						.getHomeIntent(NewProductActivity.this));
+			}
 		}
 
 		@Override
 		protected void retrieve(int counter) {
-			RPCUtils.addBranchProduct(branchProduct, code, branch.getID());
-
+			error = RPCUtils.addBranchProduct(branchProduct, code,
+					branch.getID());
 		}
 	}
 
@@ -118,7 +137,6 @@ public class NewProductActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
 
 	private void showErrorMessage() {
 

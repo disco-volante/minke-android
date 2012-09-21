@@ -4,15 +4,19 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,22 +39,43 @@ public class ProductSearchActivity extends Activity {
 	private ListView searchList;
 
 	class SearchTask extends ProgressTask {
+		private int error;
+
 		public SearchTask() {
-			super(ProductSearchActivity.this, 1, "Searching...", "Searching for products", true);
+			super(ProductSearchActivity.this, 1, "Searching...",
+					"Searching for products", true);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
 			super.onPostExecute(v);
-			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
-			BrowseUtils.setStoreBrowse(false);
-			startActivity(IntentUtils
-					.getBrowseIntent(ProductSearchActivity.this));
+			if (error == Constants.SUCCESS) {
+				BrowseUtils.setBranchProducts(SearchUtils.getSearched());
+				BrowseUtils.setStoreBrowse(false);
+				startActivity(IntentUtils
+						.getBrowseIntent(ProductSearchActivity.this));
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(
+						ProductSearchActivity.this, error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								getProducts(null);
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				dlg.show();
+				startActivity(IntentUtils
+						.getHomeIntent(ProductSearchActivity.this));
+			}
+
 		}
 
 		@Override
 		protected void retrieve(int counter) {
-			RPCUtils.retrieveBranchProducts(SearchUtils.isProductsActive());
+			error = RPCUtils.retrieveBranchProducts(SearchUtils
+					.isProductsActive());
 		}
 	}
 

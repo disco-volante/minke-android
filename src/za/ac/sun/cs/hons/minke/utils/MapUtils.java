@@ -49,8 +49,8 @@ public class MapUtils {
 
 	public static void setDestination(int position) {
 		Branch b = (Branch) branches.get(position);
-		destination = new WgsPoint(b.getCoords().getLongitude(), b
-				.getCoords().getLatitude());
+		destination = new WgsPoint(b.getCoords().getLongitude(), b.getCoords()
+				.getLatitude());
 	}
 
 	public static void setBranches(ArrayList<IsEntity> branches) {
@@ -65,7 +65,7 @@ public class MapUtils {
 		return destination;
 	}
 
-	public static void refreshLocation(LocationManager locationManager) {
+	public static int refreshLocation(LocationManager locationManager) {
 		Location location = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (location == null) {
@@ -76,9 +76,9 @@ public class MapUtils {
 			point = new WgsPoint(location.getLongitude(),
 					location.getLatitude());
 			Log.d("MAPUTILS", location.toString());
-		} else {
-			point = new WgsPoint(18.878612, -33.926617);
+			return Constants.SUCCESS;
 		}
+		return Constants.LOCATION_ERROR;
 	}
 
 	public static WgsPoint getLocation() {

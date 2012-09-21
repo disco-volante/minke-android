@@ -5,6 +5,7 @@ import java.io.IOException;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.app.Activity;
 import android.location.Location;
@@ -28,19 +29,14 @@ import com.nutiteq.wrappers.Image;
 public class DirectionsActivity extends Activity implements LocationListener {
 	private BasicMapComponent mapComponent;
 	private boolean onRetainCalled;
-	private String userId = "pieterj";
 	private WgsPoint src;
 	private LocationManager locationManager;
-	private final static String KEY = "5fd0b37cd7dbbb00f97ba6ce92bf5add503d2db5495ad7.42776752";
-	public static final int ROUTING_CLOUDMADE = 0;
-	public static final int ROUTING_YOURNAVIGATION = 1;
-	private static final String TAG = "DirectionsActivity";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.directions);
-		mapComponent = new BasicMapComponent(KEY, new AppContext(this), 1, 1,
+		mapComponent = new BasicMapComponent(Constants.KEY, new AppContext(this), 1, 1,
 				new WgsPoint(18.8600, -33.9200), 15);
 		MapUtils.setMap(mapComponent);
 		mapComponent.setMap(OpenStreetMap.MAPNIK);
@@ -65,7 +61,7 @@ public class DirectionsActivity extends Activity implements LocationListener {
 						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 			}
 			if (location != null) {
-				Log.d(TAG, location.toString());
+				Log.d(Constants.DIR_TAG, location.toString());
 				onLocationChanged(location);
 			}
 			Image userIcon = Image
@@ -76,8 +72,8 @@ public class DirectionsActivity extends Activity implements LocationListener {
 			if (src != null) {
 				mapComponent.setMiddlePoint(src);
 			}
-			new NutiteqRouteWaiter(src, MapUtils.getDestination(), this.userId,
-					ROUTING_CLOUDMADE, this);
+			new NutiteqRouteWaiter(src, MapUtils.getDestination(), Constants.USER_ID,
+					Constants.ROUTING_CLOUDMADE, this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -131,7 +127,7 @@ public class DirectionsActivity extends Activity implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(TAG, "onLocationChanged with location " + location.toString());
+		Log.d(Constants.DIR_TAG, "onLocationChanged with location " + location.toString());
 		src = new WgsPoint(location.getLongitude(), location.getLatitude());
 	}
 

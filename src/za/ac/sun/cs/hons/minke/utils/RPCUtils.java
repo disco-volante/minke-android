@@ -1,7 +1,6 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,21 +13,21 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
 public class RPCUtils {
-	private static String URL_BASE = "http://10.0.2.2:5000";// "http://backend.shop-minke.appspot.com"
-
-	private static String REQUEST_BASE = "/entityRequestServlet?type=";
 
 	@SuppressWarnings("unchecked")
-	public static void retrieveLocations() {
+	public static int retrieveLocations() {
 		String suffix = "_locations";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals("failed")) {
-			EntityUtils.setLocations(new ArrayList<IsEntity>());
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		} else {
 			try {
 				EntityUtils.setLocations(ObjectParsers.parseResponse(response,
 						suffix));
+				return Constants.SUCCESS;
 			} catch (SAXException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -37,20 +36,24 @@ public class RPCUtils {
 				e.printStackTrace();
 			}
 		}
+		return Constants.PARSE_ERROR;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void retrieveBrands() {
+	public static int retrieveBrands() {
 		String suffix = "_brands";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals("failed")) {
-			EntityUtils.setBrands(new ArrayList<IsEntity>());
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		} else {
 			try {
 				EntityUtils.setBrands(ObjectParsers.parseResponse(response,
 						suffix));
+				return Constants.SUCCESS;
 			} catch (SAXException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -59,20 +62,25 @@ public class RPCUtils {
 				e.printStackTrace();
 			}
 		}
+		return Constants.PARSE_ERROR;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void retrieveCategories() {
+	public static int retrieveCategories() {
 		String suffix = "_categories";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals("failed")) {
-			EntityUtils.setLocations(new ArrayList<IsEntity>());
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		} else {
 			try {
 				EntityUtils.setCategories(ObjectParsers.parseResponse(response,
 						suffix));
+				return Constants.SUCCESS;
+
 			} catch (SAXException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -81,19 +89,25 @@ public class RPCUtils {
 				e.printStackTrace();
 			}
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void retrieveProducts() {
+	public static int retrieveProducts() {
 		String suffix = "_products";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals("failed")) {
-			EntityUtils.setLocations(new ArrayList<IsEntity>());
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		} else {
 			try {
 				EntityUtils.setProducts(ObjectParsers.parseResponse(response,
 						suffix));
+				return Constants.SUCCESS;
+
 			} catch (SAXException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -102,25 +116,30 @@ public class RPCUtils {
 				e.printStackTrace();
 			}
 		}
+		return Constants.PARSE_ERROR;
 
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void retrieveBranchProductsC() {
+	private static int retrieveBranchProductsC() {
 		String suffix = "locationcategory_branchproducts";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url,
 				SearchUtils.getAddedCities(), SearchUtils.getAddedProvinces(),
 				SearchUtils.getAddedCountries(),
 				SearchUtils.getAddedCategories(false));
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> searched = ObjectParsers.parseResponse(response,
 					suffix);
 			SearchUtils.setSearched(searched);
 			EntityUtils.setBranchProducts(searched);
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -129,24 +148,30 @@ public class RPCUtils {
 			e.printStackTrace();
 
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void retrieveBranchProductsP() {
+	private static int retrieveBranchProductsP() {
 		String suffix = "locationproduct_branchproducts";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url,
 				SearchUtils.getAddedCities(), SearchUtils.getAddedProvinces(),
 				SearchUtils.getAddedCountries(),
 				SearchUtils.getAddedProducts(false));
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> searched = ObjectParsers.parseResponse(response,
 					suffix);
 			SearchUtils.setSearched(searched);
 			EntityUtils.setBranchProducts(searched);
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -155,28 +180,34 @@ public class RPCUtils {
 			e.printStackTrace();
 
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
-	public static void retrieveBranchProducts(boolean productsActive) {
+	public static int retrieveBranchProducts(boolean productsActive) {
 		if (productsActive) {
-			retrieveBranchProductsP();
+			return retrieveBranchProductsP();
 		} else {
-			retrieveBranchProductsC();
+			return retrieveBranchProductsC();
 
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void retrieveBranches(List<IsEntity> products) {
+	public static int retrieveBranches(List<IsEntity> products) {
 		String suffix = "product_branches";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url, products);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			EntityUtils.setBranches(ObjectParsers.parseResponse(response,
 					suffix));
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -184,18 +215,24 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
-	public static void retrieveBranches(double latitude, double longitude) {
+	public static int retrieveBranches(double latitude, double longitude) {
 		String suffix = "coords_branches";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url, latitude, longitude);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			EntityUtils.setBranches(ObjectParsers.parseResponse(response,
 					suffix));
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -203,22 +240,28 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
 	@SuppressWarnings("unchecked")
-	public static void getBranchProduct(long code, Branch branch) {
+	public static int getBranchProduct(long code, Branch branch) {
 		String suffix = "branch_branchproduct";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		List<IsEntity> holder = Arrays.asList(new IsEntity[] { branch });
 		String response = HTTPUtils.doGetWithResponse(url, code, holder);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> scanned = ObjectParsers.parseResponse(response,
 					suffix);
 			if (scanned != null && scanned.size() > 0) {
 				EntityUtils.setScanned(scanned.get(0));
+				return Constants.SUCCESS;
+
 			}
 		} catch (SAXException e) {
 			e.printStackTrace();
@@ -227,21 +270,26 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
 
 	}
 
-	public static void retrieveBranchProducts(Branch branch) {
+	public static int retrieveBranchProducts(Branch branch) {
 		String suffix = "branch_branchproducts";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		List<IsEntity> holder = Arrays.asList(new IsEntity[] { branch });
 		@SuppressWarnings("unchecked")
 		String response = HTTPUtils.doGetWithResponse(url, holder);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			EntityUtils.setBranchProducts(ObjectParsers.parseResponse(response,
 					suffix));
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -249,22 +297,28 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
-	public static void addBranchProduct(BranchProduct bp, long barcode,
+	public static int addBranchProduct(BranchProduct bp, long barcode,
 			long branchcode) {
 		String suffix = "branchproduct_branchproduct";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doPostWithResponse(url, bp, barcode,
 				branchcode);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> holder = ObjectParsers.parseResponse(response,
 					suffix);
 			EntityUtils.setBranchProducts(holder);
 			BrowseUtils.setBranchProducts(holder);
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -272,21 +326,27 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
-	public static void updateBranchProduct(BranchProduct bp) {
+	public static int updateBranchProduct(BranchProduct bp) {
 		String suffix = "price_branchproduct";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doPostWithResponse(url, bp.getID(),
 				bp.getPrice());
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> holder = ObjectParsers.parseResponse(response,
 					suffix);
 			EntityUtils.setBranchProducts(holder);
 			BrowseUtils.setBranchProducts(holder);
+			return Constants.SUCCESS;
+
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -295,20 +355,27 @@ public class RPCUtils {
 			e.printStackTrace();
 
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
-	public static void addBranch(Branch branch, String province, String country) {
+	public static int addBranch(Branch branch, String province, String country) {
 		String suffix = "branch_branch";
-		String url = URL_BASE + REQUEST_BASE + suffix;
+		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doPostWithResponse(url, branch, province,
 				country);
-		if (response.equals("failed")) {
-			return;
+		if (response.equals(Constants.CLIENT)) {
+			return Constants.CLIENT_ERROR;
+		} else if (response.equals(Constants.SERVER)) {
+			return Constants.SERVER_ERROR;
 		}
 		try {
 			List<IsEntity> holder = ObjectParsers.parseResponse(response,
 					suffix);
-			EntityUtils.setUserBranch((Branch) holder.get(0));
+			if (holder != null && holder.size() > 0) {
+				EntityUtils.setUserBranch((Branch) holder.get(0));
+				return Constants.SUCCESS;
+			}
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -316,6 +383,8 @@ public class RPCUtils {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+		return Constants.PARSE_ERROR;
+
 	}
 
 }

@@ -6,8 +6,10 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.BranchListAdapter;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
@@ -15,6 +17,7 @@ import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -30,22 +33,43 @@ public class StoreActivity extends Activity {
 	private BranchListAdapter branchListAdapter;
 	private ArrayList<IsEntity> branches;
 	protected Branch branch;
+
 	class FindBranchesTask extends ProgressTask {
+		private int error;
+
 		public FindBranchesTask() {
-			super(StoreActivity.this, 1, "Searching", "Searching for branches...", true);
+			super(StoreActivity.this, 1, "Searching",
+					"Searching for branches...", true);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
 			super.onPostExecute(v);
-			showData();
+			if (error == Constants.SUCCESS) {
+				showData();
+
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(StoreActivity.this,
+						error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								findBranches();
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				startActivity(IntentUtils.getHomeIntent(StoreActivity.this));
+			}
 		}
 
 		@Override
 		protected void retrieve(int counter) {
-			RPCUtils.retrieveBranches(ShopUtils.getAddedProducts(false));		
+			error = RPCUtils
+					.retrieveBranches(ShopUtils.getAddedProducts(false));
 		}
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,9 +80,13 @@ public class StoreActivity extends Activity {
 		actionBar.addAction(ActionUtils.getShopAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
+		findBranches();
+
+	}
+
+	private void findBranches() {
 		FindBranchesTask task = new FindBranchesTask();
 		task.execute();
-
 	}
 
 	@Override
@@ -129,7 +157,5 @@ public class StoreActivity extends Activity {
 				});
 		builder.create().show();
 	}
-	
-
 
 }

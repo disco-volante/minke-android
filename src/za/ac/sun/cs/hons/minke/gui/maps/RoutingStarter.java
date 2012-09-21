@@ -1,5 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.maps;
 
+import za.ac.sun.cs.hons.minke.utils.Constants;
+
 import com.nutiteq.services.CloudMadeDirections;
 import com.nutiteq.services.YourNavigationDirections;
 
@@ -16,10 +18,10 @@ public class RoutingStarter implements Runnable {
 
 	public void run() {
 		switch(routingService){
-		case DirectionsActivity.ROUTING_CLOUDMADE:
+		case Constants.ROUTING_CLOUDMADE:
 			new CloudMadeDirections(nutiteqRouteWaiter,nutiteqRouteWaiter.getStartCoordinates(), nutiteqRouteWaiter.getEndCoordinates(), "Car",CloudMadeDirections.ROUTE_TYPE_MODIFIER_SHORTEST ,"222c0ceb31794934a888ed9403a005d8",userId).execute();
 			break;
-		case DirectionsActivity.ROUTING_YOURNAVIGATION:
+		case Constants.ROUTING_YOURNAVIGATION:
 			new YourNavigationDirections(nutiteqRouteWaiter, nutiteqRouteWaiter.getStartCoordinates(),  nutiteqRouteWaiter.getEndCoordinates(), YourNavigationDirections.MOVE_METHOD_CAR, YourNavigationDirections.ROUTE_TYPE_FASTEST).execute();
 			break;
 			

@@ -7,20 +7,22 @@ import za.ac.sun.cs.hons.minke.assets.IntentResult;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,70 +40,122 @@ public class HomeActivity extends Activity {
 	private long code;
 
 	private class InitTask extends ProgressTask {
+		private int error;
+
 		public InitTask() {
 			super(HomeActivity.this, 6, "Loading",
 					"Loading data, please wait...", false);
 		}
 
+		@Override
+		protected void onPostExecute(Void v) {
+			super.onPostExecute(v);
+			if (error != Constants.SUCCESS) {
+				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+						error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								loadData();
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				finish();
+			}
+		}
+
 		protected void retrieve(int counter) {
 			if (counter == 0) {
-				RPCUtils.retrieveBrands();
+				error = RPCUtils.retrieveBrands();
 			} else if (counter == 1) {
-				RPCUtils.retrieveProducts();
+				error = RPCUtils.retrieveProducts();
 			} else if (counter == 2) {
-				RPCUtils.retrieveCategories();
+				error = RPCUtils.retrieveCategories();
 			} else if (counter == 3) {
-				RPCUtils.retrieveLocations();
+				error = RPCUtils.retrieveLocations();
 			} else if (counter == 4) {
-				MapUtils.refreshLocation((LocationManager) getSystemService(LOCATION_SERVICE));
+				error = MapUtils
+						.refreshLocation((LocationManager) getSystemService(LOCATION_SERVICE));
 			} else if (counter == 5) {
-				RPCUtils.retrieveBranches(MapUtils.getLocation().getLat(),
-						MapUtils.getLocation().getLon());
+				error = RPCUtils.retrieveBranches(MapUtils.getLocation()
+						.getLat(), MapUtils.getLocation().getLon());
 			}
 		}
 	}
 
-	class FindProductTask extends AsyncTask<Void, Void, Void> {
+	class FindProductTask extends ProgressTask {
 
-		@Override
-		protected Void doInBackground(Void... params) {
-			RPCUtils.getBranchProduct(code, EntityUtils.getUserBranch());
-			return null;
+		private int error;
 
+		public FindProductTask() {
+			super(HomeActivity.this, 1, "Searching",
+					"Locating product, please wait...", true);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
-			if (EntityUtils.getScanned() != null) {
+			super.onPostExecute(v);
+			if (error == Constants.SUCCESS) {
 				updatePrice(EntityUtils.getScanned());
-			} else {
+			} else if (error == Constants.PARSE_ERROR) {
 				startActivity(IntentUtils
 						.getNewProductIntent(getApplicationContext()));
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+						error);
+				dlg.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				finish();
 			}
 		}
+
+		@Override
+		protected void retrieve(int counter) {
+			error = RPCUtils
+					.getBranchProduct(code, EntityUtils.getUserBranch());
+
+		}
+
 	}
 
-	class UpdateProductTask extends AsyncTask<BranchProduct, Void, Void> {
-		@Override
-		protected Void doInBackground(BranchProduct... params) {
-			RPCUtils.updateBranchProduct(params[0]);
-			return null;
+	class UpdateProductTask extends ProgressTask {
+		BranchProduct bp;
+		private int error;
+		public UpdateProductTask(BranchProduct bp) {
+			super(HomeActivity.this, 1, "Updating", "Updating product price...", true);
+			this.bp = bp;
+		}
 
+		@Override
+		protected void retrieve(int counter) {
+			error = RPCUtils.updateBranchProduct(bp);
 		}
 
 		@Override
 		protected void onPostExecute(Void v) {
-			AlertDialog.Builder msg = new AlertDialog.Builder(HomeActivity.this);
-			msg.setTitle("Product Updated");
-			msg.setMessage("Product was successfully updated in the database.");
-			msg.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
+			if(error == Constants.SUCCESS){
+
 					startActivity(IntentUtils
 							.getBrowseIntent(HomeActivity.this));
-					dialog.cancel();
-				}
-			});
-			msg.show();
+			}else {
+				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+						error);
+				dlg.setPositiveButton("Retry",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								updatePrice(bp);
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+				finish();
+			}
 		}
 	}
 
@@ -111,12 +165,16 @@ public class HomeActivity extends Activity {
 		if (IntentUtils.scan()) {
 			scan();
 		} else if (!EntityUtils.isLoaded()) {
-			InitTask task = new InitTask();
-			task.execute();
-			EntityUtils.setLoaded(true);
+			loadData();
 		}
 		start();
 
+	}
+
+	private void loadData() {
+		InitTask task = new InitTask();
+		task.execute();
+		EntityUtils.setLoaded(true);
 	}
 
 	@Override
@@ -222,7 +280,7 @@ public class HomeActivity extends Activity {
 		if (EntityUtils.getBranches() == null) {
 			return;
 		}
-		final int size = Math.min(EntityUtils.getBranches().size(), 10);
+		final int size = Math.min(EntityUtils.getBranches().size(), 5);
 		String[] names = new String[size + 1];
 		int i = 0;
 		for (IsEntity b : EntityUtils.getBranches()) {
@@ -291,8 +349,8 @@ public class HomeActivity extends Activity {
 									.getText().toString()));
 							found.setDate(new Date());
 							found.setPrice(price);
-							UpdateProductTask task = new UpdateProductTask();
-							task.execute(found);
+							UpdateProductTask task = new UpdateProductTask(found);
+							task.execute();
 							dialog.cancel();
 						}
 

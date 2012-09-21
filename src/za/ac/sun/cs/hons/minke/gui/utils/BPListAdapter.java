@@ -50,7 +50,7 @@ public class BPListAdapter extends ArrayAdapter<IsEntity> {
 		}
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
-		holder.name.setText(item.getProduct().toString());
+		holder.name.setText(item.getBrand()+" "+	item.getProduct());
 		holder.price.setText("R " + item.getPrice());
 		return rowView;
 	}

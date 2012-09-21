@@ -20,7 +20,7 @@ public class BranchListAdapter extends ArrayAdapter<IsEntity> {
 	private Activity context;
 
 	static class ViewHolder {
-		protected TextView store, location, total;
+		protected TextView store, total;
 	}
 
 	public BranchListAdapter(Activity context, ArrayList<IsEntity> branches) {
@@ -45,8 +45,6 @@ public class BranchListAdapter extends ArrayAdapter<IsEntity> {
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder.store = (TextView) rowView
 					.findViewById(R.id.store_label);
-			viewHolder.location = (TextView) rowView
-					.findViewById(R.id.loc_label);
 			viewHolder.total = (TextView) rowView
 					.findViewById(R.id.total_label);
 			rowView.setTag(viewHolder);
@@ -54,7 +52,6 @@ public class BranchListAdapter extends ArrayAdapter<IsEntity> {
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.store.setText(item.toString());
-		holder.location.setText(item.getCity());
 		holder.total.setText("R "
 				+ ShopUtils.getTotal(item.getBranchProducts()));
 		return rowView;
