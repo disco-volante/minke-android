@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps;
+package za.ac.sun.cs.hons.minke.gui.maps.nutiteq;
 
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.content.Context;

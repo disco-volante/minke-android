@@ -4,7 +4,7 @@ public class Constants {
 	public final static String TEST_URL_BASE = "http://10.0.2.2:5000";
 	public final static String URL_BASE = "http://kraken.shop-minke.appspot.com";
 	public final static String REQUEST_BASE = "/entityRequestServlet?type=";
-	public final static String URL_PREFIX = URL_BASE+REQUEST_BASE;
+	public final static String URL_PREFIX = URL_BASE + REQUEST_BASE;
 	public static final String HTTP_TAG = "HTTPUtils";
 	public static final String RPC_TAG = "RPCUtils";
 	public static final String ENTITY_TAG = "EntityUtils";
@@ -28,5 +28,10 @@ public class Constants {
 	public static final int PARSE_ERROR = 3;
 	public static final int INPUT_ERROR = 4;
 	public static final int LOCATION_ERROR = 5;
+	public static final int MAP_ERROR = 6;
+	public static final boolean EMULATOR = true;
+	public static final boolean GOOGLE_MAPS = true;
+	public static final String EMULATOR_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";
+	public static final String APPLICATION_KEY = "0TkWntAlV0iAoUcY6-k3tkcMPE48tjyGkM9qVWA";
 
 }

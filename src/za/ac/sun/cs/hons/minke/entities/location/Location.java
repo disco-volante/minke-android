@@ -1,17 +1,17 @@
 package za.ac.sun.cs.hons.minke.entities.location;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
-import za.ac.sun.cs.hons.minke.utils.GPSArea;
+import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 
 
 public class Location extends IsEntity {
-	private GPSArea coords;
+	private GPSCoords coords;
 	private String name;
 
 	public Location() {
 	};
 
-	public Location(String name, GPSArea coords) {
+	public Location(String name, GPSCoords coords) {
 		super();
 		this.setName(name);
 		this.setCoords(coords);
@@ -25,11 +25,11 @@ public class Location extends IsEntity {
 		this.name = name;
 	}
 
-	public GPSArea getCoords() {
+	public GPSCoords getCoords() {
 		return coords;
 	}
 
-	public void setCoords(GPSArea coords) {
+	public void setCoords(GPSCoords coords) {
 		this.coords = coords;
 	}
 

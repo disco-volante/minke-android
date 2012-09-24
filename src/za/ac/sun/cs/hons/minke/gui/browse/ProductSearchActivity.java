@@ -9,7 +9,6 @@ import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
-import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
@@ -39,7 +38,6 @@ public class ProductSearchActivity extends Activity {
 	private ListView searchList;
 
 	class SearchTask extends ProgressTask {
-		private int error;
 
 		public SearchTask() {
 			super(ProductSearchActivity.this, 1, "Searching...",
@@ -47,16 +45,16 @@ public class ProductSearchActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			super.onPostExecute(v);
-			if (error == Constants.SUCCESS) {
+		protected void success() {
 				BrowseUtils.setBranchProducts(SearchUtils.getSearched());
 				BrowseUtils.setStoreBrowse(false);
 				startActivity(IntentUtils
 						.getBrowseIntent(ProductSearchActivity.this));
-			} else {
+			} 
+		@Override
+		protected void failure(int error_code) {
 				Builder dlg = DialogUtils.getErrorDialog(
-						ProductSearchActivity.this, error);
+						ProductSearchActivity.this, error_code);
 				dlg.setPositiveButton("Retry",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
@@ -64,17 +62,21 @@ public class ProductSearchActivity extends Activity {
 								dialog.cancel();
 							}
 						});
+				dlg.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								startActivity(IntentUtils
+										.getHomeIntent(ProductSearchActivity.this));
+								dialog.cancel();
+							}
+						});
 				dlg.show();
-				dlg.show();
-				startActivity(IntentUtils
-						.getHomeIntent(ProductSearchActivity.this));
+
 			}
 
-		}
-
 		@Override
-		protected void retrieve(int counter) {
-			error = RPCUtils.retrieveBranchProducts(SearchUtils
+		protected int retrieve(int counter) {
+			return RPCUtils.retrieveBranchProducts(SearchUtils
 					.isProductsActive());
 		}
 	}

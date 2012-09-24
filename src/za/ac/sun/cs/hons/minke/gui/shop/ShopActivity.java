@@ -3,12 +3,17 @@ package za.ac.sun.cs.hons.minke.gui.shop;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
+import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.app.Activity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +30,47 @@ public class ShopActivity extends Activity {
 	private ArrayAdapter<IsEntity> productAdapter;
 	AutoCompleteTextView shopping;
 	ItemListAdapter<IsEntity> shoplistAdapter;
+
+	class FindBranchesTask extends ProgressTask {
+
+		public FindBranchesTask() {
+			super(ShopActivity.this, 1, "Searching",
+					"Searching for branches...", true);
+		}
+
+		@Override
+		protected void success() {
+			startActivity(IntentUtils.getStoreIntent(ShopActivity.this));
+
+		}
+
+		@Override
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(ShopActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							findStores(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							startActivity(IntentUtils
+									.getHomeIntent(ShopActivity.this));
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+		}
+
+		@Override
+		protected int retrieve(int counter) {
+			return RPCUtils.retrieveBranches(ShopUtils.getAddedProducts(false));
+		}
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,9 +135,6 @@ public class ShopActivity extends Activity {
 		case R.id.home:
 			startActivity(IntentUtils.getHomeIntent(this));
 			return true;
-		case R.id.directions:
-			startActivity(IntentUtils.getDirectionsIntent(this));
-			return true;
 		case R.id.next:
 			startActivity(IntentUtils.getStoreIntent(this));
 			return true;
@@ -101,7 +144,8 @@ public class ShopActivity extends Activity {
 	}
 
 	public void findStores(View view) {
-		startActivity(IntentUtils.getStoreIntent(this));
+		FindBranchesTask task = new FindBranchesTask();
+		task.execute();
 	}
 
 }

@@ -166,7 +166,7 @@ public class ObjectParsers {
 					bcity = !bcity;
 					if (!bcity) {
 						City c = new City(name, provinceName, countryName,
-								new GPSArea(latitude, longitude));
+								new GPSCoords(latitude, longitude));
 						c.setID(id);
 						entities.add(c);
 					}
@@ -242,7 +242,7 @@ public class ObjectParsers {
 					bbranch = !bbranch;
 					if (!bbranch) {
 						Branch b = new Branch(name, storeName, cityName,
-								new GPSArea(latitude, longitude), bps);
+								new GPSCoords(latitude, longitude), bps);
 						b.setID(id);
 						entities.add(b);
 					} else {

@@ -1,12 +1,15 @@
 package za.ac.sun.cs.hons.minke.utils;
 
-public class GPSArea {
+import com.google.android.maps.GeoPoint;
+import com.nutiteq.components.WgsPoint;
+
+public class GPSCoords {
 	private double lat,  lon;
 
-	public GPSArea() {
+	public GPSCoords() {
 	}
 
-	public GPSArea(double latitude, double longitude) {
+	public GPSCoords(double latitude, double longitude) {
 		this.lat = latitude;
 		this.lon = longitude;
 	}
@@ -33,4 +36,10 @@ public class GPSArea {
 		return Math.abs(lat - latitude) + Math.abs(lon - longitude);
 	}
 
+	public static WgsPoint toWgsPoint(GPSCoords src) {
+		return new WgsPoint(src.getLongitude(), src.getLatitude());
+	}
+	public static GeoPoint toGeoPoint(GPSCoords src) {
+		return new GeoPoint((int)(src.getLatitude()* 1E6),(int)( src.getLongitude()* 1E6));
+	}
 }

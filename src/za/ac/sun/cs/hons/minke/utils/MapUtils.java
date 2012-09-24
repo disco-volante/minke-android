@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
@@ -12,16 +11,15 @@ import android.util.Log;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.components.Place;
 import com.nutiteq.components.Route;
-import com.nutiteq.components.WgsPoint;
 
 public class MapUtils {
 
 	private static BasicMapComponent map;
 	private static Route route;
 	private static Place[] places;
-	private static WgsPoint destination;
+	private static GPSCoords destination;
 	private static ArrayList<IsEntity> branches;
-	private static WgsPoint point;
+	private static GPSCoords point;
 
 	public static void setMap(BasicMapComponent mapComponent) {
 		map = mapComponent;
@@ -48,9 +46,7 @@ public class MapUtils {
 	}
 
 	public static void setDestination(int position) {
-		Branch b = (Branch) branches.get(position);
-		destination = new WgsPoint(b.getCoords().getLongitude(), b.getCoords()
-				.getLatitude());
+		destination = ((Branch) branches.get(position)).getCoords();
 	}
 
 	public static void setBranches(ArrayList<IsEntity> branches) {
@@ -61,7 +57,7 @@ public class MapUtils {
 		return branches;
 	}
 
-	public static WgsPoint getDestination() {
+	public static GPSCoords getDestination() {
 		return destination;
 	}
 
@@ -73,15 +69,18 @@ public class MapUtils {
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if (location != null) {
-			point = new WgsPoint(location.getLongitude(),
-					location.getLatitude());
+			point = new GPSCoords(location.getLatitude(),
+					location.getLongitude());
 			Log.d("MAPUTILS", location.toString());
+			return Constants.SUCCESS;
+		} else if(Constants.EMULATOR){
+			point = new GPSCoords(-33, 18);
 			return Constants.SUCCESS;
 		}
 		return Constants.LOCATION_ERROR;
 	}
 
-	public static WgsPoint getLocation() {
+	public static GPSCoords getLocation() {
 		return point;
 	}
 

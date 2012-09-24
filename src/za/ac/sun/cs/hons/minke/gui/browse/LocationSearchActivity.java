@@ -33,8 +33,8 @@ public class LocationSearchActivity extends Activity {
 		setContentView(R.layout.location_search);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_location_search);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getNextAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
+		actionBar.addAction(ActionUtils.getNextAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		initBoxes();
 		initLists();

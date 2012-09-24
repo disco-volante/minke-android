@@ -1,5 +1,6 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
+import za.ac.sun.cs.hons.minke.utils.Constants;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,8 +11,10 @@ public abstract class ProgressTask extends AsyncTask<Void, Integer, Void> {
 	private int tasks;
 	private String title, message;
 	private boolean spinner;
+	private int error = 0;
 
-	public ProgressTask(Context context, int tasks, String title, String message, boolean spinner) {
+	public ProgressTask(Context context, int tasks, String title,
+			String message, boolean spinner) {
 		this.context = context;
 		this.tasks = tasks;
 		this.title = title;
@@ -22,9 +25,9 @@ public abstract class ProgressTask extends AsyncTask<Void, Integer, Void> {
 	@Override
 	protected void onPreExecute() {
 		progressDialog = new ProgressDialog(context);
-		if(!spinner){
+		if (!spinner) {
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		}else{
+		} else {
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		}
 		progressDialog.setTitle(title);
@@ -40,8 +43,10 @@ public abstract class ProgressTask extends AsyncTask<Void, Integer, Void> {
 	protected Void doInBackground(Void... params) {
 		synchronized (this) {
 			int counter = 0;
-			while (counter <= tasks) {
-				retrieve(counter++);
+			while (counter < tasks) {
+				if((error = retrieve(counter++))>0){
+					break;
+				}
 				publishProgress((100 / tasks) * counter);
 			}
 		}
@@ -56,8 +61,17 @@ public abstract class ProgressTask extends AsyncTask<Void, Integer, Void> {
 	@Override
 	protected void onPostExecute(Void result) {
 		progressDialog.dismiss();
+		if (error == Constants.SUCCESS) {
+			success();
+		} else {
+			failure(error);
+		}
 	}
 
-	protected abstract void retrieve(int counter);
+	protected abstract void success();
+
+	protected abstract void failure(int code);
+
+	protected abstract int retrieve(int counter);
 
 }

@@ -8,7 +8,8 @@ import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewBranchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.nutiteq.NutiteqMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import android.app.Activity;
@@ -83,14 +84,20 @@ public class ActionUtils {
 				R.drawable.graph_40);
 	}
 
-	public static Action getDirectionsAction(Context context) {
+	public static Action getMapAction(Context context) {
 		return new IntentAction(context,
-				IntentUtils.getDirectionsIntent(context), R.drawable.map_40);
+				IntentUtils.getMapIntent(context), R.drawable.map_40);
 	}
 
 	public static Action getStoreAction(Context context) {
 		return new IntentAction(context, IntentUtils.getStoreIntent(context),
 				R.drawable.store_40);
+	}
+	
+
+	public static Action getScanAction(Context context) {
+		return new IntentAction(context, IntentUtils.getScanIntent(context),
+				R.drawable.scan_40);
 	}
 
 	public static Action getRefreshAction(Activity activity) {
@@ -123,9 +130,9 @@ public class ActionUtils {
 			return new IntentAction(activity,
 					IntentUtils.getGraphIntent(activity), R.drawable.refresh_40);
 		}
-		if (activity instanceof DirectionsActivity) {
+		if (activity instanceof NutiteqMapsActivity || activity instanceof GoogleMapsActivity) {
 			return new IntentAction(activity,
-					IntentUtils.getDirectionsIntent(activity),
+					IntentUtils.getMapIntent(activity),
 					R.drawable.refresh_40);
 		}
 		if (activity instanceof LocationSearchActivity) {
@@ -162,6 +169,7 @@ public class ActionUtils {
 		}
 		return null;
 	}
+
 
 
 }

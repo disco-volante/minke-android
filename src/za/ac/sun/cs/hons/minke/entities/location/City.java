@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.entities.location;
 
-import za.ac.sun.cs.hons.minke.utils.GPSArea;
+import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 
 public class City extends Location {
 	private String provinceName, countryName;
@@ -8,7 +8,7 @@ public class City extends Location {
 	public City() {
 	}
 
-	public City(String name, String province, String country, GPSArea coords) {
+	public City(String name, String province, String country, GPSCoords coords) {
 		super(name, coords);
 		setProvince(province);
 		setCountry(country);

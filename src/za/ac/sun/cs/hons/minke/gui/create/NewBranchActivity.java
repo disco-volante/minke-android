@@ -8,9 +8,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
-import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import za.ac.sun.cs.hons.minke.utils.GPSArea;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
@@ -40,7 +38,6 @@ public class NewBranchActivity extends Activity {
 
 	class AddBranchTask extends ProgressTask {
 		private Branch branch;
-		private int error;
 
 		public AddBranchTask(Branch branch) {
 			super(NewBranchActivity.this, 1, "Adding...",
@@ -49,28 +46,34 @@ public class NewBranchActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			super.onPostExecute(v);
-			if (error == Constants.SUCCESS) {
-				setBranch(null);
-			} else {
-				Builder dlg = DialogUtils.getErrorDialog(
-						NewBranchActivity.this, error);
-				dlg.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								createLocation(null);
-								dialog.cancel();
-							}
-						});
-				dlg.show();
-				startActivity(IntentUtils.getHomeIntent(NewBranchActivity.this));
-			}
+		protected void success() {
+			startActivity(IntentUtils.getScanIntent(NewBranchActivity.this));
+		}
+
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(NewBranchActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							createLocation(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							startActivity(IntentUtils
+									.getHomeIntent(NewBranchActivity.this));
+							dialog.cancel();
+						}
+					});
+			dlg.show();
 		}
 
 		@Override
-		protected void retrieve(int counter) {
-			error = RPCUtils.addBranch(branch, province, country);
+		protected int retrieve(int counter) {
+			return RPCUtils.addBranch(branch, province, country);
 		}
 	}
 
@@ -101,8 +104,8 @@ public class NewBranchActivity extends Activity {
 
 		});
 		branchText = (EditText) findViewById(R.id.branchText);
-		branchText
-				.addTextChangedListener(new TextErrorWatcher(branchText, true));
+		branchText.addTextChangedListener(new TextErrorWatcher(branchText,
+				false));
 		storeBox = (AutoCompleteTextView) findViewById(R.id.storeBox);
 		ArrayAdapter<String> storeAdapter = new ArrayAdapter<String>(this,
 				R.layout.dropdown_item, EntityUtils.getStores());
@@ -148,8 +151,7 @@ public class NewBranchActivity extends Activity {
 	}
 
 	public void setBranch(View view) {
-		IntentUtils.setScan(true);
-		startActivity(IntentUtils.getHomeIntent(this));
+		startActivity(IntentUtils.getScanIntent(this));
 	}
 
 	public void createLocation(View view) {
@@ -165,8 +167,7 @@ public class NewBranchActivity extends Activity {
 			country = locs[2];
 		}
 		Branch b = new Branch(branchText.getText().toString(), storeBox
-				.getText().toString(), locs[0], new GPSArea(MapUtils
-				.getLocation().getLat(), MapUtils.getLocation().getLon()), null);
+				.getText().toString(), locs[0], MapUtils.getLocation(), null);
 		AddBranchTask task = new AddBranchTask(b);
 		task.execute();
 	}

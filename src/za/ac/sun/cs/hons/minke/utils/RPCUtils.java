@@ -204,8 +204,10 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			EntityUtils.setBranches(ObjectParsers.parseResponse(response,
-					suffix));
+			List<IsEntity> branches = ObjectParsers.parseResponse(response,
+					suffix);
+			EntityUtils.setBranches(branches);
+			MapUtils.setBranches(EntityUtils.getBranches());
 			return Constants.SUCCESS;
 
 		} catch (SAXException e) {
@@ -341,10 +343,10 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> holder = ObjectParsers.parseResponse(response,
+			List<IsEntity> bps = ObjectParsers.parseResponse(response,
 					suffix);
-			EntityUtils.setBranchProducts(holder);
-			BrowseUtils.setBranchProducts(holder);
+			EntityUtils.setBranchProducts(bps);
+			BrowseUtils.setBranchProducts(bps);
 			return Constants.SUCCESS;
 
 		} catch (SAXException e) {
@@ -374,6 +376,7 @@ public class RPCUtils {
 					suffix);
 			if (holder != null && holder.size() > 0) {
 				EntityUtils.setUserBranch((Branch) holder.get(0));
+				EntityUtils.addBranch( holder.get(0));
 				return Constants.SUCCESS;
 			}
 		} catch (SAXException e) {

@@ -27,8 +27,8 @@ public class BrowseActivity extends Activity {
 		setContentView(R.layout.browse);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_browse);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getNextAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
+		actionBar.addAction(ActionUtils.getNextAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		showData();
 

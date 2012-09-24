@@ -1,5 +1,8 @@
 package za.ac.sun.cs.hons.minke.gui.utils;
 
+import java.util.List;
+
+import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
 import za.ac.sun.cs.hons.minke.utils.Constants;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -10,13 +13,40 @@ public class DialogUtils {
 	public static Builder getErrorDialog(Context context, int error) {
 		AlertDialog.Builder errorDlg = new AlertDialog.Builder(context);
 		errorDlg.setTitle(getErrorTitle(error));
-		errorDlg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		errorDlg.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		errorDlg.setMessage(getErrorMessage(error));
+		return errorDlg;
+	}
+
+	public static Builder getDirectionsDialog(Context context,
+			List<Segment> items, String title) {
+		StringBuilder msg = new StringBuilder();
+		int i = 0;
+		for (Segment s : items) {
+			i++;
+			msg.append(i);
+			msg.append(") ");
+			msg.append(s.getDistance());
+			msg.append(" km -> ");
+			msg.append(s.getInstruction());
+			msg.append(" for ");
+			msg.append(s.getLength());
+			msg.append(" m .\n");
+		}
+		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
+		dlg.setTitle(title);
+		dlg.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				dialog.cancel();
 			}
 		});
-		errorDlg.setMessage(getErrorMessage(error));
-		return errorDlg;
+		dlg.setMessage(msg.toString());
+		return dlg;
 	}
 
 	private static CharSequence getErrorMessage(int error) {
@@ -31,6 +61,8 @@ public class DialogUtils {
 			return "Invalid input entered.";
 		case Constants.LOCATION_ERROR:
 			return "Your location could not be determined.";
+		case Constants.MAP_ERROR:
+			return "Something went wrong while creating map.";
 		case Constants.SUCCESS:
 			return "Action successfully completed.";
 		}
@@ -49,6 +81,8 @@ public class DialogUtils {
 			return "Input Error";
 		case Constants.LOCATION_ERROR:
 			return "Location Error";
+		case Constants.MAP_ERROR:
+			return "Map Error";
 		case Constants.SUCCESS:
 			return "Success";
 		}

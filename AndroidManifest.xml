@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.READ_OWNER_DATA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <meta-data
         android:name="CLOUDMADE_KEY"
@@ -44,7 +45,10 @@
         <activity android:name=".gui.browse.LocationSearchActivity" />
         <activity android:name=".gui.graph.GraphActivity" />
         <activity
-            android:name=".gui.maps.DirectionsActivity"
+            android:name=".gui.maps.nutiteq.NutiteqMapsActivity"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".gui.maps.google.GoogleMapsActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
     </application>
 

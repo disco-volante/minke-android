@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.Location;
-import za.ac.sun.cs.hons.minke.utils.GPSArea;
+import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 
 /**
  * DB Entity used to store data about a specific store's branch, e.g. Spar - Die
@@ -21,7 +21,7 @@ public class Branch extends Location {
 	public Branch() {
 	}
 
-	public Branch(String name, String store,String city,  GPSArea coords, ArrayList<IsEntity> branchProducts) {
+	public Branch(String name, String store,String city,  GPSCoords coords, ArrayList<IsEntity> branchProducts) {
 		super(name, coords);
 		setStore(store);
 		setCity(city);

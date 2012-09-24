@@ -40,53 +40,52 @@ public class HomeActivity extends Activity {
 	private long code;
 
 	private class InitTask extends ProgressTask {
-		private int error;
-
 		public InitTask() {
 			super(HomeActivity.this, 6, "Loading",
 					"Loading data, please wait...", false);
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			super.onPostExecute(v);
-			if (error != Constants.SUCCESS) {
-				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-						error);
-				dlg.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								loadData();
-								dialog.cancel();
-							}
-						});
-				dlg.show();
-				finish();
-			}
+		protected void success() {
+			EntityUtils.setLoaded(true);
 		}
 
-		protected void retrieve(int counter) {
+		@Override
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							loadData();
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+		}
+		@Override
+		protected int retrieve(int counter) {
+			int error_code = 0;
 			if (counter == 0) {
-				error = RPCUtils.retrieveBrands();
+				error_code = RPCUtils.retrieveBrands();
 			} else if (counter == 1) {
-				error = RPCUtils.retrieveProducts();
+				error_code = RPCUtils.retrieveProducts();
 			} else if (counter == 2) {
-				error = RPCUtils.retrieveCategories();
+				error_code = RPCUtils.retrieveCategories();
 			} else if (counter == 3) {
-				error = RPCUtils.retrieveLocations();
+				error_code = RPCUtils.retrieveLocations();
 			} else if (counter == 4) {
-				error = MapUtils
+				error_code = MapUtils
 						.refreshLocation((LocationManager) getSystemService(LOCATION_SERVICE));
 			} else if (counter == 5) {
-				error = RPCUtils.retrieveBranches(MapUtils.getLocation()
-						.getLat(), MapUtils.getLocation().getLon());
+				error_code = RPCUtils.retrieveBranches(MapUtils.getLocation()
+						.getLatitude(), MapUtils.getLocation().getLongitude());
 			}
+			return error_code;
 		}
 	}
 
 	class FindProductTask extends ProgressTask {
-
-		private int error;
 
 		public FindProductTask() {
 			super(HomeActivity.this, 1, "Searching",
@@ -94,16 +93,18 @@ public class HomeActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			super.onPostExecute(v);
-			if (error == Constants.SUCCESS) {
-				updatePrice(EntityUtils.getScanned());
-			} else if (error == Constants.PARSE_ERROR) {
+		protected void success() {
+			updatePrice(EntityUtils.getScanned());
+		}
+
+		@Override
+		protected void failure(int code) {
+			if (code == Constants.PARSE_ERROR) {
 				startActivity(IntentUtils
 						.getNewProductIntent(getApplicationContext()));
 			} else {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-						error);
+						code);
 				dlg.setPositiveButton("Ok",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
@@ -111,14 +112,12 @@ public class HomeActivity extends Activity {
 							}
 						});
 				dlg.show();
-				finish();
 			}
 		}
 
 		@Override
-		protected void retrieve(int counter) {
-			error = RPCUtils
-					.getBranchProduct(code, EntityUtils.getUserBranch());
+		protected int retrieve(int counter) {
+			return RPCUtils.getBranchProduct(code, EntityUtils.getUserBranch());
 
 		}
 
@@ -126,36 +125,35 @@ public class HomeActivity extends Activity {
 
 	class UpdateProductTask extends ProgressTask {
 		BranchProduct bp;
-		private int error;
+
 		public UpdateProductTask(BranchProduct bp) {
-			super(HomeActivity.this, 1, "Updating", "Updating product price...", true);
+			super(HomeActivity.this, 1, "Updating",
+					"Updating product price...", true);
 			this.bp = bp;
 		}
 
 		@Override
-		protected void retrieve(int counter) {
-			error = RPCUtils.updateBranchProduct(bp);
+		protected int retrieve(int counter) {
+			return RPCUtils.updateBranchProduct(bp);
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			if(error == Constants.SUCCESS){
+		protected void success() {
+			startActivity(IntentUtils.getBrowseIntent(HomeActivity.this));
+		}
 
-					startActivity(IntentUtils
-							.getBrowseIntent(HomeActivity.this));
-			}else {
-				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-						error);
-				dlg.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								updatePrice(bp);
-								dialog.cancel();
-							}
-						});
-				dlg.show();
-				finish();
-			}
+		@Override
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							updatePrice(bp);
+							dialog.cancel();
+						}
+					});
+			dlg.show();
 		}
 	}
 
@@ -163,18 +161,19 @@ public class HomeActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (IntentUtils.scan()) {
-			scan();
+			startScan(EntityUtils.getUserBranch() != null);
 		} else if (!EntityUtils.isLoaded()) {
 			loadData();
 		}
-		start();
+		initGUI();
 
 	}
+
+
 
 	private void loadData() {
 		InitTask task = new InitTask();
 		task.execute();
-		EntityUtils.setLoaded(true);
 	}
 
 	@Override
@@ -200,10 +199,11 @@ public class HomeActivity extends Activity {
 		}
 	}
 
-	public void start() {
+	public void initGUI() {
 		setContentView(R.layout.home);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_home);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
+		actionBar.addAction(ActionUtils.getScanAction(this));
 		actionBar.addAction(ActionUtils.getLocationSearchAction(this));
 		actionBar.addAction(ActionUtils.getShopAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
@@ -219,8 +219,15 @@ public class HomeActivity extends Activity {
 		startActivity(IntentUtils
 				.getLocationSearchIntent(getApplicationContext()));
 	}
-
-	public void scan() {
+	private void startScan(boolean userLoc) {
+		if(userLoc){
+			scan();
+		}
+		else{
+			confirmLocation(null);
+		}
+	}
+	private void scan() {
 		final AlertDialog dialog;
 		downloading = false;
 		if ((dialog = IntentIntegrator.initiateScan(this)) != null) {
@@ -349,7 +356,8 @@ public class HomeActivity extends Activity {
 									.getText().toString()));
 							found.setDate(new Date());
 							found.setPrice(price);
-							UpdateProductTask task = new UpdateProductTask(found);
+							UpdateProductTask task = new UpdateProductTask(
+									found);
 							task.execute();
 							dialog.cancel();
 						}

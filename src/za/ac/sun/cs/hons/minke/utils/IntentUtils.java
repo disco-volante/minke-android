@@ -7,7 +7,8 @@ import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewBranchActivity;
 import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.DirectionsActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.nutiteq.NutiteqMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import android.content.Context;
@@ -65,10 +66,16 @@ public class IntentUtils {
 		return graph;
 	}
 
-	public static Intent getDirectionsIntent(Context context) {
-		Intent directions = new Intent(context, DirectionsActivity.class);
-		directions.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return directions;
+	public static Intent getMapIntent(Context context) {
+		Intent map;
+		if(Constants.GOOGLE_MAPS){
+			map = new Intent(context,GoogleMapsActivity.class);
+		}
+		else{
+			map = new Intent(context, NutiteqMapsActivity.class);
+		}
+		map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return map;
 	}
 
 	public static Intent getStoreIntent(Context context) {
@@ -88,6 +95,13 @@ public class IntentUtils {
 	}
 	public static void setScan(boolean _scan) {
 		scan = _scan;
+	}
+
+	public static Intent getScanIntent(Context context) {
+		setScan(true);
+		Intent home = new Intent(context, HomeActivity.class);
+		home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return home;
 	}
 
 

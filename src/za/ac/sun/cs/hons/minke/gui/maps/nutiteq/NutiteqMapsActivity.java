@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps;
+package za.ac.sun.cs.hons.minke.gui.maps.nutiteq;
 
 import java.io.IOException;
 
@@ -6,6 +6,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.utils.Constants;
+import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.app.Activity;
 import android.location.Location;
@@ -26,18 +27,35 @@ import com.nutiteq.ui.ThreadDrivenPanning;
 import com.nutiteq.wrappers.AppContext;
 import com.nutiteq.wrappers.Image;
 
-public class DirectionsActivity extends Activity implements LocationListener {
+public class NutiteqMapsActivity extends Activity implements LocationListener {
 	private BasicMapComponent mapComponent;
 	private boolean onRetainCalled;
-	private WgsPoint src;
+	private GPSCoords src;
 	private LocationManager locationManager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.directions);
-		mapComponent = new BasicMapComponent(Constants.KEY, new AppContext(this), 1, 1,
-				new WgsPoint(18.8600, -33.9200), 15);
+		locationManager = (LocationManager) this
+				.getSystemService(LOCATION_SERVICE);
+		Location location = locationManager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if (location == null) {
+			location = locationManager
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
+		if (location != null) {
+			Log.d(Constants.DIR_TAG, location.toString());
+			onLocationChanged(location);
+		}
+			createNutiteq();
+	}
+
+	private void createNutiteq() {
+		setContentView(R.layout.nutiteq_directions);
+		WgsPoint center = GPSCoords.toWgsPoint(src);
+		mapComponent = new BasicMapComponent(Constants.KEY,
+				new AppContext(this), 1, 1, center, 15);
 		MapUtils.setMap(mapComponent);
 		mapComponent.setMap(OpenStreetMap.MAPNIK);
 		mapComponent.setPanningStrategy(new ThreadDrivenPanning());
@@ -48,31 +66,21 @@ public class DirectionsActivity extends Activity implements LocationListener {
 			for (IsEntity b : MapUtils.getBranches()) {
 				PlaceLabel branchLabel = new PlaceLabel(b.toString());
 				Place p = new Place(1, branchLabel, branchIcon, ((Branch) b)
-						.getCoords().getLongitude(), ((Branch) b)
-						.getCoords().getLatitude());
+						.getCoords().getLongitude(), ((Branch) b).getCoords()
+						.getLatitude());
 				mapComponent.addPlace(p);
 			}
-			locationManager = (LocationManager) this
-					.getSystemService(LOCATION_SERVICE);
-			Location location = locationManager
-					.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-			if (location == null) {
-				location = locationManager
-						.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			}
-			if (location != null) {
-				Log.d(Constants.DIR_TAG, location.toString());
-				onLocationChanged(location);
-			}
+
 			Image userIcon = Image
 					.createImage("/res/drawable-hdpi/android_40.png");
 			PlaceLabel userLabel = new PlaceLabel("Your Location");
-			Place userPos = new Place(1, userLabel, userIcon, src);
+			Place userPos = new Place(1, userLabel, userIcon, center);
 			mapComponent.addPlace(userPos);
 			if (src != null) {
-				mapComponent.setMiddlePoint(src);
+				mapComponent.setMiddlePoint(center);
 			}
-			new NutiteqRouteWaiter(src, MapUtils.getDestination(), Constants.USER_ID,
+			new NutiteqRouteWaiter(center, GPSCoords.toWgsPoint(MapUtils
+					.getDestination()), Constants.USER_ID,
 					Constants.ROUTING_CLOUDMADE, this);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -127,8 +135,9 @@ public class DirectionsActivity extends Activity implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(Constants.DIR_TAG, "onLocationChanged with location " + location.toString());
-		src = new WgsPoint(location.getLongitude(), location.getLatitude());
+		Log.d(Constants.DIR_TAG,
+				"onLocationChanged with location " + location.toString());
+		src = new GPSCoords(location.getLatitude(), location.getLongitude());
 	}
 
 	@Override

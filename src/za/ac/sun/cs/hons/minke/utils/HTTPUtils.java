@@ -61,7 +61,7 @@ public class HTTPUtils {
 
 	public static String attempt(String mUrl) {
 		Log.i(Constants.HTTP_TAG, "URL= " + mUrl);
-		String ret = "failed";
+		String ret = "C";
 		HttpGet getMethod = new HttpGet(mUrl);
 		DefaultHttpClient httpClient = getClient();
 		try {

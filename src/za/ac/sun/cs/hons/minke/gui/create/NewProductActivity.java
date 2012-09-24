@@ -8,7 +8,6 @@ import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
-import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
@@ -38,7 +37,6 @@ public class NewProductActivity extends Activity {
 
 	class AddProductTask extends ProgressTask {
 		private BranchProduct branchProduct;
-		private int error;
 
 		public AddProductTask(BranchProduct branchProduct) {
 			super(NewProductActivity.this, 1, "Adding...",
@@ -47,30 +45,36 @@ public class NewProductActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(Void v) {
-			super.onPostExecute(v);
-			if (error == Constants.SUCCESS) {
-				startActivity(IntentUtils
-						.getBrowseIntent(NewProductActivity.this));
-			} else {
-				Builder dlg = DialogUtils.getErrorDialog(
-						NewProductActivity.this, error);
-				dlg.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								addProduct(null);
-								dialog.cancel();
-							}
-						});
-				dlg.show();
-				startActivity(IntentUtils
-						.getHomeIntent(NewProductActivity.this));
-			}
+		protected void success() {
+			startActivity(IntentUtils.getBrowseIntent(NewProductActivity.this));
 		}
 
 		@Override
-		protected void retrieve(int counter) {
-			error = RPCUtils.addBranchProduct(branchProduct, code,
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(NewProductActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							addProduct(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							startActivity(IntentUtils
+									.getHomeIntent(NewProductActivity.this));
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+
+		}
+
+		@Override
+		protected int retrieve(int counter) {
+			return RPCUtils.addBranchProduct(branchProduct, code,
 					branch.getID());
 		}
 	}
@@ -108,7 +112,6 @@ public class NewProductActivity extends Activity {
 		unitSpinner.setAdapter(units);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_newproduct);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getBrowseAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		clear();

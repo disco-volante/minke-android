@@ -177,4 +177,8 @@ public class EntityUtils {
 		return countries;
 	}
 
+	public static void addBranch(IsEntity branch) {
+		branches.add(0, branch);
+	}
+
 }
