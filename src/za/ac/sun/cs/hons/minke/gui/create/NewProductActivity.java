@@ -1,12 +1,14 @@
 package za.ac.sun.cs.hons.minke.gui.create;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
+import za.ac.sun.cs.hons.minke.entities.product.Brand;
+import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -85,19 +87,24 @@ public class NewProductActivity extends Activity {
 		initGUI();
 		showErrorMessage();
 	}
-
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
 	private void initGUI() {
 		setContentView(R.layout.new_product);
 		nameText = (EditText) findViewById(R.id.nameText);
 		nameText.addTextChangedListener(new TextErrorWatcher(nameText, false));
 		brandText = (AutoCompleteTextView) findViewById(R.id.brandText);
-		ArrayAdapter<IsEntity> brands = new ArrayAdapter<IsEntity>(this,
+		ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(this,
 				R.layout.dropdown_item, EntityUtils.getBrands());
 		brandText.setAdapter(brands);
 		brandText
 				.addTextChangedListener(new TextErrorWatcher(brandText, false));
 		categoryText = (AutoCompleteTextView) findViewById(R.id.categoryText);
-		ArrayAdapter<IsEntity> categories = new ArrayAdapter<IsEntity>(this,
+		ArrayAdapter<Category> categories = new ArrayAdapter<Category>(this,
 				R.layout.dropdown_item, EntityUtils.getCategories());
 		categoryText.setAdapter(categories);
 		categoryText.addTextChangedListener(new TextErrorWatcher(categoryText,
@@ -123,7 +130,7 @@ public class NewProductActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.newproduct_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu2, menu);
 		return true;
 	}
 
@@ -135,6 +142,9 @@ public class NewProductActivity extends Activity {
 			return true;
 		case R.id.home:
 			startActivity(IntentUtils.getHomeIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

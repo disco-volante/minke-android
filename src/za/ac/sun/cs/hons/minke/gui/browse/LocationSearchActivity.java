@@ -1,9 +1,9 @@
 package za.ac.sun.cs.hons.minke.gui.browse;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -24,8 +24,8 @@ import com.markupartist.android.widget.ActionBar;
 public class LocationSearchActivity extends Activity {
 
 	private AutoCompleteTextView locationBox;
-	private ArrayAdapter<IsEntity> locationAdapter;
-	private ItemListAdapter<IsEntity> locationListAdapter;
+	private ArrayAdapter<Location> locationAdapter;
+	private ItemListAdapter<Location> locationListAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,10 +35,19 @@ public class LocationSearchActivity extends Activity {
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getNextAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		initBoxes();
 		initLists();
 	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
+
 
 	private void initBoxes() {
 		locationBox = (AutoCompleteTextView) findViewById(R.id.locationBox);
@@ -51,13 +60,13 @@ public class LocationSearchActivity extends Activity {
 			}
 
 		});
-		locationAdapter = new ArrayAdapter<IsEntity>(this,
+		locationAdapter = new ArrayAdapter<Location>(this,
 				R.layout.dropdown_item, EntityUtils.getLocations());
 		locationBox.setAdapter(locationAdapter);
 	}
 
 	private void initLists() {
-		locationListAdapter = new ItemListAdapter<IsEntity>(this,
+		locationListAdapter = new ItemListAdapter<Location>(this,
 				SearchUtils.getAddedLocations(true));
 
 		ListView locationList = (ListView) findViewById(R.id.location_list);
@@ -83,7 +92,7 @@ public class LocationSearchActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.location_search_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu1, menu);
 		return true;
 	}
 
@@ -98,6 +107,9 @@ public class LocationSearchActivity extends Activity {
 			return true;
 		case R.id.next:
 			startActivity(IntentUtils.getProductSearchIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

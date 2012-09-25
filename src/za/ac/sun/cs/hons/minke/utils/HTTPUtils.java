@@ -43,12 +43,12 @@ import android.util.Log;
 public class HTTPUtils {
 
 	public static String doGetWithResponse(String mUrl,
-			List<IsEntity>... entities) {
+			List<? extends IsEntity>... entities) {
 		mUrl = addAuth(mUrl);
 		NameValuePair found = null;
 		if (entities.length > 0) {
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			for (List<IsEntity> entity : entities) {
+			for (List<? extends IsEntity> entity : entities) {
 				if ((found = formatEntities(entity)) != null) {
 					params.add(found);
 				}
@@ -357,5 +357,7 @@ public class HTTPUtils {
 		ret = new DefaultHttpClient(manager, params);
 		return ret;
 	}
+
+
 
 }

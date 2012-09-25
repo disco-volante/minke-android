@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,14 +14,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class BPListAdapter extends ArrayAdapter<IsEntity> {
+public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	private Activity context;
 
 	static class ViewHolder {
 		protected TextView name, price;
 	}
 
-	public BPListAdapter(Activity context, ArrayList<IsEntity> bps) {
+	public BPListAdapter(Activity context, ArrayList<BranchProduct> bps) {
 		super(context, R.layout.bp_rowlayout, bps);
 		this.context = context;
 

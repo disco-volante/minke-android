@@ -10,6 +10,7 @@ import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
@@ -22,7 +23,6 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,52 +38,6 @@ public class HomeActivity extends Activity {
 	protected int selectedBranch;
 	private boolean downloading;
 	private long code;
-
-	private class InitTask extends ProgressTask {
-		public InitTask() {
-			super(HomeActivity.this, 6, "Loading",
-					"Loading data, please wait...", false);
-		}
-
-		@Override
-		protected void success() {
-			EntityUtils.setLoaded(true);
-		}
-
-		@Override
-		protected void failure(int error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setPositiveButton("Retry",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							loadData();
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-		}
-		@Override
-		protected int retrieve(int counter) {
-			int error_code = 0;
-			if (counter == 0) {
-				error_code = RPCUtils.retrieveBrands();
-			} else if (counter == 1) {
-				error_code = RPCUtils.retrieveProducts();
-			} else if (counter == 2) {
-				error_code = RPCUtils.retrieveCategories();
-			} else if (counter == 3) {
-				error_code = RPCUtils.retrieveLocations();
-			} else if (counter == 4) {
-				error_code = MapUtils
-						.refreshLocation((LocationManager) getSystemService(LOCATION_SERVICE));
-			} else if (counter == 5) {
-				error_code = RPCUtils.retrieveBranches(MapUtils.getLocation()
-						.getLatitude(), MapUtils.getLocation().getLongitude());
-			}
-			return error_code;
-		}
-	}
 
 	class FindProductTask extends ProgressTask {
 
@@ -157,22 +111,21 @@ public class HomeActivity extends Activity {
 		}
 	}
 
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (IntentUtils.scan()) {
 			startScan(EntityUtils.getUserBranch() != null);
-		} else if (!EntityUtils.isLoaded()) {
-			loadData();
 		}
 		initGUI();
 
 	}
 
-
-
-	private void loadData() {
-		InitTask task = new InitTask();
+	@Override
+	public void onPause() {
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
 		task.execute();
 	}
 
@@ -185,14 +138,8 @@ public class HomeActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.scan:
-			confirmLocation(this.getCurrentFocus());
-			return true;
-		case R.id.search:
-			search(this.getCurrentFocus());
-			return true;
-		case R.id.shop:
-			shop(this.getCurrentFocus());
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -203,12 +150,54 @@ public class HomeActivity extends Activity {
 		setContentView(R.layout.home);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_home);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getScanAction(this));
-		actionBar.addAction(ActionUtils.getLocationSearchAction(this));
-		actionBar.addAction(ActionUtils.getShopAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 
 	}
+
+	/*private void checkPreferences() {
+		if (!PreferencesUtils.checkLoaded(this)) {
+			startActivity(IntentUtils.getSettingsIntent(this));
+		}
+		if (!PreferencesUtils.loadPreferences(this)) {
+			startActivity(IntentUtils.getSettingsIntent(this));
+			PreferencesUtils.loadPreferences(this);
+		}
+		if (PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
+			UpdateDataTask task = new UpdateDataTask(this);
+			task.execute();
+		} else {
+			LoadDataTask task = new LoadDataTask(this);
+			task.execute();
+			if (PreferencesUtils.getUpdateFrequency() != Constants.NEVER) {
+				startScheduler();
+			}
+		}
+
+	}
+	
+	private void startScheduler() {
+
+		try {
+			AlarmManager alarms = (AlarmManager) this
+					.getSystemService(ALARM_SERVICE);
+
+			Intent intent = new Intent(getApplicationContext(),
+					TimedReceiver.class);
+			pendingIntent = PendingIntent.getBroadcast(this,
+					1234567, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+			long updateInterval = PreferencesUtils.getUpdateInterval();
+			if (updateInterval == -1) {
+				return;
+			}
+			alarms.setRepeating(AlarmManager.RTC_WAKEUP,
+					System.currentTimeMillis(), updateInterval, pIntent);
+			alarms.cancel(pIntent);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}*/
 
 	public void shop(View view) {
 		startActivity(IntentUtils.getShopIntent(getApplicationContext()));
@@ -219,14 +208,15 @@ public class HomeActivity extends Activity {
 		startActivity(IntentUtils
 				.getLocationSearchIntent(getApplicationContext()));
 	}
+
 	private void startScan(boolean userLoc) {
-		if(userLoc){
+		if (userLoc) {
 			scan();
-		}
-		else{
+		} else {
 			confirmLocation(null);
 		}
 	}
+
 	private void scan() {
 		final AlertDialog dialog;
 		downloading = false;
@@ -367,5 +357,6 @@ public class HomeActivity extends Activity {
 		success.show();
 
 	}
+
 
 }

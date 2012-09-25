@@ -1,11 +1,11 @@
 package za.ac.sun.cs.hons.minke.gui.shop;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -27,9 +27,9 @@ import android.widget.ListView;
 import com.markupartist.android.widget.ActionBar;
 
 public class ShopActivity extends Activity {
-	private ArrayAdapter<IsEntity> productAdapter;
+	private ArrayAdapter<Product> productAdapter;
 	AutoCompleteTextView shopping;
-	ItemListAdapter<IsEntity> shoplistAdapter;
+	ItemListAdapter<Product> shoplistAdapter;
 
 	class FindBranchesTask extends ProgressTask {
 
@@ -80,8 +80,9 @@ public class ShopActivity extends Activity {
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getNextAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
-		productAdapter = new ArrayAdapter<IsEntity>(this,
+		productAdapter = new ArrayAdapter<Product>(this,
 				R.layout.dropdown_item, EntityUtils.getProducts());
 		shopping = (AutoCompleteTextView) findViewById(R.id.shoppingAutoComplete);
 
@@ -96,7 +97,7 @@ public class ShopActivity extends Activity {
 			}
 
 		});
-		shoplistAdapter = new ItemListAdapter<IsEntity>(this,
+		shoplistAdapter = new ItemListAdapter<Product>(this,
 				ShopUtils.getAddedProducts(true));
 		ListView shoplist = (ListView) findViewById(R.id.shoppingList);
 		shoplist.setAdapter(shoplistAdapter);
@@ -111,6 +112,13 @@ public class ShopActivity extends Activity {
 		});
 
 	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
 
 	private void addItem(Product item) {
 		if (item != null) {
@@ -122,7 +130,7 @@ public class ShopActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.shop_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu1, menu);
 		return true;
 	}
 
@@ -137,6 +145,9 @@ public class ShopActivity extends Activity {
 			return true;
 		case R.id.next:
 			startActivity(IntentUtils.getStoreIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

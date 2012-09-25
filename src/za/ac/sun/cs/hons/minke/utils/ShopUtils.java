@@ -1,20 +1,18 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 
 public class ShopUtils {
-	private static ArrayList<IsEntity> addedProducts;
+	private static ArrayList<Product> addedProducts;
 	private static ArrayList<BranchProduct> searched;
 	private static boolean productsActive;
 
-	public static ArrayList<IsEntity> getAddedProducts(boolean reset) {
+	public static ArrayList<Product> getAddedProducts(boolean reset) {
 		if (reset || addedProducts == null) {
-			addedProducts = new ArrayList<IsEntity>();
+			addedProducts = new ArrayList<Product>();
 		}
 		return addedProducts;
 	}
@@ -44,13 +42,13 @@ public class ShopUtils {
 	}
 
 
-	public static double getTotal(List<IsEntity> bps) {
+	public static double getTotal(ArrayList<BranchProduct> bps) {
 		if (bps == null) {
 			return 0;
 		}
 		double total = 0;
-		for (IsEntity bp : bps) {
-			total += ((BranchProduct) bp).getPrice();
+		for (BranchProduct bp : bps) {
+			total +=  bp.getPrice();
 		}
 		return total;
 	}

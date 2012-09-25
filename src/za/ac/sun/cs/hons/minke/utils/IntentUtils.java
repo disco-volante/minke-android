@@ -9,6 +9,7 @@ import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.nutiteq.NutiteqMapsActivity;
+import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import android.content.Context;
@@ -102,6 +103,12 @@ public class IntentUtils {
 		Intent home = new Intent(context, HomeActivity.class);
 		home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return home;
+	}
+
+	public static Intent getSettingsIntent(Context context) {
+		Intent settings = new Intent(context, SettingsActivity.class);
+		settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return settings;
 	}
 
 

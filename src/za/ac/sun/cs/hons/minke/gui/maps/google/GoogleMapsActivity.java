@@ -10,6 +10,7 @@ import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.GPSCoords;
+import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -19,6 +20,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.maps.GeoPoint;
@@ -192,6 +195,30 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 
 	public void getDirections(View view) {
 		DialogUtils.getDirectionsDialog(this, directions, "Directions").show();
+	}
+	
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.default_menu2, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.refresh:
+			startActivity(IntentUtils.getMapIntent(this));
+			return true;
+		case R.id.home:
+			startActivity(IntentUtils.getHomeIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

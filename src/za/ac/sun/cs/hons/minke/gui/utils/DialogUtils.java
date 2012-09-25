@@ -63,6 +63,8 @@ public class DialogUtils {
 			return "Your location could not be determined.";
 		case Constants.MAP_ERROR:
 			return "Something went wrong while creating map.";
+		case Constants.DB_ERROR:
+			return "An error occurred when accessing your local database.";
 		case Constants.SUCCESS:
 			return "Action successfully completed.";
 		}
@@ -83,6 +85,8 @@ public class DialogUtils {
 			return "Location Error";
 		case Constants.MAP_ERROR:
 			return "Map Error";
+		case Constants.DB_ERROR:
+			return "Database Error.";
 		case Constants.SUCCESS:
 			return "Success";
 		}

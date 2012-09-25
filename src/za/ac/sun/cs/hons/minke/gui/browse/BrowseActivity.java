@@ -3,8 +3,9 @@ package za.ac.sun.cs.hons.minke.gui.browse;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
+import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.gui.utils.BPListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -29,14 +30,21 @@ public class BrowseActivity extends Activity {
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getNextAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		showData();
 
 	}
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.browse_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu1, menu);
 		return true;
 	}
 
@@ -52,6 +60,9 @@ public class BrowseActivity extends Activity {
 		case R.id.refresh:
 			startActivity(IntentUtils.getBrowseIntent(this));
 			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -62,7 +73,7 @@ public class BrowseActivity extends Activity {
 	}
 
 	private void showData() {
-		final ArrayList<IsEntity> bps = BrowseUtils.getBranchProducts();
+		final ArrayList<BranchProduct> bps = BrowseUtils.getBranchProducts();
 		bplistAdapter = new BPListAdapter(this, bps);
 		ListView bplist = (ListView) findViewById(R.id.bp_list);
 		bplist.setAdapter(bplistAdapter);

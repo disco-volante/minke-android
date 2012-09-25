@@ -7,6 +7,7 @@ import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.GPSCoords;
+import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.app.Activity;
 import android.location.Location;
@@ -14,6 +15,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ZoomControls;
 
@@ -152,6 +155,29 @@ public class NutiteqMapsActivity extends Activity implements LocationListener {
 	@Override
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.default_menu2, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.refresh:
+			startActivity(IntentUtils.getMapIntent(this));
+			return true;
+		case R.id.home:
+			startActivity(IntentUtils.getHomeIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

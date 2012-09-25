@@ -7,6 +7,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
@@ -31,10 +32,10 @@ import com.markupartist.android.widget.ActionBar;
 public class ProductSearchActivity extends Activity {
 
 	private AutoCompleteTextView searchBox;
-	private ArrayAdapter<IsEntity> productAdapter;
-	private ArrayAdapter<IsEntity> categoryAdapter;
-	private ItemListAdapter<IsEntity> productListAdapter;
-	private ItemListAdapter<IsEntity> categoryListAdapter;
+	private ArrayAdapter<Product> productAdapter;
+	private ArrayAdapter<Category> categoryAdapter;
+	private ItemListAdapter<Product> productListAdapter;
+	private ItemListAdapter<Category> categoryListAdapter;
 	private ListView searchList;
 
 	class SearchTask extends ProgressTask {
@@ -46,33 +47,34 @@ public class ProductSearchActivity extends Activity {
 
 		@Override
 		protected void success() {
-				BrowseUtils.setBranchProducts(SearchUtils.getSearched());
-				BrowseUtils.setStoreBrowse(false);
-				startActivity(IntentUtils
-						.getBrowseIntent(ProductSearchActivity.this));
-			} 
+			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
+			BrowseUtils.setStoreBrowse(false);
+			startActivity(IntentUtils
+					.getBrowseIntent(ProductSearchActivity.this));
+		}
+
 		@Override
 		protected void failure(int error_code) {
-				Builder dlg = DialogUtils.getErrorDialog(
-						ProductSearchActivity.this, error_code);
-				dlg.setPositiveButton("Retry",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								getProducts(null);
-								dialog.cancel();
-							}
-						});
-				dlg.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								startActivity(IntentUtils
-										.getHomeIntent(ProductSearchActivity.this));
-								dialog.cancel();
-							}
-						});
-				dlg.show();
+			Builder dlg = DialogUtils.getErrorDialog(
+					ProductSearchActivity.this, error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							getProducts(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							startActivity(IntentUtils
+									.getHomeIntent(ProductSearchActivity.this));
+							dialog.cancel();
+						}
+					});
+			dlg.show();
 
-			}
+		}
 
 		@Override
 		protected int retrieve(int counter) {
@@ -89,12 +91,21 @@ public class ProductSearchActivity extends Activity {
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
 		actionBar.addAction(ActionUtils.getNextAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		initBoxes();
 		initLists();
 		setProducts(this.getCurrentFocus());
 
 	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
+
 
 	private void initBoxes() {
 		searchBox = (AutoCompleteTextView) findViewById(R.id.searchBox);
@@ -112,17 +123,17 @@ public class ProductSearchActivity extends Activity {
 
 		});
 
-		categoryAdapter = new ArrayAdapter<IsEntity>(this,
+		categoryAdapter = new ArrayAdapter<Category>(this,
 				R.layout.dropdown_item, EntityUtils.getCategories());
-		productAdapter = new ArrayAdapter<IsEntity>(this,
+		productAdapter = new ArrayAdapter<Product>(this,
 				R.layout.dropdown_item, EntityUtils.getProducts());
 
 	}
 
 	private void initLists() {
-		productListAdapter = new ItemListAdapter<IsEntity>(this,
+		productListAdapter = new ItemListAdapter<Product>(this,
 				SearchUtils.getAddedProducts(true));
-		categoryListAdapter = new ItemListAdapter<IsEntity>(this,
+		categoryListAdapter = new ItemListAdapter<Category>(this,
 				SearchUtils.getAddedCategories(true));
 		searchList = (ListView) findViewById(R.id.search_list);
 		searchList.setAdapter(productListAdapter);
@@ -160,7 +171,7 @@ public class ProductSearchActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.product_search_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu1, menu);
 		return true;
 	}
 
@@ -175,6 +186,9 @@ public class ProductSearchActivity extends Activity {
 			return true;
 		case R.id.next:
 			startActivity(IntentUtils.getBrowseIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

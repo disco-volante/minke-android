@@ -93,7 +93,10 @@ public class ActionUtils {
 		return new IntentAction(context, IntentUtils.getStoreIntent(context),
 				R.drawable.store_40);
 	}
-	
+	public static Action getSettingsAction(Context context) {
+		return new IntentAction(context, IntentUtils.getSettingsIntent(context),
+				R.drawable.settings_40);
+	}
 
 	public static Action getScanAction(Context context) {
 		return new IntentAction(context, IntentUtils.getScanIntent(context),

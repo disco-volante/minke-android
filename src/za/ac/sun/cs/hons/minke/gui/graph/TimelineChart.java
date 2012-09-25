@@ -32,10 +32,10 @@ public class TimelineChart {
 	 *            the context
 	 * @return the built intent
 	 */
-	public GraphicalView execute(final Context context,List<IsEntity> branchProducts ) {
+	public GraphicalView execute(final Context context,ArrayList<BranchProduct> bps ) {
 		PointStyle[] values = PointStyle.values();
-		PointStyle[] styles = new PointStyle[branchProducts.size()];
-		if (branchProducts.size() > values.length) {
+		PointStyle[] styles = new PointStyle[bps.size()];
+		if (bps.size() > values.length) {
 			System.arraycopy(values, 0, styles, 0, values.length);
 			System.arraycopy(values, 0, styles, values.length, styles.length
 					- values.length);
@@ -43,20 +43,20 @@ public class TimelineChart {
 			System.arraycopy(values, 0, styles, 0, styles.length);
 		}
 
-		final String[] titles = new String[branchProducts.size()];
+		final String[] titles = new String[bps.size()];
 		List<double[]> prices = new ArrayList<double[]>();
 		List<Date[]> dates = new ArrayList<Date[]>();
 		Random color = new Random();
-		int[] colors = new int[branchProducts.size()];
+		int[] colors = new int[bps.size()];
 		int i = 0;
 		int maxPrice = 0, minPrice = Integer.MAX_VALUE;
 		Date maxDate = null, minDate = null;
-		for (IsEntity entity : branchProducts) {
+		for (IsEntity entity : bps) {
 			BranchProduct bp = (BranchProduct)entity;
 			colors[i] = Color.argb(255, color.nextInt(256), color.nextInt(256),
 					color.nextInt(256));
 			titles[i++] = bp.getProduct().toString();
-			ArrayList<IsEntity> hist = bp.getDatePrices();
+			ArrayList<DatePrice> hist = bp.getDatePrices();
 			double[] p = new double[hist.size()];
 			Date[] d = new Date[hist.size()];
 			int j = 0;

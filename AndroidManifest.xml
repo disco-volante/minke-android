@@ -29,11 +29,6 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity android:name=".HomeActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".gui.create.NewProductActivity" />
         <activity android:name=".gui.create.NewBranchActivity" />
@@ -50,6 +45,15 @@
         <activity
             android:name=".gui.maps.google.GoogleMapsActivity"
             android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".gui.prefs.SettingsActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

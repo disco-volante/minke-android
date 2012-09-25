@@ -6,6 +6,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.BranchListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -25,7 +26,7 @@ import com.markupartist.android.widget.ActionBar;
 public class StoreActivity extends Activity {
 
 	private BranchListAdapter branchListAdapter;
-	private ArrayList<IsEntity> branches;
+	private ArrayList<Branch> branches;
 	protected Branch branch;
 
 	@Override
@@ -33,10 +34,15 @@ public class StoreActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		initGUI();
 	}
-
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.store_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu2, menu);
 		return true;
 	}
 
@@ -49,8 +55,8 @@ public class StoreActivity extends Activity {
 		case R.id.refresh:
 			startActivity(IntentUtils.getStoreIntent(this));
 			return true;
-		case R.id.directions:
-			showDirections(this.getCurrentFocus());
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -61,8 +67,8 @@ public class StoreActivity extends Activity {
 		setContentView(R.layout.store);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_store);
 		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getMapAction(this));
 		actionBar.addAction(ActionUtils.getRefreshAction(this));
+		actionBar.addAction(ActionUtils.getSettingsAction(this));
 		actionBar.addAction(ActionUtils.getShareAction(this));
 		branches = EntityUtils.getBranches();
 		branchListAdapter = new BranchListAdapter(this, branches);

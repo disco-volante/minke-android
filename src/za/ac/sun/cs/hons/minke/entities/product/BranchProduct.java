@@ -10,14 +10,14 @@ public class BranchProduct extends IsEntity {
 	private String product, brand, branch, measure;
 	Date date;
 	private double price, size;
-	private ArrayList<IsEntity> dps;
+	private ArrayList<DatePrice> dps;
 	private SimpleDateFormat formatter = new SimpleDateFormat("dd MMM, yyyy");
 
 	public BranchProduct() {
 	}
 
 	public BranchProduct(String product, String brand, String branch,
-			Date date, double price, double size, String measure, ArrayList<IsEntity> dps) {
+			Date date, double price, double size, String measure, ArrayList<DatePrice> dps) {
 		super();
 		setProduct(product);
 		setBrand(brand);
@@ -84,11 +84,11 @@ public class BranchProduct extends IsEntity {
 		return measure;
 	}
 
-	public ArrayList<IsEntity> getDatePrices() {
+	public ArrayList<DatePrice> getDatePrices() {
 		return dps;
 	}
 
-	public void setDatePrices(ArrayList<IsEntity> dps) {
+	public void setDatePrices(ArrayList<DatePrice> dps) {
 		this.dps = dps;
 	}
 

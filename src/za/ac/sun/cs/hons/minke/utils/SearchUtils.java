@@ -1,29 +1,37 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Country;
+import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
+import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 
 public class SearchUtils {
-	private static ArrayList<IsEntity> addedCities, addedLocations,
-			addedCountries, addedProvinces, addedProducts, addedCategories;
+	private static ArrayList<City> addedCities;
 
-	static List<IsEntity> searched;
+	private static ArrayList<Province> addedProvinces;
+
+	private static ArrayList<Product> addedProducts;
+	private static ArrayList<Category> addedCategories;
+
+	private static ArrayList<Country> addedCountries;
+
+	private static ArrayList<Location> addedLocations;
+
+	private static ArrayList<BranchProduct> searched;
 
 	private static boolean productsActive;
 
-	public static ArrayList<IsEntity> getAddedLocations(boolean reset) {
+	public static ArrayList<Location> getAddedLocations(boolean reset) {
 		if (reset || addedLocations == null) {
-			addedLocations = new ArrayList<IsEntity>(100);
-			addedCountries = new ArrayList<IsEntity>(100);
-			addedCities = new ArrayList<IsEntity>(100);
-			addedProvinces = new ArrayList<IsEntity>(100);
+			addedLocations = new ArrayList<Location>(100);
+			addedCountries = new ArrayList<Country>(100);
+			addedCities = new ArrayList<City>(100);
+			addedProvinces = new ArrayList<Province>(100);
 		}
 		return addedLocations;
 	}
@@ -35,35 +43,40 @@ public class SearchUtils {
 		addedCities.remove(position);
 	}
 
-	public static void addLocation(IsEntity location) {
+	public static void addLocation(Location location) {
 		addedLocations.add(location);
-		IsEntity city = null, province = null, country = null;
+		City city = null;
+		Province province = null;
+		Country country = null;
 		if (location instanceof City) {
-			city = location;
+			city = (City) location;
 		} else if (location instanceof Province) {
-			province = location;
+			province = (Province) location;
 		} else if (location instanceof Country) {
-			country = location;
+			country = (Country) location;
 		}
 		addedCities.add(city);
 		addedProvinces.add(province);
 		addedCountries.add(country);
 	}
 
-	public static ArrayList<IsEntity> getAddedProducts(boolean reset) {
+	public static ArrayList<Product> getAddedProducts(boolean reset) {
 		if (reset || addedProducts == null) {
-			addedProducts = new ArrayList<IsEntity>();
+			addedProducts = new ArrayList<Product>();
 		}
 		return addedProducts;
 	}
-	public static List<IsEntity> getAddedCities() {
-		return addedCountries;
+
+	public static ArrayList<City> getAddedCities() {
+		return addedCities;
 	}
-	public static List<IsEntity> getAddedProvinces() {
+
+	public static ArrayList<Province> getAddedProvinces() {
 		return addedProvinces;
 	}
-	public static List<IsEntity> getAddedCountries() {
-		return addedCities;
+
+	public static ArrayList<Country> getAddedCountries() {
+		return addedCountries;
 	}
 
 	public static void removeProduct(int position) {
@@ -74,9 +87,9 @@ public class SearchUtils {
 		addedProducts.add(product);
 	}
 
-	public static ArrayList<IsEntity> getAddedCategories(boolean reset) {
+	public static ArrayList<Category> getAddedCategories(boolean reset) {
 		if (reset || addedCategories == null) {
-			addedCategories = new ArrayList<IsEntity>();
+			addedCategories = new ArrayList<Category>();
 		}
 		return addedCategories;
 	}
@@ -97,14 +110,12 @@ public class SearchUtils {
 		productsActive = active;
 	}
 
-	public static List<IsEntity> getSearched() {
+	public static ArrayList<BranchProduct> getSearched() {
 		return searched;
 	}
 
-	public static void setSearched(List<IsEntity> bps) {
-		searched = bps;
+	public static void setSearched(ArrayList<BranchProduct> _new) {
+		searched = _new;
 	}
-
-
 
 }

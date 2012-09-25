@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -15,11 +14,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.util.Log;
-
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Country;
+import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Brand;
@@ -72,11 +69,11 @@ public class ObjectParsers {
 
 	};
 
-	private static List<IsEntity> parseProductResponse(String response)
+	public static ArrayList<Product> parseProductResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<Product> entities = new ArrayList<Product>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bproduct, bbrandName, bsize, bmeasure;
 			String brandName, measure;
@@ -124,11 +121,11 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	private static List<IsEntity> parseCategoryResponse(String response)
+	public static ArrayList<Category> parseCategoryResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<Category> entities = new ArrayList<Category>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bcategory;
 
@@ -149,11 +146,11 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	private static List<IsEntity> parseLocationResponse(String response)
+	public static ArrayList<Location> parseLocationResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<Location> entities = new ArrayList<Location>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bcity, bprovince, bcountry, blatitude, blongitude,
 					bprovinceName, bcountryName;
@@ -221,11 +218,11 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	private static List<IsEntity> parseBranchResponse(String response)
+	public static ArrayList<Branch> parseBranchResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<Branch> entities = new ArrayList<Branch>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bbranchProduct, bbranch, blatitude, blongitude,
 					bproductName, bbrandName, bbranchName, bsize, bmeasure,
@@ -234,7 +231,8 @@ public class ObjectParsers {
 					cityName;
 			Date date;
 			double latitude, longitude, size, price;
-			ArrayList<IsEntity> bps, dps;
+			ArrayList<BranchProduct> bps;
+			ArrayList<DatePrice> dps;
 
 			public void changeElement(String qName) {
 				super.changeElement(qName);
@@ -246,7 +244,7 @@ public class ObjectParsers {
 						b.setID(id);
 						entities.add(b);
 					} else {
-						bps = new ArrayList<IsEntity>();
+						bps = new ArrayList<BranchProduct>();
 					}
 				} else if (qName.equalsIgnoreCase("BRANCHPRODUCT")) {
 					bbranchProduct = !bbranchProduct;
@@ -257,7 +255,7 @@ public class ObjectParsers {
 						bp.setID(id);
 						bps.add(bp);
 					} else {
-						dps = new ArrayList<IsEntity>();
+						dps = new ArrayList<DatePrice>();
 					}
 				} else if (qName.equalsIgnoreCase("DATEPRICE")) {
 					bdatePrice = !bdatePrice;
@@ -330,18 +328,18 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	private static List<IsEntity> parseBranchProductResponse(String response)
+	public static ArrayList<BranchProduct> parseBranchProductResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<BranchProduct> entities = new ArrayList<BranchProduct>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bbranchProduct, bproductName, bbrandName, bbranchName,
 					bsize, bmeasure, bprice, bdate, bdatePrice;
 			String branchName, productName, brandName, measure;
 			Date date;
 			double size, price;
-			ArrayList<IsEntity> dps;
+			ArrayList<DatePrice> dps;
 
 			public void changeElement(String qName) {
 				super.changeElement(qName);
@@ -355,7 +353,7 @@ public class ObjectParsers {
 						entities.add(bp);
 
 					} else {
-						dps = new ArrayList<IsEntity>();
+						dps = new ArrayList<DatePrice>();
 					}
 				} else if (qName.equalsIgnoreCase("DATEPRICE")) {
 					bdatePrice = !bdatePrice;
@@ -412,11 +410,11 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	private static List<IsEntity> parseBrandResponse(String response)
+	public static ArrayList<Brand> parseBrandResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final List<IsEntity> entities = new ArrayList<IsEntity>();
+		final ArrayList<Brand> entities = new ArrayList<Brand>();
 		EntityHandler handler = new EntityHandler() {
 			boolean bbrand;
 
@@ -436,25 +434,5 @@ public class ObjectParsers {
 		};
 		saxParser.parse(new InputSource(new StringReader(response)), handler);
 		return entities;
-	}
-
-	public static List<IsEntity> parseResponse(String response, String type)
-			throws SAXException, IOException, ParserConfigurationException {
-		Log.v("RESPONSE", response);
-		if (type.endsWith("locations")) {
-			return parseLocationResponse(response);
-		} else if (type.endsWith("branchproducts")
-				|| type.endsWith("branchproduct")) {
-			return parseBranchProductResponse(response);
-		} else if (type.endsWith("products") || type.endsWith("product")) {
-			return parseProductResponse(response);
-		} else if (type.endsWith("categories") || type.endsWith("category")) {
-			return parseCategoryResponse(response);
-		} else if (type.endsWith("branches") || (type.endsWith("branch"))) {
-			return parseBranchResponse(response);
-		} else if (type.endsWith("brands")) {
-			return parseBrandResponse(response);
-		}
-		return null;
 	}
 }

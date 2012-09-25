@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.Location;
+import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 
 /**
@@ -17,15 +18,15 @@ import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 public class Branch extends Location {
 	private String store;
 	private String city;
-	private ArrayList<IsEntity> bps;
+	private ArrayList<BranchProduct> bps;
 	public Branch() {
 	}
 
-	public Branch(String name, String store,String city,  GPSCoords coords, ArrayList<IsEntity> branchProducts) {
+	public Branch(String name, String store,String city,  GPSCoords coords, ArrayList<BranchProduct> bps) {
 		super(name, coords);
 		setStore(store);
 		setCity(city);
-		setBranchProducts(branchProducts);
+		setBranchProducts(bps);
 	}
 
 
@@ -53,11 +54,11 @@ public class Branch extends Location {
 		return store + " @ " + getName();
 	}
 
-	public ArrayList<IsEntity> getBranchProducts() {
+	public ArrayList<BranchProduct> getBranchProducts() {
 		return bps;
 	}
 
-	public void setBranchProducts(ArrayList<IsEntity> bps) {
+	public void setBranchProducts(ArrayList<BranchProduct> bps) {
 		this.bps = bps;
 	}
 

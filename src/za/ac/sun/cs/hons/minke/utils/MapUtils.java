@@ -2,7 +2,6 @@ package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,7 +17,7 @@ public class MapUtils {
 	private static Route route;
 	private static Place[] places;
 	private static GPSCoords destination;
-	private static ArrayList<IsEntity> branches;
+	private static ArrayList<Branch> branches;
 	private static GPSCoords point;
 
 	public static void setMap(BasicMapComponent mapComponent) {
@@ -49,11 +48,11 @@ public class MapUtils {
 		destination = ((Branch) branches.get(position)).getCoords();
 	}
 
-	public static void setBranches(ArrayList<IsEntity> branches) {
+	public static void setBranches(ArrayList<Branch> branches) {
 		MapUtils.branches = branches;
 	}
 
-	public static ArrayList<IsEntity> getBranches() {
+	public static ArrayList<Branch> getBranches() {
 		return branches;
 	}
 
@@ -73,10 +72,8 @@ public class MapUtils {
 					location.getLongitude());
 			Log.d("MAPUTILS", location.toString());
 			return Constants.SUCCESS;
-		} else if(Constants.EMULATOR){
-			point = new GPSCoords(-33, 18);
-			return Constants.SUCCESS;
 		}
+		point = new GPSCoords(-33, 18);
 		return Constants.LOCATION_ERROR;
 	}
 

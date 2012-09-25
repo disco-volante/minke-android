@@ -7,6 +7,7 @@ import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -83,12 +84,17 @@ public class NewBranchActivity extends Activity {
 		initGUI();
 
 	}
-
+	@Override
+	public void onPause(){
+		super.onPause();
+		StoreDataTask task = new StoreDataTask(this);
+		task.execute();
+	}
 	private void initGUI() {
 		setContentView(R.layout.new_branch);
 
 		branchBox = (AutoCompleteTextView) findViewById(R.id.branchBox);
-		final ArrayAdapter<IsEntity> branchAdapter = new ArrayAdapter<IsEntity>(
+		final ArrayAdapter<Branch> branchAdapter = new ArrayAdapter<Branch>(
 				this, R.layout.dropdown_item, EntityUtils.getBranches());
 		branchBox.setAdapter(branchAdapter);
 		branchBox
@@ -132,7 +138,7 @@ public class NewBranchActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.newbranch_menu, menu);
+		getMenuInflater().inflate(R.menu.default_menu2, menu);
 		return true;
 	}
 
@@ -140,10 +146,13 @@ public class NewBranchActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.refresh:
-			startActivity(IntentUtils.getNewProductIntent(this));
+			startActivity(IntentUtils.getNewBranchIntent(this));
 			return true;
 		case R.id.home:
 			startActivity(IntentUtils.getHomeIntent(this));
+			return true;
+		case R.id.settings:
+			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

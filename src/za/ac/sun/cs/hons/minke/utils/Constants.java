@@ -29,9 +29,31 @@ public class Constants {
 	public static final int INPUT_ERROR = 4;
 	public static final int LOCATION_ERROR = 5;
 	public static final int MAP_ERROR = 6;
+	public static final int DB_ERROR = 7;
 	public static final boolean EMULATOR = true;
 	public static final boolean GOOGLE_MAPS = true;
 	public static final String EMULATOR_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";
 	public static final String APPLICATION_KEY = "0TkWntAlV0iAoUcY6-k3tkcMPE48tjyGkM9qVWA";
-
+	public static final int NO_FREQUENCY_SET = -1;
+	public static final int STARTUP = 0;
+	public static final int HOURLY = 1;
+	public static final int DAILY = 2;
+	public static final int WEEKLY = 3;
+	public static final int NEVER = 4;
+	public static final long HOUR = 3600000;
+	public static final long DAY = 86400000;
+	public static final long WEEK = 604800000;
+	public static final String DATABASE_NAME = "minke.db";
+	public static final int DATABASE_VERSION = 1;
+	public static final String[][] TABLES = new String[][] {
+			{ "product", "category", "brand", "branch", "store", "city",
+					"province", "country" },
+			{ "id,name,brand,size,measurement", "id,name", "id,name",
+					"id,name,lat,long", "id,name",
+					"id,name,province,country,lat,long",
+					"id,name,country,lat,long", "id,name,lat,long" },
+			{ "long,string,double,double,string", "long,string", "long,string",
+					"long,string,long,long", "long,string",
+					"long,string,string,string,long,long",
+					"long,string,string,long,long", "long,string,long,long" } };
 }

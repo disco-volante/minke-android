@@ -1,27 +1,27 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
+import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 
 public class BrowseUtils {
 
-	private static ArrayList<IsEntity> branchProducts = new ArrayList<IsEntity>();
+	private static ArrayList<BranchProduct> branchProducts = new ArrayList<BranchProduct>();
 	private static boolean storeBrowse;
 
 	public static void setBranchProducts(
-			List<IsEntity> list) {
-		branchProducts = new ArrayList<IsEntity>();
-		if (list != null) {
-			branchProducts.addAll(list);
+			ArrayList<BranchProduct> bps) {
+		if (bps != null) {
+			branchProducts = bps;
+		}else{
+			branchProducts = new ArrayList<BranchProduct>();
 		}
 		
 	}
 
-	public static ArrayList<IsEntity> getBranchProducts() {
+	public static ArrayList<BranchProduct> getBranchProducts() {
 		if(branchProducts == null){
-			branchProducts = new  ArrayList<IsEntity>();
+			branchProducts = new  ArrayList<BranchProduct>();
 		}
 		return branchProducts;
 	}

@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import org.xml.sax.SAXException;
 
 import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
+import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
 public class RPCUtils {
@@ -25,8 +27,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		} else {
 			try {
-				EntityUtils.setLocations(ObjectParsers.parseResponse(response,
-						suffix));
+				EntityUtils.setLocations(ObjectParsers.parseLocationResponse(response));
 				return Constants.SUCCESS;
 			} catch (SAXException e) {
 				e.printStackTrace();
@@ -51,8 +52,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		} else {
 			try {
-				EntityUtils.setBrands(ObjectParsers.parseResponse(response,
-						suffix));
+				EntityUtils.setBrands(ObjectParsers.parseBrandResponse(response));
 				return Constants.SUCCESS;
 			} catch (SAXException e) {
 				e.printStackTrace();
@@ -77,8 +77,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		} else {
 			try {
-				EntityUtils.setCategories(ObjectParsers.parseResponse(response,
-						suffix));
+				EntityUtils.setCategories(ObjectParsers.parseCategoryResponse(response));
 				return Constants.SUCCESS;
 
 			} catch (SAXException e) {
@@ -104,8 +103,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		} else {
 			try {
-				EntityUtils.setProducts(ObjectParsers.parseResponse(response,
-						suffix));
+				EntityUtils.setProducts(ObjectParsers.parseProductResponse(response));
 				return Constants.SUCCESS;
 
 			} catch (SAXException e) {
@@ -134,8 +132,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> searched = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<BranchProduct> searched = ObjectParsers.parseBranchProductResponse(response);
 			SearchUtils.setSearched(searched);
 			EntityUtils.setBranchProducts(searched);
 			return Constants.SUCCESS;
@@ -166,8 +163,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> searched = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<BranchProduct> searched = ObjectParsers.parseBranchProductResponse(response);
 			SearchUtils.setSearched(searched);
 			EntityUtils.setBranchProducts(searched);
 			return Constants.SUCCESS;
@@ -194,7 +190,7 @@ public class RPCUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int retrieveBranches(List<IsEntity> products) {
+	public static int retrieveBranches(ArrayList<Product> products) {
 		String suffix = "product_branches";
 		String url = Constants.URL_PREFIX + suffix;
 		String response = HTTPUtils.doGetWithResponse(url, products);
@@ -204,8 +200,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> branches = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<Branch> branches = ObjectParsers.parseBranchResponse(response);
 			EntityUtils.setBranches(branches);
 			MapUtils.setBranches(EntityUtils.getBranches());
 			return Constants.SUCCESS;
@@ -231,8 +226,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			EntityUtils.setBranches(ObjectParsers.parseResponse(response,
-					suffix));
+			EntityUtils.setBranches(ObjectParsers.parseBranchResponse(response));
 			return Constants.SUCCESS;
 
 		} catch (SAXException e) {
@@ -258,8 +252,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> scanned = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<BranchProduct> scanned = ObjectParsers.parseBranchProductResponse(response);
 			if (scanned != null && scanned.size() > 0) {
 				EntityUtils.setScanned(scanned.get(0));
 				return Constants.SUCCESS;
@@ -288,8 +281,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			EntityUtils.setBranchProducts(ObjectParsers.parseResponse(response,
-					suffix));
+			EntityUtils.setBranchProducts(ObjectParsers.parseBranchProductResponse(response));
 			return Constants.SUCCESS;
 
 		} catch (SAXException e) {
@@ -315,8 +307,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> holder = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<BranchProduct> holder = ObjectParsers.parseBranchProductResponse(response);
 			EntityUtils.setBranchProducts(holder);
 			BrowseUtils.setBranchProducts(holder);
 			return Constants.SUCCESS;
@@ -343,8 +334,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> bps = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<BranchProduct> bps = ObjectParsers.parseBranchProductResponse(response);
 			EntityUtils.setBranchProducts(bps);
 			BrowseUtils.setBranchProducts(bps);
 			return Constants.SUCCESS;
@@ -372,8 +362,7 @@ public class RPCUtils {
 			return Constants.SERVER_ERROR;
 		}
 		try {
-			List<IsEntity> holder = ObjectParsers.parseResponse(response,
-					suffix);
+			ArrayList<Branch> holder = ObjectParsers.parseBranchResponse(response);
 			if (holder != null && holder.size() > 0) {
 				EntityUtils.setUserBranch((Branch) holder.get(0));
 				EntityUtils.addBranch( holder.get(0));
