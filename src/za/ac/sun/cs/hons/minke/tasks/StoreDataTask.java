@@ -18,7 +18,6 @@ public class StoreDataTask extends BackgroundTask {
 
 	@Override
 	protected void failure(int error_code) {
-		StoreDataTask.this.execute();
 	}
 
 	@Override

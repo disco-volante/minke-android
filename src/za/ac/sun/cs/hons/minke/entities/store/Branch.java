@@ -2,7 +2,6 @@ package za.ac.sun.cs.hons.minke.entities.store;
 
 import java.util.ArrayList;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.utils.GPSCoords;

@@ -16,6 +16,7 @@ public class LoadDataTask extends BackgroundTask {
 
 	@Override
 	protected void success() {
+		EntityUtils.setLoaded(true);
 	}
 
 	@Override

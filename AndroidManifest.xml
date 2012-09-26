@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <meta-data
         android:name="CLOUDMADE_KEY"
@@ -28,7 +29,29 @@
         android:theme="@style/MinkeTheme" >
         <uses-library android:name="com.google.android.maps" />
 
+        <service
+            android:name=".services.UpdateService"
+            android:icon="@drawable/icon"
+            android:label="@string/update"
+            android:process=":update_process" >
+        </service>
+
+        <receiver android:name=".receivers.ScheduleReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receivers.UpdateServiceReceiver" >
+        </receiver>
+        <receiver android:name=".receivers.LoadLocalReceiver" >
+        </receiver>
+
         <activity android:name=".HomeActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".gui.create.NewProductActivity" />
         <activity android:name=".gui.create.NewBranchActivity" />
@@ -48,11 +71,6 @@
         <activity
             android:name=".gui.prefs.SettingsActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

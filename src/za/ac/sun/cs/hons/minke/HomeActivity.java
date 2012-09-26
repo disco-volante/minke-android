@@ -9,13 +9,16 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
+import za.ac.sun.cs.hons.minke.tasks.LoadDataTask;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
+import za.ac.sun.cs.hons.minke.tasks.UpdateDataTask;
 import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,6 +26,7 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,84 +43,22 @@ public class HomeActivity extends Activity {
 	private boolean downloading;
 	private long code;
 
-	class FindProductTask extends ProgressTask {
-
-		public FindProductTask() {
-			super(HomeActivity.this, 1, "Searching",
-					"Locating product, please wait...", true);
-		}
-
-		@Override
-		protected void success() {
-			updatePrice(EntityUtils.getScanned());
-		}
-
-		@Override
-		protected void failure(int code) {
-			if (code == Constants.PARSE_ERROR) {
-				startActivity(IntentUtils
-						.getNewProductIntent(getApplicationContext()));
-			} else {
-				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-						code);
-				dlg.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								dialog.cancel();
-							}
-						});
-				dlg.show();
-			}
-		}
-
-		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.getBranchProduct(code, EntityUtils.getUserBranch());
-
-		}
-
-	}
-
-	class UpdateProductTask extends ProgressTask {
-		BranchProduct bp;
-
-		public UpdateProductTask(BranchProduct bp) {
-			super(HomeActivity.this, 1, "Updating",
-					"Updating product price...", true);
-			this.bp = bp;
-		}
-
-		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.updateBranchProduct(bp);
-		}
-
-		@Override
-		protected void success() {
-			startActivity(IntentUtils.getBrowseIntent(HomeActivity.this));
-		}
-
-		@Override
-		protected void failure(int error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setPositiveButton("Retry",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							updatePrice(bp);
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-		}
-	}
-
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(!PreferencesUtils.isLoaded()){
+			System.out.println("not loaded");
+			PreferencesUtils.loadPreferences(this);
+		}
 		if (IntentUtils.scan()) {
 			startScan(EntityUtils.getUserBranch() != null);
+		} else if (MapUtils.getLocation() == null) {
+			GetLocationTask task = new GetLocationTask();
+			task.execute();
+			if(PreferencesUtils.getUpdateFrequency()!=Constants.STARTUP){
+				LoadDataTask local = new LoadDataTask(this);
+				local.execute();
+			}
 		}
 		initGUI();
 
@@ -146,6 +88,16 @@ public class HomeActivity extends Activity {
 		}
 	}
 
+	private void checkData(Intent intent) {
+		if (EntityUtils.isLoaded()) {
+			startActivity(intent);
+		} else {
+			Builder dlg = DialogUtils.getErrorDialog(this,
+					Constants.NOT_LOADED_ERROR);
+			dlg.show();
+		}
+	}
+
 	public void initGUI() {
 		setContentView(R.layout.home);
 		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_home);
@@ -154,59 +106,23 @@ public class HomeActivity extends Activity {
 
 	}
 
-	/*private void checkPreferences() {
-		if (!PreferencesUtils.checkLoaded(this)) {
-			startActivity(IntentUtils.getSettingsIntent(this));
+	protected void nextAction() {
+		if (!EntityUtils.isLoaded()
+				&& (PreferencesUtils.isFirstTime() || PreferencesUtils
+						.getUpdateFrequency() == Constants.STARTUP)) {
+			System.out.println(PreferencesUtils.getUpdateFrequency());
+			System.out.println(PreferencesUtils.isFirstTime());
+			Updater updater = new Updater();
+			updater.execute();
 		}
-		if (!PreferencesUtils.loadPreferences(this)) {
-			startActivity(IntentUtils.getSettingsIntent(this));
-			PreferencesUtils.loadPreferences(this);
-		}
-		if (PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
-			UpdateDataTask task = new UpdateDataTask(this);
-			task.execute();
-		} else {
-			LoadDataTask task = new LoadDataTask(this);
-			task.execute();
-			if (PreferencesUtils.getUpdateFrequency() != Constants.NEVER) {
-				startScheduler();
-			}
-		}
-
 	}
-	
-	private void startScheduler() {
-
-		try {
-			AlarmManager alarms = (AlarmManager) this
-					.getSystemService(ALARM_SERVICE);
-
-			Intent intent = new Intent(getApplicationContext(),
-					TimedReceiver.class);
-			pendingIntent = PendingIntent.getBroadcast(this,
-					1234567, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			long updateInterval = PreferencesUtils.getUpdateInterval();
-			if (updateInterval == -1) {
-				return;
-			}
-			alarms.setRepeating(AlarmManager.RTC_WAKEUP,
-					System.currentTimeMillis(), updateInterval, pIntent);
-			alarms.cancel(pIntent);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}*/
 
 	public void shop(View view) {
-		startActivity(IntentUtils.getShopIntent(getApplicationContext()));
+		checkData(IntentUtils.getShopIntent(getApplicationContext()));
 	}
 
 	public void search(View view) {
-
-		startActivity(IntentUtils
-				.getLocationSearchIntent(getApplicationContext()));
+		checkData(IntentUtils.getLocationSearchIntent(getApplicationContext()));
 	}
 
 	private void startScan(boolean userLoc) {
@@ -358,5 +274,123 @@ public class HomeActivity extends Activity {
 
 	}
 
+	class Updater extends UpdateDataTask {
+		public Updater() {
+			super(HomeActivity.this);
+		}
 
+		@Override
+		protected void success() {
+			super.success();
+		}
+
+		@Override
+		protected void failure(int error_code) {
+			super.failure(error_code);
+		}
+	}
+
+	class GetLocationTask extends ProgressTask {
+		public GetLocationTask() {
+			super(HomeActivity.this, 1, "Pinpointing...",
+					"Determining your location", true);
+		}
+
+		@Override
+		protected int retrieve(int counter) {
+			return MapUtils.refreshLocation((LocationManager) HomeActivity.this
+					.getSystemService(LOCATION_SERVICE));
+		}
+
+		@Override
+		protected void success() {
+			nextAction();
+		}
+
+		@Override
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					nextAction();
+					dialog.cancel();
+				}
+			});
+			dlg.show();
+		}
+
+	}
+
+	class FindProductTask extends ProgressTask {
+
+		public FindProductTask() {
+			super(HomeActivity.this, 1, "Searching",
+					"Locating product, please wait...", true);
+		}
+
+		@Override
+		protected void success() {
+			updatePrice(EntityUtils.getScanned());
+		}
+
+		@Override
+		protected void failure(int code) {
+			if (code == Constants.PARSE_ERROR) {
+				startActivity(IntentUtils
+						.getNewProductIntent(getApplicationContext()));
+			} else {
+				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+						code);
+				dlg.setPositiveButton("Ok",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+			}
+		}
+
+		@Override
+		protected int retrieve(int counter) {
+			return RPCUtils.getBranchProduct(code, EntityUtils.getUserBranch());
+
+		}
+
+	}
+
+	class UpdateProductTask extends ProgressTask {
+		BranchProduct bp;
+
+		public UpdateProductTask(BranchProduct bp) {
+			super(HomeActivity.this, 1, "Updating",
+					"Updating product price...", true);
+			this.bp = bp;
+		}
+
+		@Override
+		protected int retrieve(int counter) {
+			return RPCUtils.updateBranchProduct(bp);
+		}
+
+		@Override
+		protected void success() {
+			startActivity(IntentUtils.getBrowseIntent(HomeActivity.this));
+		}
+
+		@Override
+		protected void failure(int error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							updatePrice(bp);
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+		}
+	}
 }

@@ -1,21 +1,23 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
+import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 
-public class BackgroundUpdateDataTask extends BackgroundTask {
+public class BackgroundUpdateTask extends BackgroundTask {
 
-	public BackgroundUpdateDataTask() {
+	public BackgroundUpdateTask() {
 		super(5);
 	}
 
 	@Override
 	protected void success() {
+		EntityUtils.setLoaded(true);
 	}
 
 	@Override
 	protected void failure(int error_code) {
-		BackgroundUpdateDataTask.this.execute();
+		BackgroundUpdateTask.this.execute();
 	}
 
 	@Override

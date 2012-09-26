@@ -3,14 +3,15 @@ package za.ac.sun.cs.hons.minke.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class PreferencesUtils {
 
 	private static int updateFrequency;
 	private static long updateInterval = -1;
-	private static boolean initial = true;
 	private static long lastUpdate = -1;
 	private static boolean firstTime = false;
+	private static boolean loaded = false;
 
 	public static int getUpdateFrequency() {
 		return updateFrequency;
@@ -38,19 +39,11 @@ public class PreferencesUtils {
 		}
 	}
 
-	public static boolean initial() {
-		if (initial) {
-			initial = false;
-			return true;
-		}
-		return initial;
-	}
-
 	public static long getLastUpdate() {
 		return lastUpdate;
 	}
 
-	public static void setLastUpdate(Context context) {
+	public static void storeLastUpdate(Context context) {
 		lastUpdate = System.currentTimeMillis();
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
@@ -59,11 +52,47 @@ public class PreferencesUtils {
 		editor.commit();
 	}
 
-	public static void setFirstTime(boolean firstTime) {
-		PreferencesUtils.firstTime = firstTime;
+	public static void setFirstTime(SharedPreferences prefs) {
+		firstTime = prefs.getBoolean("first_time", true);
+		if (firstTime) {
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putBoolean("first_time", false);
+			editor.commit();
+		}
 	}
 
 	public static boolean isFirstTime() {
 		return firstTime;
 	}
+
+	public static void loadPreferences(Context context) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
+				Constants.NO_FREQUENCY_SET + "")));
+		setUpdateInterval();
+		loadLastUpdate(prefs.getLong("last_update", 0));
+		setLoaded(true);
+		setFirstTime(prefs);
+		Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
+				+ updateFrequency + ";\n interval-> " + updateInterval
+				+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
+				+ firstTime);
+
+	}
+
+	public static void loadLastUpdate(long found) {
+		lastUpdate = found + updateInterval > System.currentTimeMillis() ? found
+				+ updateInterval
+				: System.currentTimeMillis();
+	}
+
+	public static boolean isLoaded() {
+		return loaded;
+	}
+
+	public static void setLoaded(boolean loaded) {
+		PreferencesUtils.loaded = loaded;
+	}
+
 }

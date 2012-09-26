@@ -65,6 +65,8 @@ public class DialogUtils {
 			return "Something went wrong while creating map.";
 		case Constants.DB_ERROR:
 			return "An error occurred when accessing your local database.";
+		case Constants.NOT_LOADED_ERROR:
+			return "No data is currently available for this action, please wait for it to load.";
 		case Constants.SUCCESS:
 			return "Action successfully completed.";
 		}
@@ -87,6 +89,8 @@ public class DialogUtils {
 			return "Map Error";
 		case Constants.DB_ERROR:
 			return "Database Error.";
+		case Constants.NOT_LOADED_ERROR:
+			return "Data Unavailable.";
 		case Constants.SUCCESS:
 			return "Success";
 		}

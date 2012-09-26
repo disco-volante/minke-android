@@ -78,6 +78,7 @@ public abstract class Db4oHelper<T> {
 		ArrayList<T> list = new ArrayList<T>();
 		ObjectSet<T> result = db.queryByExample(obj);
 		list.addAll(result);
+		Log.d("DB", list + " retrieved");
 		return list;
 	}
 

@@ -217,36 +217,42 @@ public class EntityUtils {
 		try {
 			if (productsChanged) {
 				ProductProvider prd = new ProductProvider(context);
+				prd.deleteAll();
 				prd.addAll(products);
 				prd.close();
 				productsChanged = false;
 			}
 			if (catsChanged) {
 				CategoryProvider ca = new CategoryProvider(context);
+				ca.deleteAll();
 				ca.addAll(categories);
 				ca.close();
 				catsChanged = false;
 			}
 			if (locsChanged) {
 				LocationProvider l = new LocationProvider(context);
+				l.deleteAll();
 				l.addAll(locations);
 				l.close();
 				locsChanged = false;
 			}
 			if (branchesChanged) {
 				BranchProvider b = new BranchProvider(context);
+				b.deleteAll();
 				b.addAll(branches);
 				b.close();
 				branchesChanged = false;
 			}
 			if (bpsChanged) {
 				BranchProductProvider bp = new BranchProductProvider(context);
+				bp.deleteAll();
 				bp.addAll(bps);
 				bp.close();
 				bpsChanged = false;
 			}
 			if (brandsChanged) {
 				BrandProvider b = new BrandProvider(context);
+				b.deleteAll();
 				b.addAll(brands);
 				b.close();
 				brandsChanged = false;

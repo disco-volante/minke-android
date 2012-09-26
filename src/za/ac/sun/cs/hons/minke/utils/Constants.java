@@ -30,6 +30,7 @@ public class Constants {
 	public static final int LOCATION_ERROR = 5;
 	public static final int MAP_ERROR = 6;
 	public static final int DB_ERROR = 7;
+	public static final int NOT_LOADED_ERROR = 8;
 	public static final boolean EMULATOR = true;
 	public static final boolean GOOGLE_MAPS = true;
 	public static final String EMULATOR_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";
@@ -45,15 +46,4 @@ public class Constants {
 	public static final long WEEK = 604800000;
 	public static final String DATABASE_NAME = "minke.db";
 	public static final int DATABASE_VERSION = 1;
-	public static final String[][] TABLES = new String[][] {
-			{ "product", "category", "brand", "branch", "store", "city",
-					"province", "country" },
-			{ "id,name,brand,size,measurement", "id,name", "id,name",
-					"id,name,lat,long", "id,name",
-					"id,name,province,country,lat,long",
-					"id,name,country,lat,long", "id,name,lat,long" },
-			{ "long,string,double,double,string", "long,string", "long,string",
-					"long,string,long,long", "long,string",
-					"long,string,string,string,long,long",
-					"long,string,string,long,long", "long,string,long,long" } };
 }
