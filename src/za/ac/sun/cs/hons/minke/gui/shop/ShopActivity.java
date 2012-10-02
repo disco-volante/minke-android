@@ -5,11 +5,8 @@ import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
-import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -24,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 
-import com.markupartist.android.widget.ActionBar;
 
 public class ShopActivity extends Activity {
 	private ArrayAdapter<Product> productAdapter;
@@ -34,8 +30,8 @@ public class ShopActivity extends Activity {
 	class FindBranchesTask extends ProgressTask {
 
 		public FindBranchesTask() {
-			super(ShopActivity.this, 1, "Searching",
-					"Searching for branches...", true);
+			super(ShopActivity.this, "Searching",
+					"Searching for branches...");
 		}
 
 		@Override
@@ -67,8 +63,8 @@ public class ShopActivity extends Activity {
 		}
 
 		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.retrieveBranches(ShopUtils.getAddedProducts(false));
+		protected int retrieve() {
+			return EntityUtils.retrieveBranches(ShopUtils.getAddedProducts(false));
 		}
 	}
 
@@ -76,12 +72,6 @@ public class ShopActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.shop);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_shop);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getNextAction(this));
-		actionBar.addAction(ActionUtils.getSettingsAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
 		productAdapter = new ArrayAdapter<Product>(this,
 				R.layout.dropdown_item, EntityUtils.getProducts());
 		shopping = (AutoCompleteTextView) findViewById(R.id.shoppingAutoComplete);
@@ -113,12 +103,7 @@ public class ShopActivity extends Activity {
 
 	}
 	
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
+
 
 	private void addItem(Product item) {
 		if (item != null) {
@@ -134,25 +119,7 @@ public class ShopActivity extends Activity {
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getShopIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.next:
-			startActivity(IntentUtils.getStoreIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
+	
 
 	public void findStores(View view) {
 		FindBranchesTask task = new FindBranchesTask();

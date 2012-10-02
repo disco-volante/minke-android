@@ -16,7 +16,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Country;
-import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Brand;
@@ -24,6 +23,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.entities.store.Store;
 
 public class ObjectParsers {
 	static class EntityHandler extends DefaultHandler {
@@ -75,9 +75,10 @@ public class ObjectParsers {
 		SAXParser saxParser = factory.newSAXParser();
 		final ArrayList<Product> entities = new ArrayList<Product>();
 		EntityHandler handler = new EntityHandler() {
-			boolean bproduct, bbrandName, bsize, bmeasure;
-			String brandName, measure;
+			boolean bproduct, bbrandId, bsize, bmeasure;
+			String measure;
 			double size;
+			long brandId;
 
 			@Override
 			protected void changeElement(String qName) {
@@ -85,12 +86,12 @@ public class ObjectParsers {
 				if (qName.equalsIgnoreCase("PRODUCT")) {
 					bproduct = !bproduct;
 					if (!bproduct) {
-						Product p = new Product(name, brandName, size, measure);
-						p.setID(id);
+						Product p = new Product(id, name, brandId, size,
+								measure);
 						entities.add(p);
 					}
-				} else if (qName.equalsIgnoreCase("BRANDNAME")) {
-					bbrandName = !bbrandName;
+				} else if (qName.equalsIgnoreCase("BRANDID")) {
+					bbrandId = !bbrandId;
 				} else if (qName.equalsIgnoreCase("SIZE")) {
 					bsize = !bsize;
 				} else if (qName.equalsIgnoreCase("MEASURE")) {
@@ -103,8 +104,8 @@ public class ObjectParsers {
 			protected boolean parseValue(String cur) {
 				if (super.parseValue(cur)) {
 					return true;
-				} else if (bbrandName) {
-					brandName = cur;
+				} else if (bbrandId) {
+					brandId = Long.parseLong(cur);
 				} else if (bsize) {
 					size = Double.parseDouble(cur);
 				} else if (bmeasure) {
@@ -135,8 +136,7 @@ public class ObjectParsers {
 				if (qName.equalsIgnoreCase("CATEGORY")) {
 					bcategory = !bcategory;
 					if (!bcategory) {
-						Category c = new Category(name);
-						c.setID(id);
+						Category c = new Category(id, name);
 						entities.add(c);
 					}
 				}
@@ -146,50 +146,49 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	public static ArrayList<Location> parseLocationResponse(String response)
+	public static ArrayList<Country> parseCountryResponse(String response)
 			throws SAXException, IOException, ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		final ArrayList<Location> entities = new ArrayList<Location>();
+		final ArrayList<Country> entities = new ArrayList<Country>();
 		EntityHandler handler = new EntityHandler() {
-			boolean bcity, bprovince, bcountry, blatitude, blongitude,
-					bprovinceName, bcountryName;
-			String provinceName, countryName;
-			double latitude, longitude;
+			boolean bcountry;
+
+			@Override
+			public void changeElement(String qName) {
+				super.changeElement(qName);
+				if (qName.equalsIgnoreCase("COUNTRY")) {
+					bcountry = !bcountry;
+					if (!bcountry) {
+						Country c = new Country(id, name);
+						entities.add(c);
+					}
+				}
+			}
+		};
+		saxParser.parse(new InputSource(new StringReader(response)), handler);
+		return entities;
+	}
+
+	public static ArrayList<Province> parseProvinceResponse(String response)
+			throws SAXException, IOException, ParserConfigurationException {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		final ArrayList<Province> entities = new ArrayList<Province>();
+		EntityHandler handler = new EntityHandler() {
+			boolean bprovince, bcountryId;
+			long countryId;
 
 			public void changeElement(String qName) {
 				super.changeElement(qName);
-				if (qName.equalsIgnoreCase("CITY")) {
-					bcity = !bcity;
-					if (!bcity) {
-						City c = new City(name, provinceName, countryName,
-								new GPSCoords(latitude, longitude));
-						c.setID(id);
-						entities.add(c);
-					}
-				} else if (qName.equalsIgnoreCase("PROVINCE")) {
+				if (qName.equalsIgnoreCase("PROVINCE")) {
 					bprovince = !bprovince;
 					if (!bprovince) {
-						Province p = new Province(name, countryName,
-								null);
-						p.setID(id);
+						Province p = new Province(id, countryId, name);
 						entities.add(p);
 					}
-				} else if (qName.equalsIgnoreCase("COUNTRY")) {
-					bcountry = !bcountry;
-					if (!bcountry) {
-						Country c = new Country(name, null);
-						c.setID(id);
-						entities.add(c);
-					}
-				} else if (qName.equalsIgnoreCase("LONGITUDE")) {
-					blongitude = !blongitude;
-				} else if (qName.equalsIgnoreCase("LATITUDE")) {
-					blatitude = !blatitude;
-				} else if (qName.equalsIgnoreCase("PROVINCENAME")) {
-					bprovinceName = !bprovinceName;
-				} else if (qName.equalsIgnoreCase("COUNTRYNAME")) {
-					bcountryName = !bcountryName;
+				} else if (qName.equalsIgnoreCase("COUNTRYID")) {
+					bcountryId = !bcountryId;
 				}
 
 			}
@@ -198,10 +197,53 @@ public class ObjectParsers {
 			public boolean parseValue(String cur) {
 				if (super.parseValue(cur)) {
 					return true;
-				} else if (bprovinceName) {
-					provinceName = cur;
-				} else if (bcountryName) {
-					countryName = cur;
+				} else if (bcountryId) {
+					countryId = Long.parseLong(cur);
+				} else {
+					return false;
+				}
+				return true;
+
+			}
+
+		};
+		saxParser.parse(new InputSource(new StringReader(response)), handler);
+		return entities;
+	}
+
+	public static ArrayList<City> parseCityResponse(String response)
+			throws SAXException, IOException, ParserConfigurationException {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		final ArrayList<City> entities = new ArrayList<City>();
+		EntityHandler handler = new EntityHandler() {
+			boolean bcity, blatitude, blongitude, bprovinceId;
+			long provinceId;
+			double latitude, longitude;
+
+			public void changeElement(String qName) {
+				super.changeElement(qName);
+				if (qName.equalsIgnoreCase("CITY")) {
+					bcity = !bcity;
+					if (!bcity) {
+						
+					}
+				} else if (qName.equalsIgnoreCase("LONGITUDE")) {
+					blongitude = !blongitude;
+				} else if (qName.equalsIgnoreCase("LATITUDE")) {
+					blatitude = !blatitude;
+				} else if (qName.equalsIgnoreCase("PROVINCEID")) {
+					bprovinceId = !bprovinceId;
+				}
+
+			}
+
+			@Override
+			public boolean parseValue(String cur) {
+				if (super.parseValue(cur)) {
+					return true;
+				} else if (bprovinceId) {
+					provinceId = Long.parseLong(cur);
 				} else if (blongitude) {
 					longitude = Double.parseDouble(cur);
 				} else if (blatitude) {
@@ -224,68 +266,21 @@ public class ObjectParsers {
 		SAXParser saxParser = factory.newSAXParser();
 		final ArrayList<Branch> entities = new ArrayList<Branch>();
 		EntityHandler handler = new EntityHandler() {
-			boolean bbranchProduct, bbranch, blatitude, blongitude,
-					bproductName, bbrandName, bbranchName, bsize, bmeasure,
-					bprice, bdate, bstoreName, bcityName, bdatePrice;
-			String productName, branchName, brandName, measure, storeName,
-					cityName;
-			Date date;
-			double latitude, longitude, size, price;
-			ArrayList<BranchProduct> bps;
-			ArrayList<DatePrice> dps;
+			boolean bbranch, bstoreId, bclId;
+			long storeId, clId;
 
 			public void changeElement(String qName) {
 				super.changeElement(qName);
 				if (qName.equalsIgnoreCase("BRANCH")) {
 					bbranch = !bbranch;
 					if (!bbranch) {
-						Branch b = new Branch(name, storeName, cityName,
-								new GPSCoords(latitude, longitude), bps);
-						b.setID(id);
+						Branch b = new Branch(id, storeId, clId, name);
 						entities.add(b);
-					} else {
-						bps = new ArrayList<BranchProduct>();
 					}
-				} else if (qName.equalsIgnoreCase("BRANCHPRODUCT")) {
-					bbranchProduct = !bbranchProduct;
-					if (!bbranchProduct) {
-						BranchProduct bp = new BranchProduct(productName,
-								brandName, branchName, date, price, size,
-								measure, dps);
-						bp.setID(id);
-						bps.add(bp);
-					} else {
-						dps = new ArrayList<DatePrice>();
-					}
-				} else if (qName.equalsIgnoreCase("DATEPRICE")) {
-					bdatePrice = !bdatePrice;
-					if (!bdatePrice) {
-						DatePrice dp = new DatePrice(date, price, 0);
-						dp.setID(id);
-						dps.add(dp);
-					}
-				} else if (qName.equalsIgnoreCase("LONGITUDE")) {
-					blongitude = !blongitude;
-				} else if (qName.equalsIgnoreCase("LATITUDE")) {
-					blatitude = !blatitude;
-				} else if (qName.equalsIgnoreCase("CITYNAME")) {
-					bcityName = !bcityName;
-				} else if (qName.equalsIgnoreCase("STORENAME")) {
-					bstoreName = !bstoreName;
-				} else if (qName.equalsIgnoreCase("BRANDNAME")) {
-					bbrandName = !bbrandName;
-				} else if (qName.equalsIgnoreCase("BRANCHNAME")) {
-					bbranchName = !bbranchName;
-				} else if (qName.equalsIgnoreCase("PRODUCTNAME")) {
-					bproductName = !bproductName;
-				} else if (qName.equalsIgnoreCase("SIZE")) {
-					bsize = !bsize;
-				} else if (qName.equalsIgnoreCase("MEASURE")) {
-					bmeasure = !bmeasure;
-				} else if (qName.equalsIgnoreCase("DATE")) {
-					bdate = !bdate;
-				} else if (qName.equalsIgnoreCase("PRICE")) {
-					bprice = !bprice;
+				} else if (qName.equalsIgnoreCase("STOREID")) {
+					bstoreId = !bstoreId;
+				} else if (qName.equalsIgnoreCase("CITYLOCATIONID")) {
+					bclId = !bclId;
 				}
 
 			}
@@ -294,28 +289,10 @@ public class ObjectParsers {
 			public boolean parseValue(String cur) {
 				if (super.parseValue(cur)) {
 					return true;
-				} else if (bcityName) {
-					cityName = cur;
-				} else if (bstoreName) {
-					storeName = cur;
-				} else if (blongitude) {
-					longitude = Double.parseDouble(cur);
-				} else if (blatitude) {
-					latitude = Double.parseDouble(cur);
-				} else if (bbrandName) {
-					brandName = cur;
-				} else if (bbranchName) {
-					branchName = cur;
-				} else if (bproductName) {
-					productName = cur;
-				} else if (bsize) {
-					size = Double.parseDouble(cur);
-				} else if (bmeasure) {
-					measure = cur;
-				} else if (bdate) {
-					date = new Date(Long.parseLong(cur));
-				} else if (bprice) {
-					price = Double.parseDouble(cur);
+				} else if (bstoreId) {
+					storeId = Long.parseLong(cur);
+				} else if (bclId) {
+					clId = Long.parseLong(cur);
 				} else {
 					return false;
 				}
@@ -328,50 +305,76 @@ public class ObjectParsers {
 		return entities;
 	}
 
-	public static ArrayList<BranchProduct> parseBranchProductResponse(String response)
-			throws SAXException, IOException, ParserConfigurationException {
+	public static ArrayList<BranchProduct> parseBranchProductResponse(
+			String response) throws SAXException, IOException,
+			ParserConfigurationException {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 		final ArrayList<BranchProduct> entities = new ArrayList<BranchProduct>();
 		EntityHandler handler = new EntityHandler() {
-			boolean bbranchProduct, bproductName, bbrandName, bbranchName,
-					bsize, bmeasure, bprice, bdate, bdatePrice;
-			String branchName, productName, brandName, measure;
-			Date date;
-			double size, price;
-			ArrayList<DatePrice> dps;
+			boolean bbranchProduct, bproductId, bbranchId, bdpId;
+			long productId, branchId, dpId;
 
 			public void changeElement(String qName) {
 				super.changeElement(qName);
 				if (qName.equalsIgnoreCase("BRANCHPRODUCT")) {
 					bbranchProduct = !bbranchProduct;
 					if (!bbranchProduct) {
-						BranchProduct bp = new BranchProduct(productName,
-								brandName, branchName, date, price, size,
-								measure, dps);
-						bp.setID(id);
+						BranchProduct bp = new BranchProduct(id, productId,
+								branchId, dpId);
 						entities.add(bp);
 
-					} else {
-						dps = new ArrayList<DatePrice>();
 					}
-				} else if (qName.equalsIgnoreCase("DATEPRICE")) {
+				} else if (qName.equalsIgnoreCase("BRANCHID")) {
+					bbranchId = !bbranchId;
+				} else if (qName.equalsIgnoreCase("PRODUCTID")) {
+					bproductId = !bproductId;
+				} else if (qName.equalsIgnoreCase("DATEPRICEID")) {
+					bdpId = !bdpId;
+				}
+
+			}
+
+			@Override
+			public boolean parseValue(String cur) {
+				if (super.parseValue(cur)) {
+					return true;
+				} else if (bbranchId) {
+					branchId = Long.parseLong(cur);
+				} else if (bproductId) {
+					productId = Long.parseLong(cur);
+				} else if (bdpId) {
+					dpId = Long.parseLong(cur);
+				} else {
+					return false;
+				}
+				return true;
+
+			}
+
+		};
+		saxParser.parse(new InputSource(new StringReader(response)), handler);
+		return entities;
+	}
+
+	public static ArrayList<DatePrice> parseDatePriceResponse(String response)
+			throws SAXException, IOException, ParserConfigurationException {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		final ArrayList<DatePrice> entities = new ArrayList<DatePrice>();
+		EntityHandler handler = new EntityHandler() {
+			boolean bprice, bdate, bdatePrice;
+			Date date;
+			int price;
+
+			public void changeElement(String qName) {
+				super.changeElement(qName);
+				if (qName.equalsIgnoreCase("DATEPRICE")) {
 					bdatePrice = !bdatePrice;
 					if (!bdatePrice) {
-						DatePrice dp = new DatePrice(date, price, 0);
-						dp.setID(id);
-						dps.add(dp);
+						DatePrice dp = new DatePrice(id, date, price, 0);
+						entities.add(dp);
 					}
-				} else if (qName.equalsIgnoreCase("BRANDNAME")) {
-					bbrandName = !bbrandName;
-				} else if (qName.equalsIgnoreCase("BRANCHNAME")) {
-					bbranchName = !bbranchName;
-				} else if (qName.equalsIgnoreCase("PRODUCTNAME")) {
-					bproductName = !bproductName;
-				} else if (qName.equalsIgnoreCase("SIZE")) {
-					bsize = !bsize;
-				} else if (qName.equalsIgnoreCase("MEASURE")) {
-					bmeasure = !bmeasure;
 				} else if (qName.equalsIgnoreCase("DATE")) {
 					bdate = !bdate;
 				} else if (qName.equalsIgnoreCase("PRICE")) {
@@ -384,20 +387,10 @@ public class ObjectParsers {
 			public boolean parseValue(String cur) {
 				if (super.parseValue(cur)) {
 					return true;
-				} else if (bbrandName) {
-					brandName = cur;
-				} else if (bbranchName) {
-					branchName = cur;
-				} else if (bproductName) {
-					productName = cur;
-				} else if (bsize) {
-					size = Double.parseDouble(cur);
-				} else if (bmeasure) {
-					measure = cur;
 				} else if (bdate) {
 					date = new Date(Long.parseLong(cur));
 				} else if (bprice) {
-					price = Double.parseDouble(cur);
+					price = Integer.parseInt(cur);
 				} else {
 					return false;
 				}
@@ -423,9 +416,33 @@ public class ObjectParsers {
 				if (qName.equalsIgnoreCase("BRAND")) {
 					bbrand = !bbrand;
 					if (!bbrand) {
-						Brand b = new Brand(name);
-						b.setID(id);
+						Brand b = new Brand(id, name);
 						entities.add(b);
+					}
+				}
+
+			}
+
+		};
+		saxParser.parse(new InputSource(new StringReader(response)), handler);
+		return entities;
+	}
+
+	public static ArrayList<Store> parseStoreResponse(String response)
+			throws SAXException, IOException, ParserConfigurationException {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		final ArrayList<Store> entities = new ArrayList<Store>();
+		EntityHandler handler = new EntityHandler() {
+			boolean bstore;
+
+			public void changeElement(String qName) {
+				super.changeElement(qName);
+				if (qName.equalsIgnoreCase("STORE")) {
+					bstore = !bstore;
+					if (!bstore) {
+						Store store = new Store(id, name);
+						entities.add(store);
 					}
 				}
 

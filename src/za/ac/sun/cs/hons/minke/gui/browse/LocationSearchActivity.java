@@ -1,10 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.browse;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
@@ -19,34 +16,21 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 
-import com.markupartist.android.widget.ActionBar;
 
 public class LocationSearchActivity extends Activity {
 
 	private AutoCompleteTextView locationBox;
-	private ArrayAdapter<Location> locationAdapter;
-	private ItemListAdapter<Location> locationListAdapter;
+	private ArrayAdapter<Object> locationAdapter;
+	private ItemListAdapter<Object> locationListAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.location_search);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_location_search);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getNextAction(this));
-		actionBar.addAction(ActionUtils.getSettingsAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
 		initBoxes();
 		initLists();
 	}
 	
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
 
 
 	private void initBoxes() {
@@ -56,18 +40,18 @@ public class LocationSearchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				addItem((Location) locationAdapter.getItem(position));
+				addItem( locationAdapter.getItem(position));
 			}
 
 		});
-		locationAdapter = new ArrayAdapter<Location>(this,
+		locationAdapter = new ArrayAdapter<Object>(this,
 				R.layout.dropdown_item, EntityUtils.getLocations());
 		locationBox.setAdapter(locationAdapter);
 	}
 
 	private void initLists() {
-		locationListAdapter = new ItemListAdapter<Location>(this,
-				SearchUtils.getAddedLocations(true));
+		locationListAdapter = new ItemListAdapter<Object>(this,
+				SearchUtils.getAddedLocations());
 
 		ListView locationList = (ListView) findViewById(R.id.location_list);
 		locationList.setAdapter(locationListAdapter);
@@ -82,7 +66,7 @@ public class LocationSearchActivity extends Activity {
 		});
 	}
 
-	protected void addItem(Location location) {
+	protected void addItem(Object location) {
 		if (location != null) {
 			SearchUtils.addLocation(location);
 			locationListAdapter.notifyDataSetChanged();
@@ -96,25 +80,6 @@ public class LocationSearchActivity extends Activity {
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getLocationSearchIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.next:
-			startActivity(IntentUtils.getProductSearchIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	public void getProductSearch(View view) {
 		startActivity(IntentUtils.getProductSearchIntent(this));

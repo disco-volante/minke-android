@@ -1,17 +1,14 @@
 package za.ac.sun.cs.hons.minke.gui.create;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Brand;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
+import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,31 +16,41 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
-import com.markupartist.android.widget.ActionBar;
-
 public class NewProductActivity extends Activity {
 
 	private EditText nameText, priceText, sizeText;
-	private AutoCompleteTextView brandText, categoryText;
+	private AutoCompleteTextView brandBox, categoryBox;
 	private Spinner unitSpinner;
-	private long code;
-	protected Branch branch;
+	protected Brand brand;
+	protected Category category;
 
-	class AddProductTask extends ProgressTask {
-		private BranchProduct branchProduct;
+	class CreateProductTask extends ProgressTask {
+		private String name;
+		private Brand brand;
+		private Category category;
+		private double size;
+		private int price;
+		private String measure;
 
-		public AddProductTask(BranchProduct branchProduct) {
-			super(NewProductActivity.this, 1, "Adding...",
-					"Adding product to the database", true);
-			this.branchProduct = branchProduct;
+		public CreateProductTask(String name, Brand brand, Category category,
+				double size, String measure, int price) {
+			super(NewProductActivity.this, "Adding...",
+					"Adding product to the database");
+			this.name = name;
+			this.brand = brand;
+			this.category = category;
+			this.size = size;
+			this.price = price;
+			this.measure = measure;
 		}
 
 		@Override
@@ -75,9 +82,23 @@ public class NewProductActivity extends Activity {
 		}
 
 		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.addBranchProduct(branchProduct, code,
-					branch.getID());
+		protected int retrieve() {
+			if (brand != null && category != null) {
+				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
+						name, brand, category, size, measure, price);
+			} else if (brand != null) {
+				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
+						name, brand, categoryBox.getText().toString(), size,
+						measure, price);
+			} else if (category != null) {
+				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
+						name, brandBox.getText().toString(), category, size,
+						measure, price);
+			} else {
+				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
+						name, brandBox.getText().toString(), categoryBox
+								.getText().toString(), size, measure, price);
+			}
 		}
 	}
 
@@ -87,28 +108,38 @@ public class NewProductActivity extends Activity {
 		initGUI();
 		showErrorMessage();
 	}
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
+
 	private void initGUI() {
 		setContentView(R.layout.new_product);
 		nameText = (EditText) findViewById(R.id.nameText);
 		nameText.addTextChangedListener(new TextErrorWatcher(nameText, false));
-		brandText = (AutoCompleteTextView) findViewById(R.id.brandText);
-		ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(this,
+		brandBox = (AutoCompleteTextView) findViewById(R.id.brandText);
+		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(this,
 				R.layout.dropdown_item, EntityUtils.getBrands());
-		brandText.setAdapter(brands);
-		brandText
-				.addTextChangedListener(new TextErrorWatcher(brandText, false));
-		categoryText = (AutoCompleteTextView) findViewById(R.id.categoryText);
-		ArrayAdapter<Category> categories = new ArrayAdapter<Category>(this,
-				R.layout.dropdown_item, EntityUtils.getCategories());
-		categoryText.setAdapter(categories);
-		categoryText.addTextChangedListener(new TextErrorWatcher(categoryText,
+		brandBox.setAdapter(brands);
+		brandBox.addTextChangedListener(new TextErrorWatcher(brandBox, false));
+		brandBox.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				brand = brands.getItem(position);
+			}
+
+		});
+		categoryBox = (AutoCompleteTextView) findViewById(R.id.categoryText);
+		final ArrayAdapter<Category> categories = new ArrayAdapter<Category>(
+				this, R.layout.dropdown_item, EntityUtils.getCategories());
+		categoryBox.setAdapter(categories);
+		categoryBox.addTextChangedListener(new TextErrorWatcher(categoryBox,
 				false));
+		categoryBox.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				category = categories.getItem(position);
+			}
+
+		});
 		priceText = (EditText) findViewById(R.id.priceText);
 		priceText.addTextChangedListener(new TextErrorWatcher(priceText, true));
 		sizeText = (EditText) findViewById(R.id.sizeText);
@@ -117,10 +148,7 @@ public class NewProductActivity extends Activity {
 		SpinnerAdapter units = new ArrayAdapter<String>(this,
 				R.layout.dropdown_item, getMeasures());
 		unitSpinner.setAdapter(units);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_newproduct);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
+
 		clear();
 	}
 
@@ -132,23 +160,6 @@ public class NewProductActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.default_menu2, menu);
 		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getNewProductIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
 	}
 
 	private void showErrorMessage() {
@@ -175,24 +186,54 @@ public class NewProductActivity extends Activity {
 	}
 
 	public void addProduct(View view) {
-		if (nameText.getError() != null || brandText.getError() != null
-				|| categoryText.getError() != null
+		if (nameText.getError() != null || brandBox.getError() != null
+				|| categoryBox.getError() != null
 				|| sizeText.getError() != null || priceText.getError() != null) {
-			return;
+			AlertDialog.Builder errors = new AlertDialog.Builder(this);
+			StringBuilder msg = new StringBuilder();
+			msg.append("Please enter a valid: ");
+			if (nameText.getError() != null) {
+				msg.append("product name, ");
+			}
+			if (brandBox.getError() != null) {
+				msg.append("brand name, ");
+			}
+			if (categoryBox.getError() != null) {
+				msg.append("category name, ");
+			}
+			if (sizeText.getError() != null) {
+				msg.append("product size, ");
+			}
+			if (priceText.getError() != null) {
+				msg.append("product price, ");
+			}
+			msg.replace(msg.length() - 2, msg.length(), ".");
+			errors.setTitle("Invalid input");
+			errors.setMessage(msg.toString());
+			errors.setPositiveButton("Ok",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+			errors.show();
+		} else {
+			String name = nameText.getText().toString();
+			double size = Double.parseDouble(sizeText.getText().toString());
+			int price = (int) Double.parseDouble(sizeText.getText().toString()) * 100;
+			CreateProductTask task = new CreateProductTask(name, brand,
+					category, size, unitSpinner.getSelectedItem().toString(),
+					price);
+			task.execute();
+
 		}
-		BranchProduct bp = new BranchProduct(nameText.getText().toString(),
-				brandText.getText().toString(), null, null,
-				Double.parseDouble(priceText.getText().toString()),
-				Double.parseDouble(sizeText.getText().toString()), unitSpinner
-						.getSelectedItem().toString(), null);
-		AddProductTask task = new AddProductTask(bp);
-		task.execute();
+
 	}
 
 	private void clear() {
 		nameText.setText("");
-		brandText.setText("");
-		categoryText.setText("");
+		brandBox.setText("");
+		categoryBox.setText("");
 		priceText.setText("");
 		sizeText.setText("");
 	}

@@ -1,38 +1,142 @@
 package za.ac.sun.cs.hons.minke.entities.location;
 
-import za.ac.sun.cs.hons.minke.utils.GPSCoords;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class City extends Location {
-	private String provinceName, countryName;
+public class City {
+	private long id, provinceId;
+	private String name;
+	private int lat, lon;
+	private Province province;
 
 	public City() {
 	}
 
-	public City(String name, String province, String country, GPSCoords coords) {
-		super(name, coords);
-		setProvince(province);
-		setCountry(country);
+	public City(long id, long provinceId, String name, int lat, int lon) {
+		super();
+		this.id = id;
+		this.provinceId = provinceId;
+		this.name = name;
+		this.lat = lat;
+		this.lon = lon;
 	}
 
-	public void setProvince(String province) {
-		this.provinceName = province;
+	public long getId() {
+		return id;
 	}
 
-	public String getProvince() {
-		return provinceName;
+	public void setId(long id) {
+		this.id = id;
 	}
 
-	public void setCountry(String country) {
-		this.countryName = country;
+	public long getProvinceId() {
+		return provinceId;
 	}
 
-	public String getCountry() {
-		return countryName;
+	public void setProvinceId(long provinceId) {
+		this.provinceId = provinceId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getLat() {
+		return lat;
+	}
+
+	public void setLat(int lat) {
+		this.lat = lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = (int) (lat * 1E6);
+	}
+
+	public int getLon() {
+		return lon;
+	}
+
+	public void setLon(int lon) {
+		this.lon = lon;
+	}
+
+	public void setLon(double lon) {
+		this.lon = (int) (lon * 1E6);
+	}
+
+	public Province getProvince() {
+		return province;
+	}
+
+	public void setProvince(Province province) {
+		this.province = province;
 	}
 
 	@Override
 	public String toString() {
-		return getName() + ", " + getProvince() + ", " + getCountry();
+		if(province == null){
+			return name;
+		}
+		return name+", "+province.toString();
 	}
 
+	public JSONObject toJSON() throws JSONException {
+		JSONObject obj = new JSONObject();
+		obj.put("type", "city");
+		obj.put("id", id);
+		obj.put("name", name);
+		obj.put("provinceId", provinceId);
+		obj.put("lon", lon);
+		obj.put("lat", lat);
+		return obj;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + lat;
+		result = prime * result + lon;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result
+				+ ((province == null) ? 0 : province.hashCode());
+		result = prime * result + (int) (provinceId ^ (provinceId >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		City other = (City) obj;
+		if (id != other.id)
+			return false;
+		if (lat != other.lat)
+			return false;
+		if (lon != other.lon)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (province == null) {
+			if (other.province != null)
+				return false;
+		} else if (!province.equals(other.province))
+			return false;
+		if (provinceId != other.provinceId)
+			return false;
+		return true;
+	}
 }

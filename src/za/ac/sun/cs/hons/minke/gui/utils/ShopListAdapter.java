@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
@@ -15,15 +14,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class BranchListAdapter extends ArrayAdapter<Branch> {
+public class ShopListAdapter extends ArrayAdapter<ShopList> {
 	private Activity context;
 
 	static class ViewHolder {
 		protected TextView store, total;
 	}
 
-	public BranchListAdapter(Activity context, ArrayList<Branch> branches) {
-		super(context, R.layout.branch_rowlayout, branches);
+	public ShopListAdapter(Activity context, ArrayList<ShopList> shopLists) {
+		super(context, R.layout.branch_rowlayout, shopLists);
 		this.context = context;
 
 	}
@@ -31,7 +30,7 @@ public class BranchListAdapter extends ArrayAdapter<Branch> {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View rowView = convertView;
-		final Branch item = getItem(position);
+		final ShopList item = getItem(position);
 		if (rowView == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
 			rowView = inflater.inflate(R.layout.branch_rowlayout, null);
@@ -56,7 +55,7 @@ public class BranchListAdapter extends ArrayAdapter<Branch> {
 		return rowView;
 	}
 
-	protected void showInfo(Branch item) {
+	protected void showInfo(ShopList item) {
 		BrowseUtils.setBranchProducts(item.getBranchProducts());
 		BrowseUtils.setStoreBrowse(true);
 		context.startActivity(IntentUtils.getBrowseIntent(context));

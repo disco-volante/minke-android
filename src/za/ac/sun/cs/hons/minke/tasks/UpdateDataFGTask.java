@@ -1,22 +1,20 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
-import za.ac.sun.cs.hons.minke.utils.EntityUtils;
+import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 
-public class LoadDataTask extends BackgroundTask {
-
+public class UpdateDataFGTask extends ProgressTask {
 	private Context context;
 
-	public LoadDataTask(Context context) {
-		super(1);
+	public UpdateDataFGTask(Context context) {
+		super(context, "Downloading", "Downloading data, please wait...");
 		this.context = context;
 	}
 
 	@Override
 	protected void success() {
-		EntityUtils.setLoaded(true);
 	}
 
 	@Override
@@ -26,12 +24,7 @@ public class LoadDataTask extends BackgroundTask {
 	}
 
 	@Override
-	protected int retrieve(int counter) {
-		return EntityUtils.loadLocalData(context);
-	}
-
-	@Override
-	protected void showProgress(int task) {
-
+	protected int retrieve() {
+		return RPCUtils.retrieveAll(context);
 	}
 }

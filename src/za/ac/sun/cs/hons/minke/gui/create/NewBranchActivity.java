@@ -1,14 +1,13 @@
 package za.ac.sun.cs.hons.minke.gui.create;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.location.City;
+import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
@@ -28,22 +27,45 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
-import com.markupartist.android.widget.ActionBar;
 
 public class NewBranchActivity extends Activity {
-	private AutoCompleteTextView branchBox;
+	private AutoCompleteTextView branchBox, storeBox, cityBox;
 	private EditText branchText;
-	private AutoCompleteTextView storeBox;
-	private AutoCompleteTextView cityBox;
-	public String province, country;
+	private Province province;
+	private City city;
+	private Store store;
 
-	class AddBranchTask extends ProgressTask {
-		private Branch branch;
+	class CreateBranchTask extends ProgressTask {
+		private City city;
+		private int lat, lon;
+		private String branchName;
+		private Store store;
+		private Province province;
+		private String cityName;
 
-		public AddBranchTask(Branch branch) {
-			super(NewBranchActivity.this, 1, "Adding...",
-					"Adding branch to the database", true);
-			this.branch = branch;
+		private CreateBranchTask(int lat, int lon) {
+			super(NewBranchActivity.this, "Adding...",
+					"Adding branch to the database");
+			this.lat = lat;
+			this.lon = lon;
+		}
+	
+
+		public CreateBranchTask(int lat, int lon, City city, Store store,
+				String branchName) {
+			this(lat, lon);
+			this.city = city;
+			this.branchName = branchName;
+			this.store = store;
+		}
+
+		public CreateBranchTask(int lat, int lon, Province province,
+				Store store, String cityName, String branchName) {
+			this(lat, lon);
+			this.province = province;
+			this.cityName = cityName;
+			this.store = store;
+			this.branchName = branchName;
 		}
 
 		@Override
@@ -73,8 +95,21 @@ public class NewBranchActivity extends Activity {
 		}
 
 		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.addBranch(branch, province, country);
+		protected int retrieve() {
+			if (store == null) {
+				if (city == null) {
+					return RPCUtils.createBranch(province, lat, lon, cityName,
+							storeBox.getText().toString(), branchName);
+				} else {
+					return RPCUtils.createBranch(city, lat, lon, storeBox.getText().toString(),
+							branchName);
+				}
+			} else if (city == null) {
+				return RPCUtils.createBranch(province, store, lat, lon,
+						cityName, branchName);
+			} else {
+				return RPCUtils.createBranch(city, store, lat, lon, branchName);
+			}
 		}
 	}
 
@@ -84,12 +119,8 @@ public class NewBranchActivity extends Activity {
 		initGUI();
 
 	}
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
+
+
 	private void initGUI() {
 		setContentView(R.layout.new_branch);
 
@@ -100,12 +131,10 @@ public class NewBranchActivity extends Activity {
 		branchBox
 				.addTextChangedListener(new TextErrorWatcher(branchBox, false));
 		branchBox.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				EntityUtils.setUserBranch((Branch) branchAdapter
-						.getItem(position));
+				MapUtils.setUserBranch(branchAdapter.getItem(position));
 			}
 
 		});
@@ -113,19 +142,33 @@ public class NewBranchActivity extends Activity {
 		branchText.addTextChangedListener(new TextErrorWatcher(branchText,
 				false));
 		storeBox = (AutoCompleteTextView) findViewById(R.id.storeBox);
-		ArrayAdapter<String> storeAdapter = new ArrayAdapter<String>(this,
+		final ArrayAdapter<Store> storeAdapter = new ArrayAdapter<Store>(this,
 				R.layout.dropdown_item, EntityUtils.getStores());
 		storeBox.setAdapter(storeAdapter);
 		storeBox.addTextChangedListener(new TextErrorWatcher(storeBox, false));
+		storeBox.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				store = storeAdapter.getItem(position);
+			}
+
+		});
 		cityBox = (AutoCompleteTextView) findViewById(R.id.cityBox);
-		ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(this,
+		final ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(this,
 				R.layout.dropdown_item, EntityUtils.getCities());
 		cityBox.setAdapter(cityAdapter);
 		cityBox.addTextChangedListener(new TextErrorWatcher(cityBox, false));
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_newbranch);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
+		cityBox.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				city = cityAdapter.getItem(position);
+			}
+
+		});
 		clear();
 	}
 
@@ -142,22 +185,6 @@ public class NewBranchActivity extends Activity {
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getNewBranchIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	public void setBranch(View view) {
 		startActivity(IntentUtils.getScanIntent(this));
@@ -168,17 +195,17 @@ public class NewBranchActivity extends Activity {
 				|| cityBox.getError() != null) {
 			return;
 		}
-		String[] locs = cityBox.getText().toString().split(",");
-		if (locs.length == 1) {
-			requestLocations();
+		if (city != null) {
+			CreateBranchTask task = new CreateBranchTask(MapUtils.getLocation()
+						.getLatitudeE6(), MapUtils.getLocation()
+						.getLongitudeE6(), city, store, branchText.getText()
+						.toString());
+			
+			task.execute();
+
 		} else {
-			province = locs[1];
-			country = locs[2];
+			requestLocations();
 		}
-		Branch b = new Branch(branchText.getText().toString(), storeBox
-				.getText().toString(), locs[0], MapUtils.getLocation(), null);
-		AddBranchTask task = new AddBranchTask(b);
-		task.execute();
 	}
 
 	private void requestLocations() {
@@ -188,11 +215,11 @@ public class NewBranchActivity extends Activity {
 		final int size = Math.min(EntityUtils.getProvinces().size(), 10);
 		final String[] names = new String[size];
 		int i = 0;
-		for (IsEntity b : EntityUtils.getProvinces()) {
+		for (Province p : EntityUtils.getProvinces()) {
 			if (i == size) {
 				break;
 			}
-			names[i++] = b.toString();
+			names[i++] = p.toString();
 		}
 		AlertDialog.Builder location = new AlertDialog.Builder(this);
 		location.setTitle("Choose Province");
@@ -200,15 +227,18 @@ public class NewBranchActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface arg0, int position) {
-				String[] s = names[position].split(",");
-				province = s[0];
-				country = s[1];
-
+				province = EntityUtils.getProvinces().get(position);
 			}
 		});
 		location.setPositiveButton("Add Branch",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
+						CreateBranchTask task = new CreateBranchTask(MapUtils.getLocation()
+									.getLatitudeE6(), MapUtils.getLocation()
+									.getLongitudeE6(), province, store, cityBox
+									.getText().toString(), branchText.getText()
+									.toString());
+						task.execute();
 						dialog.cancel();
 					}
 				});
@@ -221,5 +251,4 @@ public class NewBranchActivity extends Activity {
 				});
 		location.show();
 	}
-
 }

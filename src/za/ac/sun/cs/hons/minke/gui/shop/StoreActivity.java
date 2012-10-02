@@ -3,14 +3,12 @@ package za.ac.sun.cs.hons.minke.gui.shop;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.gui.utils.BranchListAdapter;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
-import za.ac.sun.cs.hons.minke.utils.EntityUtils;
+import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
+import za.ac.sun.cs.hons.minke.gui.utils.ShopListAdapter;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,69 +19,42 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import com.markupartist.android.widget.ActionBar;
 
 public class StoreActivity extends Activity {
 
-	private BranchListAdapter branchListAdapter;
-	private ArrayList<Branch> branches;
+	private ShopListAdapter shopListAdapter;
 	protected Branch branch;
+	private ArrayList<ShopList> shopLists;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initGUI();
 	}
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.default_menu2, menu);
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.refresh:
-			startActivity(IntentUtils.getStoreIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
-
+	
 	private void initGUI() {
 		setContentView(R.layout.store);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_store);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getSettingsAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
-		branches = EntityUtils.getBranches();
-		branchListAdapter = new BranchListAdapter(this, branches);
+		shopLists = ShopUtils.getShopLists();
+		shopListAdapter = new ShopListAdapter(this, shopLists);
 		ListView storeList = (ListView) findViewById(R.id.store_list);
-		storeList.setAdapter(branchListAdapter);
-		branchListAdapter.notifyDataSetChanged();
+		storeList.setAdapter(shopListAdapter);
+		shopListAdapter.notifyDataSetChanged();
 
 	}
 
 	public void showDirections(View view) {
-		String[] names = new String[branches.size()];
-		MapUtils.setBranches(branches);
+		String[] names = new String[ShopUtils.getBranches().size()];
+		MapUtils.setBranches(ShopUtils.getBranches());
 		MapUtils.setDestination(0);
 		int i = 0;
-		for (IsEntity b : branches) {
+		for (Branch b : ShopUtils.getBranches()) {
 			names[i++] = b.toString();
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

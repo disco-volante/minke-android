@@ -3,7 +3,7 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.List;
 
 import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
-import za.ac.sun.cs.hons.minke.utils.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -51,23 +51,23 @@ public class DialogUtils {
 
 	private static CharSequence getErrorMessage(int error) {
 		switch (error) {
-		case Constants.CLIENT_ERROR:
+		case ERROR.CLIENT:
 			return "Please make sure data is enabled.";
-		case Constants.SERVER_ERROR:
+		case ERROR.SERVER:
 			return "Unfortunately the server is down, please try again later.";
-		case Constants.PARSE_ERROR:
+		case ERROR.PARSE:
 			return "Something went wrong when retrieving data, please notify the developers.";
-		case Constants.INPUT_ERROR:
+		case ERROR.INPUT:
 			return "Invalid input entered.";
-		case Constants.LOCATION_ERROR:
+		case ERROR.LOCATION:
 			return "Your location could not be determined.";
-		case Constants.MAP_ERROR:
+		case ERROR.MAP:
 			return "Something went wrong while creating map.";
-		case Constants.DB_ERROR:
+		case ERROR.DB:
 			return "An error occurred when accessing your local database.";
-		case Constants.NOT_LOADED_ERROR:
+		case ERROR.NOT_LOADED:
 			return "No data is currently available for this action, please wait for it to load.";
-		case Constants.SUCCESS:
+		case ERROR.SUCCESS:
 			return "Action successfully completed.";
 		}
 		return null;
@@ -75,23 +75,23 @@ public class DialogUtils {
 
 	private static CharSequence getErrorTitle(int error) {
 		switch (error) {
-		case Constants.CLIENT_ERROR:
+		case ERROR.CLIENT:
 			return "Network Error";
-		case Constants.SERVER_ERROR:
+		case ERROR.SERVER:
 			return "Server Error";
-		case Constants.PARSE_ERROR:
+		case ERROR.PARSE:
 			return "Parsing Error";
-		case Constants.INPUT_ERROR:
+		case ERROR.INPUT:
 			return "Input Error";
-		case Constants.LOCATION_ERROR:
+		case ERROR.LOCATION:
 			return "Location Error";
-		case Constants.MAP_ERROR:
+		case ERROR.MAP:
 			return "Map Error";
-		case Constants.DB_ERROR:
+		case ERROR.DB:
 			return "Database Error.";
-		case Constants.NOT_LOADED_ERROR:
+		case ERROR.NOT_LOADED:
 			return "Data Unavailable.";
-		case Constants.SUCCESS:
+		case ERROR.SUCCESS:
 			return "Success";
 		}
 		return null;

@@ -1,5 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -65,7 +67,7 @@ public class PreferencesUtils {
 		return firstTime;
 	}
 
-	public static void loadPreferences(Context context) {
+	public static int loadPreferences(Context context) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
@@ -78,6 +80,7 @@ public class PreferencesUtils {
 				+ updateFrequency + ";\n interval-> " + updateInterval
 				+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
 				+ firstTime);
+		return ERROR.SUCCESS;
 
 	}
 

@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.gui.maps.nutiteq;
 
-import za.ac.sun.cs.hons.minke.utils.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 
 import com.nutiteq.services.CloudMadeDirections;
 import com.nutiteq.services.YourNavigationDirections;

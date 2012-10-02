@@ -17,6 +17,35 @@ import android.widget.TextView;
 public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	private Activity context;
 
+	/*
+	 * class ViewHolderTask extends BackgroundTask {
+	 * 
+	 * private ViewHolder holder; private BranchProduct bp; private Product p;
+	 * private Brand b; private DatePrice dp;
+	 * 
+	 * ViewHolderTask(ViewHolder holder, BranchProduct bp) { super(3);
+	 * this.holder = holder; this.bp = bp; }
+	 * 
+	 * @Override protected void showProgress(int task) {
+	 * 
+	 * }
+	 * 
+	 * @Override protected void success() { holder.name.setText(b.getName() +
+	 * " " + p.getName()); holder.price.setText("R " + dp.getPrice()); }
+	 * 
+	 * @Override protected void failure(int code) { Builder dlg =
+	 * DialogUtils.getErrorDialog(context, code); dlg.show(); }
+	 * 
+	 * @Override protected int retrieve(int counter) { switch (counter) { case
+	 * 0: p = new ProductDAO(context).getByID(bp.getProductId()); return
+	 * Constants.SUCCESS; case 1: b = new
+	 * BrandDAO(context).getByID(p.getBrandId()); return Constants.SUCCESS; case
+	 * 2: dp = new DatePriceDAO(context).getByID(bp.getProductId()); return
+	 * Constants.SUCCESS; } return Constants.DB_ERROR; }
+	 * 
+	 * }
+	 */
+
 	static class ViewHolder {
 		protected TextView name, price;
 	}
@@ -49,8 +78,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		}
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
-		holder.name.setText(item.getBrand()+" "+	item.getProduct());
-		holder.price.setText("R " + item.getPrice());
+		holder.name.setText(item.getProduct().toString());
+		holder.price.setText("R " + item.getDatePrice().getActualPrice());
 		return rowView;
 	}
 
@@ -65,14 +94,14 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		final TextView price = (TextView) infoView
 				.findViewById(R.id.price_text);
 		final TextView date = (TextView) infoView.findViewById(R.id.date_text);
-		brand.setText(item.getBrand());
-		store.setText(item.getBranch());
-		size.setText(item.getSize()+
-		item.getMeasurement());
-		price.setText("R " + item.getPrice());
-		date.setText(item.getDate());
+		brand.setText(item.getProduct().getBrand().getName());
+		store.setText(item.getBranch().toString());
+		size.setText(item.getProduct().getSize()
+				+ item.getProduct().getMeasure());
+		price.setText("R " + item.getDatePrice().getActualPrice());
+		date.setText(item.getDatePrice().getFormattedDate());
 		AlertDialog.Builder infoDialog = new AlertDialog.Builder(context);
-		infoDialog.setTitle(item.getProduct());
+		infoDialog.setTitle(item.getProduct().toString());
 		infoDialog.setView(infoView);
 		infoDialog.setIcon(R.drawable.shop_40);
 		infoDialog.setPositiveButton("Close",

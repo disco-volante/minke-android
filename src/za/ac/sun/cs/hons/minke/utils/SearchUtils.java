@@ -1,81 +1,90 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Country;
-import za.ac.sun.cs.hons.minke.entities.location.Location;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 
 public class SearchUtils {
-	private static ArrayList<City> addedCities;
+	private static HashSet<City> addedCities;
 
-	private static ArrayList<Province> addedProvinces;
+	private static HashSet<Province> addedProvinces;
 
 	private static ArrayList<Product> addedProducts;
 	private static ArrayList<Category> addedCategories;
 
-	private static ArrayList<Country> addedCountries;
+	private static HashSet<Country> addedCountries;
 
-	private static ArrayList<Location> addedLocations;
+	private static ArrayList<Object> addedLocations;
 
 	private static ArrayList<BranchProduct> searched;
 
 	private static boolean productsActive;
 
-	public static ArrayList<Location> getAddedLocations(boolean reset) {
-		if (reset || addedLocations == null) {
-			addedLocations = new ArrayList<Location>(100);
-			addedCountries = new ArrayList<Country>(100);
-			addedCities = new ArrayList<City>(100);
-			addedProvinces = new ArrayList<Province>(100);
+	public static ArrayList<Object> getAddedLocations() {
+		if (addedLocations == null) {
+			addedLocations = new ArrayList<Object>();
+			addedCities = new HashSet<City>();
+			addedProvinces = new HashSet<Province>();
+			addedCountries = new HashSet<Country>();
 		}
 		return addedLocations;
 	}
 
 	public static void removeLocation(int position) {
-		addedLocations.remove(position);
-		addedCountries.remove(position);
-		addedProvinces.remove(position);
-		addedCities.remove(position);
-	}
-
-	public static void addLocation(Location location) {
-		addedLocations.add(location);
-		City city = null;
-		Province province = null;
-		Country country = null;
+		Object location = addedLocations.remove(position);
 		if (location instanceof City) {
-			city = (City) location;
+			addedCities.remove((City) location);
 		} else if (location instanceof Province) {
-			province = (Province) location;
+			addedProvinces.remove((Province) location);
 		} else if (location instanceof Country) {
-			country = (Country) location;
+			addedCountries.remove((Country) location);
+
 		}
-		addedCities.add(city);
-		addedProvinces.add(province);
-		addedCountries.add(country);
 	}
 
-	public static ArrayList<Product> getAddedProducts(boolean reset) {
-		if (reset || addedProducts == null) {
+	public static void addLocation(Object location) {
+		addedLocations.add(location);
+		if (location instanceof City) {
+			addedCities.add((City) location);
+		} else if (location instanceof Province) {
+			addedProvinces.add((Province) location);
+		} else if (location instanceof Country) {
+			addedCountries.add((Country) location);
+
+		}
+	}
+
+	public static ArrayList<Product> getAddedProducts() {
+		if (addedProducts == null) {
 			addedProducts = new ArrayList<Product>();
 		}
 		return addedProducts;
 	}
 
-	public static ArrayList<City> getAddedCities() {
+	public static HashSet<City> getAddedCities() {
+		if (addedCities == null) {
+			addedCities = new HashSet<City>();
+		}
 		return addedCities;
 	}
 
-	public static ArrayList<Province> getAddedProvinces() {
+	public static HashSet<Province> getAddedProvinces() {
+		if (addedProvinces == null) {
+			addedProvinces = new HashSet<Province>();
+		}
 		return addedProvinces;
 	}
 
-	public static ArrayList<Country> getAddedCountries() {
+	public static HashSet<Country> getAddedCountries() {
+		if (addedCountries == null) {
+			addedCountries = new HashSet<Country>();
+		}
 		return addedCountries;
 	}
 
@@ -87,8 +96,8 @@ public class SearchUtils {
 		addedProducts.add(product);
 	}
 
-	public static ArrayList<Category> getAddedCategories(boolean reset) {
-		if (reset || addedCategories == null) {
+	public static ArrayList<Category> getAddedCategories() {
+		if (addedCategories == null) {
 			addedCategories = new ArrayList<Category>();
 		}
 		return addedCategories;
@@ -111,6 +120,9 @@ public class SearchUtils {
 	}
 
 	public static ArrayList<BranchProduct> getSearched() {
+		if (searched == null) {
+			searched = new ArrayList<BranchProduct>();
+		}
 		return searched;
 	}
 

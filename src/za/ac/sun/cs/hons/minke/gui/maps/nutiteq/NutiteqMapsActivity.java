@@ -3,12 +3,11 @@ package za.ac.sun.cs.hons.minke.gui.maps.nutiteq;
 import java.io.IOException;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.utils.Constants;
-import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.Activity;
 import android.location.Location;
 import android.location.LocationListener;
@@ -33,7 +32,7 @@ import com.nutiteq.wrappers.Image;
 public class NutiteqMapsActivity extends Activity implements LocationListener {
 	private BasicMapComponent mapComponent;
 	private boolean onRetainCalled;
-	private GPSCoords src;
+	private WgsPoint src;
 	private LocationManager locationManager;
 
 	@Override
@@ -48,17 +47,16 @@ public class NutiteqMapsActivity extends Activity implements LocationListener {
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if (location != null) {
-			Log.d(Constants.DIR_TAG, location.toString());
+			Log.d(TAGS.LOCATION, location.toString());
 			onLocationChanged(location);
 		}
-			createNutiteq();
+		createNutiteq();
 	}
 
 	private void createNutiteq() {
 		setContentView(R.layout.nutiteq_directions);
-		WgsPoint center = GPSCoords.toWgsPoint(src);
 		mapComponent = new BasicMapComponent(Constants.KEY,
-				new AppContext(this), 1, 1, center, 15);
+				new AppContext(this), 1, 1, src, 15);
 		MapUtils.setMap(mapComponent);
 		mapComponent.setMap(OpenStreetMap.MAPNIK);
 		mapComponent.setPanningStrategy(new ThreadDrivenPanning());
@@ -66,25 +64,24 @@ public class NutiteqMapsActivity extends Activity implements LocationListener {
 		try {
 			Image branchIcon = Image
 					.createImage("/res/drawable-hdpi/shop_40.png");
-			for (IsEntity b : MapUtils.getBranches()) {
+			for (Branch b : MapUtils.getBranches()) {
 				PlaceLabel branchLabel = new PlaceLabel(b.toString());
-				Place p = new Place(1, branchLabel, branchIcon, ((Branch) b)
-						.getCoords().getLongitude(), ((Branch) b).getCoords()
-						.getLatitude());
+				Place p = new Place(1, branchLabel, branchIcon, b
+						.getCityLocation().getLon(), b.getCityLocation()
+						.getLat());
 				mapComponent.addPlace(p);
 			}
 
 			Image userIcon = Image
 					.createImage("/res/drawable-hdpi/android_40.png");
 			PlaceLabel userLabel = new PlaceLabel("Your Location");
-			Place userPos = new Place(1, userLabel, userIcon, center);
+			Place userPos = new Place(1, userLabel, userIcon, src);
 			mapComponent.addPlace(userPos);
 			if (src != null) {
-				mapComponent.setMiddlePoint(center);
+				mapComponent.setMiddlePoint(src);
 			}
-			new NutiteqRouteWaiter(center, GPSCoords.toWgsPoint(MapUtils
-					.getDestination()), Constants.USER_ID,
-					Constants.ROUTING_CLOUDMADE, this);
+			new NutiteqRouteWaiter(src, MapUtils.getDestinationWGS(),
+					Constants.USER_ID, Constants.ROUTING_CLOUDMADE, this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -138,9 +135,9 @@ public class NutiteqMapsActivity extends Activity implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(Constants.DIR_TAG,
+		Log.d(TAGS.LOCATION,
 				"onLocationChanged with location " + location.toString());
-		src = new GPSCoords(location.getLatitude(), location.getLongitude());
+		src = new WgsPoint(location.getLatitude(), location.getLongitude());
 	}
 
 	@Override
@@ -156,7 +153,7 @@ public class NutiteqMapsActivity extends Activity implements LocationListener {
 	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
 
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.default_menu2, menu);

@@ -1,18 +1,14 @@
 package za.ac.sun.cs.hons.minke.gui.browse;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.tasks.StoreDataTask;
-import za.ac.sun.cs.hons.minke.utils.ActionUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
-import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -27,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 
-import com.markupartist.android.widget.ActionBar;
 
 public class ProductSearchActivity extends Activity {
 
@@ -41,8 +36,8 @@ public class ProductSearchActivity extends Activity {
 	class SearchTask extends ProgressTask {
 
 		public SearchTask() {
-			super(ProductSearchActivity.this, 1, "Searching...",
-					"Searching for products", true);
+			super(ProductSearchActivity.this, "Searching...",
+					"Searching for products");
 		}
 
 		@Override
@@ -77,8 +72,8 @@ public class ProductSearchActivity extends Activity {
 		}
 
 		@Override
-		protected int retrieve(int counter) {
-			return RPCUtils.retrieveBranchProducts(SearchUtils
+		protected int retrieve() {
+			return EntityUtils.retrieveBranchProducts(SearchUtils
 					.isProductsActive());
 		}
 	}
@@ -87,24 +82,12 @@ public class ProductSearchActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.product_search);
-		final ActionBar actionBar = (ActionBar) findViewById(R.id.actionbar_product_search);
-		actionBar.setHomeAction(ActionUtils.getHomeAction(this));
-		actionBar.addAction(ActionUtils.getRefreshAction(this));
-		actionBar.addAction(ActionUtils.getNextAction(this));
-		actionBar.addAction(ActionUtils.getSettingsAction(this));
-		actionBar.addAction(ActionUtils.getShareAction(this));
 		initBoxes();
 		initLists();
 		setProducts(this.getCurrentFocus());
 
 	}
 	
-	@Override
-	public void onPause(){
-		super.onPause();
-		StoreDataTask task = new StoreDataTask(this);
-		task.execute();
-	}
 
 
 	private void initBoxes() {
@@ -132,9 +115,9 @@ public class ProductSearchActivity extends Activity {
 
 	private void initLists() {
 		productListAdapter = new ItemListAdapter<Product>(this,
-				SearchUtils.getAddedProducts(true));
+				SearchUtils.getAddedProducts());
 		categoryListAdapter = new ItemListAdapter<Category>(this,
-				SearchUtils.getAddedCategories(true));
+				SearchUtils.getAddedCategories());
 		searchList = (ListView) findViewById(R.id.search_list);
 		searchList.setAdapter(productListAdapter);
 		searchList.setOnItemClickListener(new OnItemClickListener() {
@@ -155,7 +138,7 @@ public class ProductSearchActivity extends Activity {
 		});
 	}
 
-	protected void addItem(IsEntity entity) {
+	protected void addItem(Object entity) {
 		if (entity != null) {
 			if (SearchUtils.isProductsActive()) {
 				SearchUtils.addProduct((Product) entity);
@@ -175,25 +158,6 @@ public class ProductSearchActivity extends Activity {
 		return true;
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getProductSearchIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.next:
-			startActivity(IntentUtils.getBrowseIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
-	}
 
 	public void setProducts(View view) {
 		SearchUtils.setProductsActive(true);

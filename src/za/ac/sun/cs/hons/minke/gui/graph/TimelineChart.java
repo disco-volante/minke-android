@@ -15,9 +15,9 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
+import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -32,7 +32,8 @@ public class TimelineChart {
 	 *            the context
 	 * @return the built intent
 	 */
-	public GraphicalView execute(final Context context,ArrayList<BranchProduct> bps ) {
+	public GraphicalView execute(final Context context,
+			ArrayList<BranchProduct> bps) {
 		PointStyle[] values = PointStyle.values();
 		PointStyle[] styles = new PointStyle[bps.size()];
 		if (bps.size() > values.length) {
@@ -51,17 +52,17 @@ public class TimelineChart {
 		int i = 0;
 		int maxPrice = 0, minPrice = Integer.MAX_VALUE;
 		Date maxDate = null, minDate = null;
-		for (IsEntity entity : bps) {
-			BranchProduct bp = (BranchProduct)entity;
+		for (BranchProduct bp : bps) {
 			colors[i] = Color.argb(255, color.nextInt(256), color.nextInt(256),
 					color.nextInt(256));
 			titles[i++] = bp.getProduct().toString();
-			ArrayList<DatePrice> hist = bp.getDatePrices();
+			ArrayList<DatePrice> hist = EntityUtils
+					.getDatePrices(bp.getId());
 			double[] p = new double[hist.size()];
 			Date[] d = new Date[hist.size()];
 			int j = 0;
-			for (IsEntity ie : hist) {
-				DatePrice dp = (DatePrice)ie;
+			for (DatePrice ie : hist) {
+				DatePrice dp = (DatePrice) ie;
 				p[j] = dp.getPrice();
 				if (p[j] > maxPrice) {
 					maxPrice = (int) Math.ceil(p[j]);

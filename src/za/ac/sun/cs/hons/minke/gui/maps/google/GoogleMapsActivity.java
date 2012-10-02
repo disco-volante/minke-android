@@ -3,15 +3,14 @@ package za.ac.sun.cs.hons.minke.gui.maps.google;
 import java.util.List;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import za.ac.sun.cs.hons.minke.utils.GPSCoords;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -39,11 +38,11 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 
 	class BuildRouteTask extends ProgressTask {
 		private RouteOverlay routeOverlay;
-		private GeoPoint dest = GPSCoords.toGeoPoint(MapUtils.getDestination());
+		private GeoPoint dest = MapUtils.getDestination();
 
 		public BuildRouteTask() {
-			super(GoogleMapsActivity.this, 1, "Retrieving...",
-					"Retrieving route to store.", true);
+			super(GoogleMapsActivity.this, "Retrieving...",
+					"Retrieving route to store.");
 		}
 
 		@Override
@@ -72,13 +71,13 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		}
 
 		@Override
-		protected int retrieve(int counter) {
+		protected int retrieve() {
 			try {
 				Route route = directions(src, dest);
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
-				return Constants.SUCCESS;
+				return ERROR.SUCCESS;
 			} catch (Exception e) {
-				return Constants.MAP_ERROR;
+				return ERROR.MAP;
 			}
 		}
 	}
@@ -86,7 +85,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		src = GPSCoords.toGeoPoint(MapUtils.getLocation());
+		src = MapUtils.getLocation();
 		locationManager = (LocationManager) this
 				.getSystemService(LOCATION_SERVICE);
 		Location location = locationManager
@@ -96,7 +95,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if (location != null) {
-			Log.d(Constants.DIR_TAG, location.toString());
+			Log.d(TAGS.LOCATION, location.toString());
 			onLocationChanged(location);
 		}
 		createGoogle();
@@ -113,10 +112,10 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		BasicOverlay shopsOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.shop_40),
 				GoogleMapsActivity.this);
-		for (IsEntity ie : EntityUtils.getBranches()) {
-			Branch b = (Branch) ie;
-			shopsOverlay.addOverlay(new OverlayItem(GPSCoords.toGeoPoint(b
-					.getCoords()), b.toString(), b.getCity()));
+		for (Branch b : EntityUtils.getBranches()) {
+			shopsOverlay.addOverlay(new OverlayItem(b.getCityLocation()
+					.getGeoPoint(), b.toString(), b.getCityLocation()
+					.toString()));
 		}
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.android_40),
@@ -168,7 +167,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(Constants.DIR_TAG,
+		Log.d(TAGS.LOCATION,
 				"onLocationChanged with location " + location.toString());
 		src = new GeoPoint((int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6));
@@ -196,7 +195,6 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 	public void getDirections(View view) {
 		DialogUtils.getDirectionsDialog(this, directions, "Directions").show();
 	}
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

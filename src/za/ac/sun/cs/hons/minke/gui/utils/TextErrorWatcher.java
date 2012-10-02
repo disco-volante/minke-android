@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.gui.utils;
 
-import za.ac.sun.cs.hons.minke.utils.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.TextView;

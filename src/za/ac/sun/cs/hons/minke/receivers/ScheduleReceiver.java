@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.receivers;
 
-import za.ac.sun.cs.hons.minke.utils.Constants;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

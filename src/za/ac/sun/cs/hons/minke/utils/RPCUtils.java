@@ -1,382 +1,443 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import org.xml.sax.SAXException;
-
-import za.ac.sun.cs.hons.minke.entities.IsEntity;
+import za.ac.sun.cs.hons.minke.entities.location.City;
+import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
+import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
+import za.ac.sun.cs.hons.minke.entities.product.Brand;
+import za.ac.sun.cs.hons.minke.entities.product.Category;
+import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.entities.store.Store;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.json.JSONBuilder;
+import za.ac.sun.cs.hons.minke.utils.json.JSONParser;
+import android.content.Context;
+import android.util.Log;
 
 public class RPCUtils {
 
-	@SuppressWarnings("unchecked")
-	public static int retrieveLocations() {
-		String suffix = "_locations";
+	public static int retrieveAll(Context context) {
+		String suffix = "get_all";
 		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		} else {
-			try {
-				EntityUtils.setLocations(ObjectParsers.parseLocationResponse(response));
-				return Constants.SUCCESS;
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
+
+		try {
+			JSONObject obj;
+			obj = HTTPUtils.doGetWithResponse(url);
+
+			if (obj == null || obj.isNull("branches")) {
+				return ERROR.SERVER;
 			}
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static int retrieveBrands() {
-		String suffix = "_brands";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		} else {
-			try {
-				EntityUtils.setBrands(ObjectParsers.parseBrandResponse(response));
-				return Constants.SUCCESS;
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static int retrieveCategories() {
-		String suffix = "_categories";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		} else {
-			try {
-				EntityUtils.setCategories(ObjectParsers.parseCategoryResponse(response));
-				return Constants.SUCCESS;
-
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static int retrieveProducts() {
-		String suffix = "_products";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		} else {
-			try {
-				EntityUtils.setProducts(ObjectParsers.parseProductResponse(response));
-				return Constants.SUCCESS;
-
-			} catch (SAXException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
-			}
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private static int retrieveBranchProductsC() {
-		String suffix = "locationcategory_branchproducts";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url,
-				SearchUtils.getAddedCities(), SearchUtils.getAddedProvinces(),
-				SearchUtils.getAddedCountries(),
-				SearchUtils.getAddedCategories(false));
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			ArrayList<BranchProduct> searched = ObjectParsers.parseBranchProductResponse(response);
-			SearchUtils.setSearched(searched);
-			EntityUtils.setBranchProducts(searched);
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
+			Log.v(TAGS.JSON, obj.toString());
+			EntityUtils.persistBranches(context,
+					JSONParser.parseBranches(obj.getJSONObject("branches")));
+			EntityUtils.persistProducts(context,
+					JSONParser.parseProducts(obj.getJSONObject("products")));
+			EntityUtils.persistStores(context,
+					JSONParser.parseStores(obj.getJSONObject("stores")));
+			EntityUtils.persistBranchProducts(context, JSONParser
+					.parseBranchProducts(obj.getJSONObject("branchProducts")));
+			EntityUtils
+					.persistCategories(context, JSONParser.parseCategories(obj
+							.getJSONObject("categories")));
+			EntityUtils.persistCities(context,
+					JSONParser.parseCities(obj.getJSONObject("cities")));
+			EntityUtils.persistProvinces(context,
+					JSONParser.parseProvinces(obj.getJSONObject("provinces")));
+			EntityUtils.persistCountries(context,
+					JSONParser.parseCountries(obj.getJSONObject("countries")));
+			EntityUtils
+					.persistDatePrices(context, JSONParser.parseDatePrices(obj
+							.getJSONObject("datePrices")));
+			EntityUtils.persistCityLocations(context, JSONParser
+					.parseCityLocations(obj.getJSONObject("cityLocations")));
+			EntityUtils.persistProductCategories(context, JSONParser
+					.parseProductCategories(obj
+							.getJSONObject("productCategories")));
+			EntityUtils.persistBrands(context,
+					JSONParser.parseBrands(obj.getJSONObject("brands")));
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
 			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-
+			return ERROR.SERVER;
 		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	private static int retrieveBranchProductsP() {
-		String suffix = "locationproduct_branchproducts";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url,
-				SearchUtils.getAddedCities(), SearchUtils.getAddedProvinces(),
-				SearchUtils.getAddedCountries(),
-				SearchUtils.getAddedProducts(false));
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			ArrayList<BranchProduct> searched = ObjectParsers.parseBranchProductResponse(response);
-			SearchUtils.setSearched(searched);
-			EntityUtils.setBranchProducts(searched);
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	public static int retrieveBranchProducts(boolean productsActive) {
-		if (productsActive) {
-			return retrieveBranchProductsP();
-		} else {
-			return retrieveBranchProductsC();
-
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static int retrieveBranches(ArrayList<Product> products) {
-		String suffix = "product_branches";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url, products);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			ArrayList<Branch> branches = ObjectParsers.parseBranchResponse(response);
-			EntityUtils.setBranches(branches);
-			MapUtils.setBranches(EntityUtils.getBranches());
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	public static int retrieveBranches(double latitude, double longitude) {
-		String suffix = "coords_branches";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doGetWithResponse(url, latitude, longitude);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			EntityUtils.setBranches(ObjectParsers.parseBranchResponse(response));
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public static int getBranchProduct(long code, Branch branch) {
-		String suffix = "branch_branchproduct";
-		String url = Constants.URL_PREFIX + suffix;
-		List<IsEntity> holder = Arrays.asList(new IsEntity[] { branch });
-		String response = HTTPUtils.doGetWithResponse(url, code, holder);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			ArrayList<BranchProduct> scanned = ObjectParsers.parseBranchProductResponse(response);
-			if (scanned != null && scanned.size() > 0) {
-				EntityUtils.setScanned(scanned.get(0));
-				return Constants.SUCCESS;
-
-			}
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	public static int retrieveBranchProducts(Branch branch) {
-		String suffix = "branch_branchproducts";
-		String url = Constants.URL_PREFIX + suffix;
-		List<IsEntity> holder = Arrays.asList(new IsEntity[] { branch });
-		@SuppressWarnings("unchecked")
-		String response = HTTPUtils.doGetWithResponse(url, holder);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			EntityUtils.setBranchProducts(ObjectParsers.parseBranchProductResponse(response));
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		return Constants.PARSE_ERROR;
-
-	}
-
-	public static int addBranchProduct(BranchProduct bp, long barcode,
-			long branchcode) {
-		String suffix = "branchproduct_branchproduct";
-		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doPostWithResponse(url, bp, barcode,
-				branchcode);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
-		try {
-			ArrayList<BranchProduct> holder = ObjectParsers.parseBranchProductResponse(response);
-			EntityUtils.setBranchProducts(holder);
-			BrowseUtils.setBranchProducts(holder);
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		return Constants.PARSE_ERROR;
-
 	}
 
 	public static int updateBranchProduct(BranchProduct bp) {
-		String suffix = "price_branchproduct";
+		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doPostWithResponse(url, bp.getID(),
-				bp.getPrice());
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
 		try {
-			ArrayList<BranchProduct> bps = ObjectParsers.parseBranchProductResponse(response);
-			EntityUtils.setBranchProducts(bps);
-			BrowseUtils.setBranchProducts(bps);
-			return Constants.SUCCESS;
-
-		} catch (SAXException e) {
+			bp = JSONParser.parseBranchProduct(HTTPUtils.doJSONPost(url,
+					bp.toJSON()));
+			bp = EntityUtils.addBranchProduct(bp);
+			ScanUtils.setBranchProduct(bp);
+			if (bp == null) {
+				return ERROR.SERVER;
+			}
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
 			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-
+			return ERROR.SERVER;
 		}
-		return Constants.PARSE_ERROR;
 
 	}
 
-	public static int addBranch(Branch branch, String province, String country) {
-		String suffix = "branch_branch";
+	public static int createBranch(City city, Store store, int lat, int lon,
+			String branchName) {
+		String suffix = "create_branch0";
 		String url = Constants.URL_PREFIX + suffix;
-		String response = HTTPUtils.doPostWithResponse(url, branch, province,
-				country);
-		if (response.equals(Constants.CLIENT)) {
-			return Constants.CLIENT_ERROR;
-		} else if (response.equals(Constants.SERVER)) {
-			return Constants.SERVER_ERROR;
-		}
 		try {
-			ArrayList<Branch> holder = ObjectParsers.parseBranchResponse(response);
-			if (holder != null && holder.size() > 0) {
-				EntityUtils.setUserBranch((Branch) holder.get(0));
-				EntityUtils.addBranch( holder.get(0));
-				return Constants.SUCCESS;
+			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
+					null, null, lon, lat);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON(),
+					store.toJSON());
+			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
+			CityLocation cl = JSONParser.parseCityLocation(response
+					.getJSONObject("cityLocation"));
+			if (b == null || cl == null) {
+				return ERROR.SERVER;
 			}
-		} catch (SAXException e) {
+			EntityUtils.addCityLocation(cl);
+			b = EntityUtils.addBranch(b);
+			MapUtils.setUserBranch(b);
+			MapUtils.setBranches(EntityUtils.getBranches());
+			ScanUtils.setBranch(b);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+	}
+
+	public static int createBranch(City city, int lat, int lon,
+			String storeName, String branchName) {
+		String suffix = "create_branch1";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
+					null, storeName, lon, lat);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON());
+			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
+			Store s = JSONParser.parseStore(response.getJSONObject("store"));
+			CityLocation cl = JSONParser.parseCityLocation(response
+					.getJSONObject("cityLocation"));
+			if (b == null || s == null || cl == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addStore(s);
+			EntityUtils.addCityLocation(cl);
+			b = EntityUtils.addBranch(b);
+			MapUtils.setUserBranch(b);
+			MapUtils.setBranches(EntityUtils.getBranches());
+			ScanUtils.setBranch(b);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+	}
+
+	public static int createBranch(Province province, Store store, int lat,
+			int lon, String cityName, String branchName) {
+		String suffix = "create_branch2";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
+					cityName, null, lon, lat);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branchJSON, store.toJSON(),
+					province.toJSON());
+			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
+			City c = JSONParser.parseCity(response.getJSONObject("city"));
+			CityLocation cl = JSONParser.parseCityLocation(response
+					.getJSONObject("cityLocation"));
+			if (b == null || c == null || cl == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addCity(c);
+			EntityUtils.addCityLocation(cl);
+			b = EntityUtils.addBranch(b);
+			MapUtils.setUserBranch(b);
+			MapUtils.setBranches(EntityUtils.getBranches());
+			ScanUtils.setBranch(b);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+		return ERROR.PARSE;
+	}
+
+	public static int createBranch(Province province, int lat, int lon,
+			String cityName, String storeName, String branchName) {
+		String suffix = "create_branch3";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
+					cityName, storeName, lon, lat);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branchJSON, province.toJSON());
+
+			Store s = JSONParser.parseStore(response.getJSONObject("store"));
+			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
+			City c = JSONParser.parseCity(response.getJSONObject("city"));
+			CityLocation cl = JSONParser.parseCityLocation(response
+					.getJSONObject("cityLocation"));
+			if (b == null || c == null || cl == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addStore(s);
+			EntityUtils.addCity(c);
+			EntityUtils.addCityLocation(cl);
+			b = EntityUtils.addBranch(b);
+			MapUtils.setUserBranch(b);
+			MapUtils.setBranches(EntityUtils.getBranches());
+			ScanUtils.setBranch(b);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+	}
+
+	public static int createBranchProduct(Branch branch, String name,
+			Brand brand, Category category, double size, String measure,
+			int price) {
+		String suffix = "create_branchproduct0";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
+					null, null, size, measure, price);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
+					brand.toJSON(), category.toJSON());
+			BranchProduct bp = JSONParser.parseBranchProduct(response
+					.getJSONObject("branchProduct"));
+			Product p = JSONParser.parseProduct(response
+					.getJSONObject("product"));
+			DatePrice dp = JSONParser.parseDatePrice(response
+					.getJSONObject("datePrice"));
+			if (bp == null || p == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addDatePrice(dp);
+			EntityUtils.addProduct(p);
+			bp = EntityUtils.addBranchProduct(bp);
+			ScanUtils.setBranchProduct(bp);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+		return ERROR.PARSE;
+	}
+
+	public static int createBranchProduct(Branch branch, String name,
+			Brand brand, String category, double size, String measure, int price) {
+		String suffix = "create_branchproduct1";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
+					category, null, size, measure, price);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
+					brand.toJSON());
+			BranchProduct bp = JSONParser.parseBranchProduct(response
+					.getJSONObject("branchProduct"));
+			Product p = JSONParser.parseProduct(response
+					.getJSONObject("product"));
+			Category c = JSONParser.parseCategory(response
+					.getJSONObject("category"));
+			DatePrice dp = JSONParser.parseDatePrice(response
+					.getJSONObject("datePrice"));
+			if (bp == null || p == null || c == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addDatePrice(dp);
+			EntityUtils.addCategory(c);
+			EntityUtils.addProduct(p);
+			bp = EntityUtils.addBranchProduct(bp);
+			ScanUtils.setBranchProduct(bp);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+		return ERROR.PARSE;
+	}
+
+	public static int createBranchProduct(Branch branch, String name,
+			String brand, Category category, double size, String measure,
+			int price) {
+		String suffix = "create_branchproduct2";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
+					null, brand, size, measure, price);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
+					category.toJSON());
+			BranchProduct bp = JSONParser.parseBranchProduct(response
+					.getJSONObject("branchProduct"));
+			Product p = JSONParser.parseProduct(response
+					.getJSONObject("product"));
+			Brand b = JSONParser.parseBrand(response.getJSONObject("brand"));
+			DatePrice dp = JSONParser.parseDatePrice(response
+					.getJSONObject("datePrice"));
+
+			if (bp == null || p == null || b == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addDatePrice(dp);
+			EntityUtils.addBrand(b);
+			EntityUtils.addProduct(p);
+			bp = EntityUtils.addBranchProduct(bp);
+			ScanUtils.setBranchProduct(bp);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+	}
+
+	public static int createBranchProduct(Branch branch, String name,
+			String brand, String category, double size, String measure,
+			int price) {
+		String suffix = "create_branchproduct3";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
+					category, brand, size, measure, price);
+			JSONObject response;
+			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON);
+			BranchProduct bp = JSONParser.parseBranchProduct(response
+					.getJSONObject("branchProduct"));
+			Product p = JSONParser.parseProduct(response
+					.getJSONObject("product"));
+			Brand b = JSONParser.parseBrand(response.getJSONObject("brand"));
+			Category c = JSONParser.parseCategory(response
+					.getJSONObject("category"));
+			DatePrice dp = JSONParser.parseDatePrice(response
+					.getJSONObject("datePrice"));
+
+			if (bp == null || p == null || c == null || b == null) {
+				return ERROR.SERVER;
+			}
+			EntityUtils.addDatePrice(dp);
+			EntityUtils.addBrand(b);
+			EntityUtils.addCategory(c);
+			EntityUtils.addProduct(p);
+			bp = EntityUtils.addBranchProduct(bp);
+			ScanUtils.setBranchProduct(bp);
+			return ERROR.SUCCESS;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return ERROR.PARSE;
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+			return ERROR.CLIENT;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ERROR.SERVER;
+		}
+	}
+
+	public static Product retrieveProduct(long code) {
+		String suffix = "get_product";
+		String url = Constants.URL_PREFIX + suffix;
+		try {
+			JSONObject pId = JSONBuilder.toJSON("productId", code);
+			return JSONParser.parseProduct(HTTPUtils.doJSONPost(url, pId));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
+		}
+		return null;
+	}
+
+	public static BranchProduct retrieveBranchProduct(long productId,
+			long branchId) {
+		String suffix = "get_branchproduct";
+		String url = Constants.URL_PREFIX + suffix;
+
+		try {
+			JSONObject pId = JSONBuilder.toJSON("productId", productId);
+			JSONObject bId = JSONBuilder.toJSON("branchId", branchId);
+			return JSONParser.parseBranchProduct(HTTPUtils.doJSONPost(url, pId,
+					bId));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return Constants.PARSE_ERROR;
-
+		return null;
 	}
 
 }

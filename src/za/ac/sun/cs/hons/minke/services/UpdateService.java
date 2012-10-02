@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.services;
 
-import za.ac.sun.cs.hons.minke.tasks.BackgroundUpdateTask;
+import za.ac.sun.cs.hons.minke.tasks.UpdateDataBGTask;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +9,8 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class UpdateService extends IntentService {
-	private BackgroundUpdateTask task;
+	private UpdateDataBGTask task;
+	private Context context;
 
 	public UpdateService() {
 		super("UpdateService");
@@ -17,6 +18,7 @@ public class UpdateService extends IntentService {
 
 	public UpdateService(Context context) {
 		super("UpdateService");
+		this.context = context;
 	}
 
 	@Override
@@ -47,7 +49,6 @@ public class UpdateService extends IntentService {
 		};
 	}
 
-
 	public void stop() {
 		if (task != null) {
 			task.cancel(true);
@@ -60,7 +61,7 @@ public class UpdateService extends IntentService {
 	}
 
 	private void start() {
-		task = new BackgroundUpdateTask();
+		task = new UpdateDataBGTask(context);
 		task.execute();
 	}
 

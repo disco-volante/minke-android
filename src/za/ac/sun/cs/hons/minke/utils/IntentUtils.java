@@ -12,6 +12,7 @@ import za.ac.sun.cs.hons.minke.gui.maps.nutiteq.NutiteqMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
 import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.content.Context;
 import android.content.Intent;
 
@@ -50,7 +51,8 @@ public class IntentUtils {
 	}
 
 	public static Intent getLocationSearchIntent(Context context) {
-		Intent locationSearch = new Intent(context, LocationSearchActivity.class);
+		Intent locationSearch = new Intent(context,
+				LocationSearchActivity.class);
 		locationSearch.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return locationSearch;
 	}
@@ -69,10 +71,9 @@ public class IntentUtils {
 
 	public static Intent getMapIntent(Context context) {
 		Intent map;
-		if(Constants.GOOGLE_MAPS){
-			map = new Intent(context,GoogleMapsActivity.class);
-		}
-		else{
+		if (Constants.GOOGLE_MAPS) {
+			map = new Intent(context, GoogleMapsActivity.class);
+		} else {
 			map = new Intent(context, NutiteqMapsActivity.class);
 		}
 		map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -94,6 +95,7 @@ public class IntentUtils {
 	public static boolean scan() {
 		return scan;
 	}
+
 	public static void setScan(boolean _scan) {
 		scan = _scan;
 	}
@@ -111,5 +113,11 @@ public class IntentUtils {
 		return settings;
 	}
 
+	public static Intent getEmulatorIntent() {
+		Intent intent = new Intent();
+		intent.putExtra("SCAN_RESULT_FORMAT", "UPC_A");
+		intent.putExtra("SCAN_RESULT", String.valueOf((long) (100000 * Math.random())));
+		return intent;
+	}
 
 }
