@@ -48,7 +48,6 @@ public class HTTPUtils {
 		inputstream.close();
 		Log.v(TAGS.JSON, resultstring);
 		return new JSONObject(resultstring);
-
 	}
 
 	public static JSONObject doJSONPost(String url, JSONObject... jsons)

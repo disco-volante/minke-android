@@ -26,7 +26,7 @@ import android.util.Log;
 
 public class RPCUtils {
 
-	public static int retrieveAll(Context context) {
+	public static ERROR retrieveAll(Context context) {
 		String suffix = "get_all";
 		String url = Constants.URL_PREFIX + suffix;
 
@@ -78,7 +78,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static int updateBranchProduct(BranchProduct bp) {
+	public static ERROR updateBranchProduct(BranchProduct bp) {
 		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
@@ -103,16 +103,18 @@ public class RPCUtils {
 
 	}
 
-	public static int createBranch(City city, Store store, int lat, int lon,
-			String branchName) {
+	public static ERROR createBranch(City city, Store store, double lat,
+			double lon, String branchName) {
 		String suffix = "create_branch0";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, null, lon, lat);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON(),
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON(),
 					store.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
 			CityLocation cl = JSONParser.parseCityLocation(response
 					.getJSONObject("cityLocation"));
@@ -137,15 +139,17 @@ public class RPCUtils {
 		}
 	}
 
-	public static int createBranch(City city, int lat, int lon,
+	public static ERROR createBranch(City city, double lat, double lon,
 			String storeName, String branchName) {
 		String suffix = "create_branch1";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, storeName, lon, lat);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON());
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
 			Store s = JSONParser.parseStore(response.getJSONObject("store"));
 			CityLocation cl = JSONParser.parseCityLocation(response
@@ -172,16 +176,18 @@ public class RPCUtils {
 		}
 	}
 
-	public static int createBranch(Province province, Store store, int lat,
-			int lon, String cityName, String branchName) {
+	public static ERROR createBranch(Province province, Store store,
+			double lat, double lon, String cityName, String branchName) {
 		String suffix = "create_branch2";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, null, lon, lat);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branchJSON, store.toJSON(),
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, store.toJSON(),
 					province.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
 			City c = JSONParser.parseCity(response.getJSONObject("city"));
 			CityLocation cl = JSONParser.parseCityLocation(response
@@ -208,16 +214,17 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static int createBranch(Province province, int lat, int lon,
+	public static ERROR createBranch(Province province, double lat, double lon,
 			String cityName, String storeName, String branchName) {
 		String suffix = "create_branch3";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, storeName, lon, lat);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branchJSON, province.toJSON());
-
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, province.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			Store s = JSONParser.parseStore(response.getJSONObject("store"));
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
 			City c = JSONParser.parseCity(response.getJSONObject("city"));
@@ -246,7 +253,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static int createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Branch branch, String name,
 			Brand brand, Category category, double size, String measure,
 			int price) {
 		String suffix = "create_branchproduct0";
@@ -254,9 +261,11 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, null, size, measure, price);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
+			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
 					brand.toJSON(), category.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
 					.getJSONObject("branchProduct"));
 			Product p = JSONParser.parseProduct(response
@@ -283,16 +292,18 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static int createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Branch branch, String name,
 			Brand brand, String category, double size, String measure, int price) {
 		String suffix = "create_branchproduct1";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					category, null, size, measure, price);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
+			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
 					brand.toJSON());
+			if(response.length() == 0){
+				return ERROR.SERVER;
+			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
 					.getJSONObject("branchProduct"));
 			Product p = JSONParser.parseProduct(response
@@ -322,7 +333,7 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static int createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Branch branch, String name,
 			String brand, Category category, double size, String measure,
 			int price) {
 		String suffix = "create_branchproduct2";
@@ -330,9 +341,11 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, brand, size, measure, price);
-			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
-					category.toJSON());
+			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+					bpJSON, category.toJSON());
+			if (response.length() == 0) {
+				return ERROR.SERVER;
+			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
 					.getJSONObject("branchProduct"));
 			Product p = JSONParser.parseProduct(response
@@ -362,7 +375,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static int createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Branch branch, String name,
 			String brand, String category, double size, String measure,
 			int price) {
 		String suffix = "create_branchproduct3";
@@ -372,6 +385,9 @@ public class RPCUtils {
 					category, brand, size, measure, price);
 			JSONObject response;
 			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON);
+			if (response.length() == 0) {
+				return ERROR.SERVER;
+			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
 					.getJSONObject("branchProduct"));
 			Product p = JSONParser.parseProduct(response
@@ -409,7 +425,11 @@ public class RPCUtils {
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject pId = JSONBuilder.toJSON("productId", code);
-			return JSONParser.parseProduct(HTTPUtils.doJSONPost(url, pId));
+			JSONObject obj = HTTPUtils.doJSONPost(url, pId);
+			if (obj.length() == 0) {
+				return null;
+			}
+			return JSONParser.parseProduct(obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
@@ -424,12 +444,15 @@ public class RPCUtils {
 			long branchId) {
 		String suffix = "get_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
-
 		try {
 			JSONObject pId = JSONBuilder.toJSON("productId", productId);
 			JSONObject bId = JSONBuilder.toJSON("branchId", branchId);
-			return JSONParser.parseBranchProduct(HTTPUtils.doJSONPost(url, pId,
-					bId));
+			JSONObject obj = HTTPUtils.doJSONPost(url, pId,
+					bId);
+			if (obj.length() == 0) {
+				return null;
+			}
+			return JSONParser.parseBranchProduct(obj);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {

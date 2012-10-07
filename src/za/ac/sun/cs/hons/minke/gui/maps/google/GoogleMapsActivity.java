@@ -7,7 +7,6 @@ import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -19,8 +18,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.maps.GeoPoint;
@@ -44,14 +41,13 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 			super(GoogleMapsActivity.this, "Retrieving...",
 					"Retrieving route to store.");
 		}
-
 		@Override
 		protected void success() {
 			mapView.getOverlays().add(routeOverlay);
 			mapController.animateTo(dest);
 		}
 
-		protected void failure(int error_code) {
+		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(GoogleMapsActivity.this,
 					error_code);
 			dlg.setPositiveButton("Retry",
@@ -71,7 +67,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		}
 
 		@Override
-		protected int retrieve() {
+		protected ERROR retrieve() {
 			try {
 				Route route = directions(src, dest);
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
@@ -102,7 +98,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 	}
 
 	private void createGoogle() {
-		setContentView(R.layout.google_directions);
+		setContentView(R.layout.activity_maps);
 		mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		mapView.setClickable(true);
@@ -110,7 +106,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		mapController.setZoom(15);
 		mapController.setCenter(src);
 		BasicOverlay shopsOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.shop_40),
+				.getResources().getDrawable(R.drawable.shop),
 				GoogleMapsActivity.this);
 		for (Branch b : EntityUtils.getBranches()) {
 			shopsOverlay.addOverlay(new OverlayItem(b.getCityLocation()
@@ -118,7 +114,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 					.toString()));
 		}
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.android_40),
+				.getResources().getDrawable(R.drawable.ic_launcher),
 				GoogleMapsActivity.this);
 		iconOverlay.addOverlay(new OverlayItem(src, "You",
 				"You are currently here."));
@@ -194,29 +190,6 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 
 	public void getDirections(View view) {
 		DialogUtils.getDirectionsDialog(this, directions, "Directions").show();
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.default_menu2, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.refresh:
-			startActivity(IntentUtils.getMapIntent(this));
-			return true;
-		case R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
-			return true;
-		case R.id.settings:
-			startActivity(IntentUtils.getSettingsIntent(this));
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
-		}
 	}
 
 }

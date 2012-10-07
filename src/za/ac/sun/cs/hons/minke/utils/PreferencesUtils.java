@@ -67,7 +67,7 @@ public class PreferencesUtils {
 		return firstTime;
 	}
 
-	public static int loadPreferences(Context context) {
+	public static ERROR loadPreferences(Context context) {
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",

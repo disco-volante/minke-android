@@ -8,13 +8,13 @@ import com.google.android.maps.GeoPoint;
 public class CityLocation {
 	private long id, cityId;
 	private String name;
-	private int lat, lon;
+	private double lat, lon;
 	private City city;
 
 	public CityLocation() {
 	}
 
-	public CityLocation(long id, long cityId, String name, int lat, int lon) {
+	public CityLocation(long id, long cityId, String name, double lat, double lon) {
 		this.id = id;
 		this.setCityId(cityId);
 		this.name = name;
@@ -46,28 +46,20 @@ public class CityLocation {
 		this.name = name;
 	}
 
-	public int getLat() {
+	public double getLat() {
 		return lat;
 	}
 
-	public void setLat(int lat) {
+	public void setLat(double lat) {
 		this.lat = lat;
 	}
 
-	public void setLat(double lat) {
-		this.lat = (int) (lat * 1E6);
-	}
-
-	public int getLon() {
+	public double getLon() {
 		return lon;
 	}
 
-	public void setLon(int lon) {
-		this.lon = lon;
-	}
-
 	public void setLon(double lon) {
-		this.lon = (int) (lon * 1E6);
+		this.lon = lon;
 	}
 
 	public City getCity() {
@@ -98,7 +90,7 @@ public class CityLocation {
 	}
 
 	public GeoPoint getGeoPoint() {
-		return new GeoPoint(lat, lon);
+		return new GeoPoint((int)(lat*1E6), (int)(lon*1E6));
 	}
 
 	@Override
@@ -108,8 +100,8 @@ public class CityLocation {
 		result = prime * result + ((city == null) ? 0 : city.hashCode());
 		result = prime * result + (int) (cityId ^ (cityId >>> 32));
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + lat;
-		result = prime * result + lon;
+		result = (int) (prime * result + lat);
+		result = (int) (prime * result + lon);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}

@@ -231,7 +231,7 @@ public class EntityUtils {
 		categoryDAO.addAll(_categories);
 	}
 
-	public static int loadAll(Context context) {
+	public static ERROR loadAll(Context context) {
 		init(context);
 		setCountries(countryDAO.getAll());
 		setStores(storeDAO.getAll());
@@ -242,7 +242,7 @@ public class EntityUtils {
 		setProducts(productDAO.getAll());
 		setBranches(branchDAO.getAll());
 		setLocations();
-		if(MapUtils.getLocation() != null && branches != null){
+		if (MapUtils.getLocation() != null && branches != null) {
 			MapUtils.setBranches(branches);
 		}
 		loaded = true;
@@ -271,7 +271,7 @@ public class EntityUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static int retrieveBranches(ArrayList<Product> addedProducts) {
+	public static ERROR retrieveBranches(ArrayList<Product> addedProducts) {
 		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
 		HashMap<Branch, ArrayList<BranchProduct>> temp = new HashMap<Branch, ArrayList<BranchProduct>>();
 		for (Product p : addedProducts) {
@@ -311,7 +311,7 @@ public class EntityUtils {
 				new String[] { String.valueOf(id) });
 	}
 
-	public static int retrieveBranchProducts(boolean productsActive) {
+	public static ERROR retrieveBranchProducts(boolean productsActive) {
 		HashSet<Product> _p = new HashSet<Product>();
 		if (!productsActive) {
 			for (Category c : SearchUtils.getAddedCategories()) {
@@ -322,10 +322,6 @@ public class EntityUtils {
 		} else {
 			_p.addAll(SearchUtils.getAddedProducts());
 		}
-		Log.v(TAGS.ENTITY, _p.toString());
-		Log.v(TAGS.ENTITY, SearchUtils.getAddedCities().toString());
-		Log.v(TAGS.ENTITY, SearchUtils.getAddedProvinces().toString());
-		Log.v(TAGS.ENTITY, SearchUtils.getAddedCountries().toString());
 		HashSet<BranchProduct> found = new HashSet<BranchProduct>();
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
@@ -401,44 +397,48 @@ public class EntityUtils {
 		stores.add(s);
 		return s;
 	}
+
 	public static DatePrice addDatePrice(DatePrice dp) {
-		long id =datePriceDAO.add(dp);
-		return  datePriceDAO.getByID(id);
+		long id = datePriceDAO.add(dp);
+		return datePriceDAO.getByID(id);
 	}
 
 	public static Product retrieveProduct(long code) {
-		Product product = productDAO.getByID(code);
-		if(product == null){
-			product = RPCUtils.retrieveProduct(code);
-			if(product != null){
-				return addProduct(product);
-			}
+		return productDAO.getByID(code);
+	}
+
+	public static Product retrieveProductServer(long code) {
+		Log.v(TAGS.SCAN, String.valueOf(code));
+		Product product = RPCUtils.retrieveProduct(code);
+		if (product != null) {
+			return addProduct(product);
 		}
 		return product;
 	}
 
 	public static BranchProduct retrieveBranchProduct(long productId,
 			long branchId) {
-		BranchProduct branchProduct = branchProductDAO.getByParameters(new String[] {
+		return branchProductDAO.getByParameters(new String[] {
 				DBConstants.PRODUCT_ID, DBConstants.BRANCH_ID }, new String[] {
 				String.valueOf(productId), String.valueOf(branchId) });
-		if(branchProduct == null){
-			branchProduct = RPCUtils.retrieveBranchProduct(productId, branchId);
-			if(branchProduct != null){
-				return addBranchProduct(branchProduct);
-			}
+	}
+
+	public static BranchProduct retrieveBranchProductServer(long productId,
+			long branchId) {
+		BranchProduct branchProduct = RPCUtils.retrieveBranchProduct(productId,
+				branchId);
+		if (branchProduct != null) {
+			return addBranchProduct(branchProduct);
 		}
 		return branchProduct;
 	}
 
-	public static ArrayList<BranchProduct> retrieveBranchProducts(long productId, BranchProduct main) {
-		 ArrayList<BranchProduct> branchProducts = branchProductDAO.getAllByParameters(new String[] {
-				DBConstants.PRODUCT_ID }, new String[] {
-				String.valueOf(productId) });
+	public static ArrayList<BranchProduct> retrieveBranchProducts(
+			long productId, BranchProduct main) {
+		ArrayList<BranchProduct> branchProducts = branchProductDAO
+				.getAllByParameters(new String[] { DBConstants.PRODUCT_ID },
+						new String[] { String.valueOf(productId) });
 		return branchProducts;
 	}
-
-
-
 
 }

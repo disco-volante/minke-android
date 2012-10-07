@@ -20,7 +20,7 @@ public class ItemListAdapter<T> extends ArrayAdapter<T> {
 	}
 
 	public ItemListAdapter(Activity context, ArrayList<T> added) {
-		super(context, R.layout.rowlayout, added);
+		super(context, R.layout.row_default, added);
 		this.context = context;
 
 	}
@@ -31,10 +31,10 @@ public class ItemListAdapter<T> extends ArrayAdapter<T> {
 		final T item = getItem(position);
 		if (rowView == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
-			rowView = inflater.inflate(R.layout.rowlayout, null);
+			rowView = inflater.inflate(R.layout.row_default, null);
 			ViewHolder viewHolder = new ViewHolder();
-			viewHolder.text = (TextView) rowView.findViewById(R.id.label);
-			viewHolder.btn = (ImageButton) rowView.findViewById(R.id.removeBtn);
+			viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_remove);
+			viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_remove);
 			viewHolder.btn.setOnClickListener(new OnClickListener() {
 
 				@Override

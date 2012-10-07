@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="11"
         android:targetSdkVersion="15" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,10 +18,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <meta-data
-        android:name="CLOUDMADE_KEY"
-        android:value="c5f4486abc034369842fc16a7b744085" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -45,7 +41,7 @@
         <receiver android:name=".receivers.LoadLocalReceiver" >
         </receiver>
 
-        <activity android:name=".HomeActivity" >
+        <activity android:name=".gui.HomeActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,12 +50,12 @@
         </activity>
         <activity android:name=".gui.create.NewProductActivity" />
         <activity android:name=".gui.create.NewBranchActivity" />
-        <activity android:name=".gui.shop.ShopActivity" />
-        <activity android:name=".gui.shop.StoreActivity" />
+        <activity android:name=".gui.shop.ShopFragment" />
+        <activity android:name=".gui.shop.StoreFragment" />
         <activity android:name=".gui.shop.ShopListActivity" />
-        <activity android:name=".gui.browse.BrowseActivity" />
-        <activity android:name=".gui.browse.ProductSearchActivity" />
-        <activity android:name=".gui.browse.LocationSearchActivity" />
+        <activity android:name=".gui.browse.BrowseFragment" />
+        <activity android:name=".gui.browse.ProductSearchFragment" />
+        <activity android:name=".gui.browse.LocationSearchFragment" />
         <activity android:name=".gui.graph.GraphActivity" />
         <activity
             android:name=".gui.maps.nutiteq.NutiteqMapsActivity"

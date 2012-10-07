@@ -3,10 +3,11 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
+import za.ac.sun.cs.hons.minke.gui.HomeActivity;
+import za.ac.sun.cs.hons.minke.gui.browse.BrowseFragment;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
-import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
-import android.app.Activity;
+import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,14 +16,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class ShopListAdapter extends ArrayAdapter<ShopList> {
-	private Activity context;
+	private HomeActivity context;
 
 	static class ViewHolder {
 		protected TextView store, total;
 	}
 
-	public ShopListAdapter(Activity context, ArrayList<ShopList> shopLists) {
-		super(context, R.layout.branch_rowlayout, shopLists);
+	public ShopListAdapter(HomeActivity context, ArrayList<ShopList> shopLists) {
+		super(context, R.layout.row_branch, shopLists);
 		this.context = context;
 
 	}
@@ -33,7 +34,7 @@ public class ShopListAdapter extends ArrayAdapter<ShopList> {
 		final ShopList item = getItem(position);
 		if (rowView == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
-			rowView = inflater.inflate(R.layout.branch_rowlayout, null);
+			rowView = inflater.inflate(R.layout.row_branch, null);
 			rowView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View arg0) {
@@ -58,7 +59,7 @@ public class ShopListAdapter extends ArrayAdapter<ShopList> {
 	protected void showInfo(ShopList item) {
 		BrowseUtils.setBranchProducts(item.getBranchProducts());
 		BrowseUtils.setStoreBrowse(true);
-		context.startActivity(IntentUtils.getBrowseIntent(context));
+		context.getView(VIEW.SHOP, BrowseFragment.class.getName());
 	}
 
 }

@@ -1,24 +1,41 @@
-package za.ac.sun.cs.hons.minke;
+package za.ac.sun.cs.hons.minke.gui;
 
+import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.assets.IntentIntegrator;
 import za.ac.sun.cs.hons.minke.assets.IntentResult;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.browse.BrowseFragment;
+import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchFragment;
+import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchFragment;
+import za.ac.sun.cs.hons.minke.gui.scan.NewBranchFragment;
+import za.ac.sun.cs.hons.minke.gui.scan.NewProductFragment;
+import za.ac.sun.cs.hons.minke.gui.scan.ScanFragment;
+import za.ac.sun.cs.hons.minke.gui.shop.ShopFragment;
+import za.ac.sun.cs.hons.minke.gui.shop.StoreFragment;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
+import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
+import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.LoadDataFGTask;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.tasks.UpdateDataFGTask;
+import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
+import za.ac.sun.cs.hons.minke.utils.SearchUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -31,23 +48,43 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class HomeActivity extends SherlockActivity {
+public class HomeActivity extends SherlockFragmentActivity {
+	TabHost mTabHost;
+	TabsAdapter mTabManager;
+	TabInfo browse, shop, scan;
+	public long code;
+	protected boolean downloading;
 	protected int selectedBranch;
-	private boolean downloading;
-	private long code;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.home);
+	protected void onCreate(Bundle savedInstanceState) {
 		setTheme(R.style.Theme_Sherlock_Light);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+		mTabHost.setup();
+
+		mTabManager = new TabsAdapter(this, mTabHost, R.id.tab_real);
+
+		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SCAN).setIndicator("Scan"),
+				ScanFragment.class.getName());
+		mTabManager.addTab(
+				mTabHost.newTabSpec(VIEW.BROWSE).setIndicator("Browse"),
+				LocationSearchFragment.class.getName());
+		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SHOP).setIndicator("Shop"),
+				ShopFragment.class.getName());
+
+		if (savedInstanceState != null) {
+			mTabHost.setCurrentTabByTag(savedInstanceState.getString(VIEW.SCAN));
+		}
 		if (Debug.ON) {
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 					.detectDiskReads().detectDiskWrites().detectNetwork()
@@ -60,35 +97,135 @@ public class HomeActivity extends SherlockActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getSupportMenuInflater();
-		inflater.inflate(R.menu.home, menu);
+		inflater.inflate(R.menu.menu_home, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.settings) {
-			startActivity(IntentUtils.getSettingsIntent(this));
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case R.id.menu_item_info:
+			displayInfo();
+			return true;
+		case R.id.menu_item_settings:
+			displaySettings();
 			return true;
 		}
 		return false;
 	}
 
-	private void checkData(Intent intent) {
-		if (EntityUtils.isLoaded()) {
-			startActivity(intent);
+	private void displaySettings() {
+		startActivity(IntentUtils.getSettingsIntent(this));
+	}
+
+	private void displayInfo() {
+		Builder dlg = DialogUtils.getInfoDialog(this);
+		dlg.show();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString("tab", mTabHost.getCurrentTabTag());
+	}
+
+	public void getView(String tag, String className) {
+		mTabManager.changeTab(tag, className);
+	}
+
+	public void getProductSearch(View view) {
+		getView(VIEW.BROWSE, ProductSearchFragment.class.getName());
+	}
+
+	public void getProducts(View view) {
+		SearchTask task = new SearchTask();
+		task.execute();
+	}
+
+	public void showHistories(View view) {
+		startActivity(IntentUtils.getGraphIntent(this));
+	}
+
+	public void setBranch(View view) {
+		getView(VIEW.SCAN, ScanFragment.class.getName());
+	}
+
+	public void findStores(View view) {
+		FindBranchesTask task = new FindBranchesTask();
+		task.execute();
+	}
+
+	public void scan(View view) {
+		if (MapUtils.getUserBranch() == null) {
+			confirmLocation();
 		} else {
-			Builder dlg = DialogUtils.getErrorDialog(this, ERROR.NOT_LOADED);
-			dlg.show();
+			if (Debug.EMULATOR) {
+				Intent intent = IntentUtils.getEmulatorIntent();
+				onActivityResult(IntentIntegrator.REQUEST_CODE,
+						Activity.RESULT_OK, intent);
+			} else {
+				final AlertDialog dialog;
+				downloading = false;
+				if ((dialog = IntentIntegrator.initiateScan(this)) != null) {
+					downloading = true;
+					dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
+							.setOnClickListener(new View.OnClickListener() {
+
+								@Override
+								public void onClick(View arg0) {
+									downloading = false;
+									onActivityResult(Activity.RESULT_CANCELED,
+											0, null);
+									dialog.cancel();
+								}
+
+							});
+
+				}
+			}
 		}
+	}
+
+	public void showDirections(View view) {
+		String[] names = new String[ShopUtils.getBranches().size()];
+		MapUtils.setBranches(ShopUtils.getBranches());
+		MapUtils.setDestination(0);
+		int i = 0;
+		for (Branch b : ShopUtils.getBranches()) {
+			names[i++] = b.toString();
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Directions to?");
+		builder.setSingleChoiceItems(names, 0, new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface arg0, int position) {
+				MapUtils.setDestination(position);
+			}
+		});
+		builder.setPositiveButton("View Map",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						startActivity(IntentUtils
+								.getMapIntent(HomeActivity.this));
+					}
+				});
+		builder.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+		builder.create().show();
 	}
 
 	protected void nextAction() {
 		if (!PreferencesUtils.isLoaded()) {
 			PrefsTask prefTask = new PrefsTask();
 			prefTask.execute();
-		} else if (IntentUtils.scan()) {
-			scan(null);
 		} else if (MapUtils.getLocation() == null) {
 			GetLocationTask task = new GetLocationTask();
 			task.execute();
@@ -104,47 +241,9 @@ public class HomeActivity extends SherlockActivity {
 		}
 	}
 
-	public void shop(View view) {
-		checkData(IntentUtils.getShopIntent(getApplicationContext()));
-	}
-
-	public void search(View view) {
-		checkData(IntentUtils.getLocationSearchIntent(getApplicationContext()));
-	}
-
-	public void scan(View view) {
-		if (MapUtils.getUserBranch() == null) {
-			confirmLocation();
-		} else {
-			if (Debug.EMULATOR) {
-				Intent intent = IntentUtils.getEmulatorIntent();
-				onActivityResult(IntentIntegrator.REQUEST_CODE, RESULT_OK,
-						intent);
-			} else {
-				final AlertDialog dialog;
-				downloading = false;
-				if ((dialog = IntentIntegrator.initiateScan(this)) != null) {
-					downloading = true;
-					dialog.getButton(DialogInterface.BUTTON_NEGATIVE)
-							.setOnClickListener(new View.OnClickListener() {
-
-								@Override
-								public void onClick(View arg0) {
-									downloading = false;
-									onActivityResult(RESULT_CANCELED, 0, null);
-									dialog.cancel();
-								}
-
-							});
-
-				}
-			}
-		}
-	}
-
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == IntentIntegrator.REQUEST_CODE
-				&& resultCode != RESULT_CANCELED) {
+				&& resultCode != Activity.RESULT_CANCELED) {
 			IntentResult scanResult = IntentIntegrator.parseActivityResult(
 					requestCode, resultCode, data);
 			if (scanResult != null) {
@@ -157,7 +256,7 @@ public class HomeActivity extends SherlockActivity {
 					nfe.printStackTrace();
 				}
 			}
-		} else if (!downloading && resultCode == RESULT_CANCELED) {
+		} else if (!downloading && resultCode == Activity.RESULT_CANCELED) {
 			AlertDialog.Builder failed = new AlertDialog.Builder(this);
 			failed.setTitle("Scan Error");
 			failed.setMessage("Unsuccessful scan, please try again.");
@@ -227,17 +326,17 @@ public class HomeActivity extends SherlockActivity {
 
 	protected void editLocation() {
 		Log.v("LOCATION", MapUtils.getLocation().toString());
-		startActivity(IntentUtils.getNewBranchIntent(this));
+		getView(VIEW.SCAN, NewBranchFragment.class.getName());
 	}
 
 	private void updatePrice(final BranchProduct found, final Product product) {
 
 		LayoutInflater factory = LayoutInflater.from(this);
-		final View updateView = factory.inflate(R.layout.update_dialog, null);
+		final View updateView = factory.inflate(R.layout.dialog_update, null);
 		final TextView productText = (TextView) updateView
-				.findViewById(R.id.product_lbl);
+				.findViewById(R.id.lbl_product);
 		final EditText updatePriceText = (EditText) updateView
-				.findViewById(R.id.price_text);
+				.findViewById(R.id.text_price);
 		updatePriceText.addTextChangedListener(new TextErrorWatcher(
 				updatePriceText, true));
 		productText.setText(product.toString());
@@ -262,6 +361,98 @@ public class HomeActivity extends SherlockActivity {
 
 	}
 
+	@Override
+	public void onBackPressed() {
+		Log.v(TAGS.KEY_PRESS, "BACK PRESSED");
+		mTabManager.setBackPress(true);
+		if (!mTabManager.isStackEmpty()) {
+			mTabManager.goBack();
+		} else {
+			super.onBackPressed();
+		}
+	}
+
+	class SearchTask extends ProgressTask {
+
+		public SearchTask() {
+			super(HomeActivity.this, "Searching...", "Searching for products");
+		}
+
+		@Override
+		protected void success() {
+			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
+			BrowseUtils.setStoreBrowse(false);
+			getView(VIEW.BROWSE, BrowseFragment.class.getName());
+
+		}
+
+		@Override
+		protected void failure(ERROR error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							getProducts(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+
+		}
+
+		@Override
+		protected ERROR retrieve() {
+			return EntityUtils.retrieveBranchProducts(SearchUtils
+					.isProductsActive());
+		}
+	}
+
+	class FindBranchesTask extends ProgressTask {
+
+		public FindBranchesTask() {
+			super(HomeActivity.this, "Searching", "Searching for branches...");
+		}
+
+		@Override
+		protected void success() {
+			getView(VIEW.SHOP, StoreFragment.class.getName());
+
+		}
+
+		@Override
+		protected void failure(ERROR error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					error_code);
+			dlg.setPositiveButton("Retry",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							findStores(null);
+							dialog.cancel();
+						}
+					});
+			dlg.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+		}
+
+		@Override
+		protected ERROR retrieve() {
+			return EntityUtils.retrieveBranches(ShopUtils
+					.getAddedProducts(false));
+		}
+	}
+
 	class Updater extends UpdateDataFGTask {
 		public Updater() {
 			super(HomeActivity.this);
@@ -275,7 +466,7 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected void failure(int error_code) {
+		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
 			dlg.setPositiveButton("Retry", new OnClickListener() {
@@ -297,7 +488,7 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected int retrieve() {
+		protected ERROR retrieve() {
 			return PreferencesUtils.loadPreferences(HomeActivity.this);
 		}
 
@@ -307,7 +498,7 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected void failure(int error_code) {
+		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
 			dlg.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -328,9 +519,9 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected int retrieve() {
+		protected ERROR retrieve() {
 			return MapUtils.refreshLocation((LocationManager) HomeActivity.this
-					.getSystemService(LOCATION_SERVICE));
+					.getSystemService(Activity.LOCATION_SERVICE));
 		}
 
 		@Override
@@ -339,7 +530,7 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected void failure(int error_code) {
+		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
 			dlg.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -366,10 +557,19 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected void failure(int code) {
+		protected void failure(ERROR code) {
 			if (code == ERROR.NOT_FOUND) {
-				startActivity(IntentUtils
-						.getNewProductIntent(getApplicationContext()));
+				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+						code);
+				dlg.setPositiveButton("Create",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								getView(VIEW.SCAN,
+										NewProductFragment.class.getName());
+								dialog.cancel();
+							}
+						});
+				dlg.show();
 			} else {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 						code);
@@ -384,21 +584,32 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected int retrieve() {
+		protected ERROR retrieve() {
 			Product p = EntityUtils.retrieveProduct(code);
 			if (p == null) {
-				return ERROR.NOT_FOUND;
-			} else {
-				BranchProduct bp = EntityUtils.retrieveBranchProduct(code,
-						MapUtils.getUserBranch().getId());
+				if (!isNetworkAvailable()) {
+					return ERROR.NOT_FOUND;
+				}
+				p = EntityUtils.retrieveProductServer(code);
+				if (p == null) {
+					return ERROR.NOT_FOUND;
+				}
+			}
+			BranchProduct bp = EntityUtils.retrieveBranchProduct(code, MapUtils
+					.getUserBranch().getId());
+			if (bp == null) {
+				if (!isNetworkAvailable()) {
+					return ERROR.NOT_FOUND;
+				}
+				bp = EntityUtils.retrieveBranchProductServer(code, MapUtils
+						.getUserBranch().getId());
 				if (bp == null) {
 					return ERROR.NOT_FOUND;
-				} else {
-					ScanUtils.setProduct(p);
-					ScanUtils.setBranchProduct(bp);
 				}
-				return ERROR.SUCCESS;
 			}
+			ScanUtils.setProduct(p);
+			ScanUtils.setBranchProduct(bp);
+			return ERROR.SUCCESS;
 		}
 
 	}
@@ -412,17 +623,20 @@ public class HomeActivity extends SherlockActivity {
 		}
 
 		@Override
-		protected int retrieve() {
+		protected ERROR retrieve() {
+			if (!isNetworkAvailable()) {
+				return ERROR.CLIENT;
+			}
 			return RPCUtils.updateBranchProduct(bp);
 		}
 
 		@Override
 		protected void success() {
-			startActivity(IntentUtils.getBrowseIntent(HomeActivity.this));
+			getView(VIEW.SCAN, BrowseFragment.class.getName());
 		}
 
 		@Override
-		protected void failure(int error_code) {
+		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
 			dlg.setPositiveButton("Retry",
@@ -435,4 +649,5 @@ public class HomeActivity extends SherlockActivity {
 			dlg.show();
 		}
 	}
+
 }

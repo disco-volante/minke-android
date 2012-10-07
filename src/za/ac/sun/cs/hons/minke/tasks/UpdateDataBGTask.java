@@ -16,13 +16,16 @@ public class UpdateDataBGTask extends LoadTask {
 	}
 
 	@Override
-	protected void failure(int error_code) {
+	protected void failure(ERROR error_code) {
 		UpdateDataBGTask.this.execute();
 	}
 
 	@Override
-	protected int retrieve() {
-		int error = RPCUtils.retrieveAll(context);
+	protected ERROR retrieve() {
+		if(!isNetworkAvailable()){
+			return ERROR.CLIENT;
+		}
+		ERROR error = RPCUtils.retrieveAll(context);
 		if(error == ERROR.SUCCESS){
 			return EntityUtils.loadAll(context);
 		}

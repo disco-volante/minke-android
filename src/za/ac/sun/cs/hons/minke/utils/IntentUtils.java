@@ -1,66 +1,19 @@
 package za.ac.sun.cs.hons.minke.utils;
 
-import za.ac.sun.cs.hons.minke.HomeActivity;
-import za.ac.sun.cs.hons.minke.gui.browse.BrowseActivity;
-import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchActivity;
-import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchActivity;
-import za.ac.sun.cs.hons.minke.gui.create.NewBranchActivity;
-import za.ac.sun.cs.hons.minke.gui.create.NewProductActivity;
+import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.nutiteq.NutiteqMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
-import za.ac.sun.cs.hons.minke.gui.shop.ShopActivity;
-import za.ac.sun.cs.hons.minke.gui.shop.StoreActivity;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.content.Context;
 import android.content.Intent;
 
 public class IntentUtils {
-	private static boolean scan;
-
 	public static Intent createShareIntent() {
 		final Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		intent.putExtra(Intent.EXTRA_TEXT, "Shared from minke.");
 		return Intent.createChooser(intent, "Share");
-	}
-
-	public static Intent getHomeIntent(Context context) {
-		Intent home = new Intent(context, HomeActivity.class);
-		home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return home;
-	}
-
-	public static Intent getShopIntent(Context context) {
-		Intent shop = new Intent(context, ShopActivity.class);
-		shop.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return shop;
-	}
-
-	public static Intent getBrowseIntent(Context context) {
-		Intent browse = new Intent(context, BrowseActivity.class);
-		browse.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return browse;
-	}
-
-	public static Intent getNewProductIntent(Context context) {
-		Intent scan = new Intent(context, NewProductActivity.class);
-		scan.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return scan;
-	}
-
-	public static Intent getLocationSearchIntent(Context context) {
-		Intent locationSearch = new Intent(context,
-				LocationSearchActivity.class);
-		locationSearch.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return locationSearch;
-	}
-
-	public static Intent getProductSearchIntent(Context context) {
-		Intent productSearch = new Intent(context, ProductSearchActivity.class);
-		productSearch.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return productSearch;
 	}
 
 	public static Intent getGraphIntent(Context context) {
@@ -73,40 +26,17 @@ public class IntentUtils {
 		Intent map;
 		if (Constants.GOOGLE_MAPS) {
 			map = new Intent(context, GoogleMapsActivity.class);
-		} else {
-			map = new Intent(context, NutiteqMapsActivity.class);
 		}
 		map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return map;
 	}
 
-	public static Intent getStoreIntent(Context context) {
-		Intent store = new Intent(context, StoreActivity.class);
-		store.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return store;
+	public static Intent getHomeIntent(Context context) {
+		Intent scanIntent = new Intent(context, HomeActivity.class);
+		scanIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return scanIntent;
 	}
-
-	public static Intent getNewBranchIntent(Context context) {
-		Intent store = new Intent(context, NewBranchActivity.class);
-		store.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return store;
-	}
-
-	public static boolean scan() {
-		return scan;
-	}
-
-	public static void setScan(boolean _scan) {
-		scan = _scan;
-	}
-
-	public static Intent getScanIntent(Context context) {
-		setScan(true);
-		Intent home = new Intent(context, HomeActivity.class);
-		home.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		return home;
-	}
-
+	
 	public static Intent getSettingsIntent(Context context) {
 		Intent settings = new Intent(context, SettingsActivity.class);
 		settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -116,8 +46,12 @@ public class IntentUtils {
 	public static Intent getEmulatorIntent() {
 		Intent intent = new Intent();
 		intent.putExtra("SCAN_RESULT_FORMAT", "UPC_A");
-		intent.putExtra("SCAN_RESULT", String.valueOf((long) (100000 * Math.random())));
+		intent.putExtra("SCAN_RESULT",
+				String.valueOf((long) (100000 * Math.random())));
 		return intent;
 	}
+
+
+
 
 }

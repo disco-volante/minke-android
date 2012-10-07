@@ -3,7 +3,9 @@ package za.ac.sun.cs.hons.minke.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
@@ -12,7 +14,6 @@ import com.google.android.maps.GeoPoint;
 import com.nutiteq.BasicMapComponent;
 import com.nutiteq.components.Place;
 import com.nutiteq.components.Route;
-import com.nutiteq.components.WgsPoint;
 
 public class MapUtils {
 
@@ -49,9 +50,16 @@ public class MapUtils {
 	}
 
 	public static void setDestination(int position) {
-		destination = new GeoPoint(((Branch) branches.get(position))
-				.getCityLocation().getLat(), ((Branch) branches.get(position))
-				.getCityLocation().getLon());
+		destination = ((Branch) branches.get(position)).getCityLocation().getGeoPoint();
+		if (Debug.ON) {
+			Log.v(TAGS.MAP,
+					"latitude = "
+							+ ((Branch) branches.get(position))
+									.getCityLocation().getLat()
+							+ " longitude = "
+							+ ((Branch) branches.get(position))
+									.getCityLocation().getLon());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,8 +70,8 @@ public class MapUtils {
 			int curMaxIndex = -1;
 			for (Branch cur : _branches) {
 				double curDist = dist(cur.getCityLocation().getLat(), cur
-						.getCityLocation().getLon(), point.getLatitudeE6(),
-						point.getLongitudeE6());
+						.getCityLocation().getLon(), point.getLatitudeE6()/1E6,
+						point.getLongitudeE6()/1E6);
 				if (branches.size() < 5) {
 					branches.add(cur);
 					if (curDist > curMax) {
@@ -79,8 +87,8 @@ public class MapUtils {
 						for (Branch b : branches) {
 							double dis = dist(b.getCityLocation().getLat(), b
 									.getCityLocation().getLon(),
-									point.getLatitudeE6(),
-									point.getLongitudeE6());
+									point.getLatitudeE6()/1E6,
+									point.getLongitudeE6()/1E6);
 							if (dis > curDist) {
 								curMaxIndex = branches.indexOf(b);
 								curMax = dis;
@@ -95,7 +103,7 @@ public class MapUtils {
 		}
 	}
 
-	private static double dist(int latS, int lonS, int latD, int lonD) {
+	private static double dist(double latS, double lonS, double latD, double lonD) {
 		return Math.sqrt(Math.pow(latS - latD, 2) + Math.pow(lonS - lonD, 2));
 	}
 
@@ -107,7 +115,11 @@ public class MapUtils {
 		return destination;
 	}
 
-	public static int refreshLocation(LocationManager locationManager) {
+	public static ERROR refreshLocation(LocationManager locationManager) {
+		if (Debug.EMULATOR) {
+			point = new GeoPoint((int) (-33 * 1E6), (int) (18 * 1E6));
+			return ERROR.SUCCESS;
+		}
 		Location location = locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		if (location == null) {
@@ -120,17 +132,11 @@ public class MapUtils {
 			Log.d("MAPUTILS", location.toString());
 			return ERROR.SUCCESS;
 		}
-		point = new GeoPoint((int) (-33 * 1E6), (int) (18 * 1E6));
 		return ERROR.LOCATION;
 	}
 
 	public static GeoPoint getLocation() {
 		return point;
-	}
-
-	public static WgsPoint getDestinationWGS() {
-		return new WgsPoint(((double) destination.getLatitudeE6()) / 1E6,
-				((double) destination.getLongitudeE6()) / 1E6);
 	}
 
 	public static Branch getUserBranch() {

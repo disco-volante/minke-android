@@ -92,6 +92,7 @@ public abstract class BaseDAO<T> {
 		Cursor cursor = database.query(table, columns, DBConstants.ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
 		if (!cursor.moveToFirst()) {
+			cursor.close();
 			return null;
 		}
 		return parse(cursor);

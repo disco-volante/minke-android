@@ -3,38 +3,40 @@ package za.ac.sun.cs.hons.minke.gui.browse;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockFragment;
 
-public class LocationSearchActivity extends Activity {
+
+public class LocationSearchFragment  extends SherlockFragment {
 
 	private AutoCompleteTextView locationBox;
 	private ArrayAdapter<Object> locationAdapter;
 	private ItemListAdapter<Object> locationListAdapter;
 
+
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.location_search);
-		initBoxes();
-		initLists();
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View v = inflater.inflate(R.layout.fragment_location_search, container, false);
+		initBoxes(v);
+		initLists(v);
+		return v;
 	}
 	
 
 
-	private void initBoxes() {
-		locationBox = (AutoCompleteTextView) findViewById(R.id.locationBox);
+	private void initBoxes(View v) {
+		locationBox = (AutoCompleteTextView) v.findViewById(R.id.text_location);
 		locationBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -44,16 +46,16 @@ public class LocationSearchActivity extends Activity {
 			}
 
 		});
-		locationAdapter = new ArrayAdapter<Object>(this,
-				R.layout.dropdown_item, EntityUtils.getLocations());
+		locationAdapter = new ArrayAdapter<Object>(this.getActivity(),
+				R.layout.listitem_default, EntityUtils.getLocations());
 		locationBox.setAdapter(locationAdapter);
 	}
 
-	private void initLists() {
-		locationListAdapter = new ItemListAdapter<Object>(this,
+	private void initLists(View v) {
+		locationListAdapter = new ItemListAdapter<Object>(this.getActivity(),
 				SearchUtils.getAddedLocations());
 
-		ListView locationList = (ListView) findViewById(R.id.location_list);
+		ListView locationList = (ListView) v.findViewById(R.id.location_list);
 		locationList.setAdapter(locationListAdapter);
 		locationList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -74,15 +76,5 @@ public class LocationSearchActivity extends Activity {
 		}
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.default_menu1, menu);
-		return true;
-	}
-
-
-	public void getProductSearch(View view) {
-		startActivity(IntentUtils.getProductSearchIntent(this));
-	}
-
+	
 }

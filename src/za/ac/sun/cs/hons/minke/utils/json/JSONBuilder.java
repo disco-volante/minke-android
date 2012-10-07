@@ -113,7 +113,7 @@ public class JSONBuilder {
 	}
 
 	public static JSONObject BranchProtoToJSON(String name, String cityName,
-			String storeName, int lon, int lat) throws JSONException {
+			String storeName, double lon, double lat) throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "branchProto");
 		obj.put("name", name);

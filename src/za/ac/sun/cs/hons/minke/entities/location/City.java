@@ -6,13 +6,13 @@ import org.json.JSONObject;
 public class City {
 	private long id, provinceId;
 	private String name;
-	private int lat, lon;
+	private double lat, lon;
 	private Province province;
 
 	public City() {
 	}
 
-	public City(long id, long provinceId, String name, int lat, int lon) {
+	public City(long id, long provinceId, String name, double lat, double lon) {
 		super();
 		this.id = id;
 		this.provinceId = provinceId;
@@ -45,29 +45,23 @@ public class City {
 		this.name = name;
 	}
 
-	public int getLat() {
+	public double getLat() {
 		return lat;
 	}
 
-	public void setLat(int lat) {
+	public void setLat(double lat) {
 		this.lat = lat;
 	}
 
-	public void setLat(double lat) {
-		this.lat = (int) (lat * 1E6);
-	}
 
-	public int getLon() {
+	public double getLon() {
 		return lon;
 	}
 
-	public void setLon(int lon) {
+	public void setLon(double lon) {
 		this.lon = lon;
 	}
 
-	public void setLon(double lon) {
-		this.lon = (int) (lon * 1E6);
-	}
 
 	public Province getProvince() {
 		return province;
@@ -101,8 +95,8 @@ public class City {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + lat;
-		result = prime * result + lon;
+		result = (int) (prime * result + lat);
+		result = (int) (prime * result + lon);
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result
 				+ ((province == null) ? 0 : province.hashCode());
