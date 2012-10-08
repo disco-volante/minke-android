@@ -30,11 +30,20 @@ public class ShopFragment extends SherlockFragment {
 		return v;
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		ShopUtils.getAddedProducts(false).clear();
+		shoplistAdapter.notifyDataSetChanged();
+		if (ShopUtils.getShopLists() != null) {
+			ShopUtils.getShopLists().clear();
+		}
+	}
+
 	private void initGUI(View v) {
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
 				R.layout.listitem_default, EntityUtils.getProducts());
-		shopping = (AutoCompleteTextView) v
-				.findViewById(R.id.text_shops);
+		shopping = (AutoCompleteTextView) v.findViewById(R.id.text_shops);
 		shopping.setAdapter(productAdapter);
 		shopping.setOnItemClickListener(new OnItemClickListener() {
 

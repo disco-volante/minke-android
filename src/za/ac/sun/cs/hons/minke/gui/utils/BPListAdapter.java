@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.AlertDialog.Builder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,33 +54,9 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	}
 
 	protected void showInfo(BranchProduct item) {
-		LayoutInflater factory = LayoutInflater.from(context);
-		final View infoView = factory.inflate(R.layout.dialog_info, null);
-		final TextView brand = (TextView) infoView
-				.findViewById(R.id.brand_text);
-		final TextView store = (TextView) infoView
-				.findViewById(R.id.text_store);
-		final TextView size = (TextView) infoView.findViewById(R.id.text_size);
-		final TextView price = (TextView) infoView
-				.findViewById(R.id.text_price);
-		final TextView date = (TextView) infoView.findViewById(R.id.text_date);
-		brand.setText(item.getProduct().getBrand().getName());
-		store.setText(item.getBranch().toString());
-		size.setText(item.getProduct().getSize()
-				+ item.getProduct().getMeasure());
-		price.setText("R " + item.getDatePrice().getActualPrice());
-		date.setText(item.getDatePrice().getFormattedDate());
-		AlertDialog.Builder infoDialog = new AlertDialog.Builder(context);
-		infoDialog.setTitle(item.getProduct().toString());
-		infoDialog.setView(infoView);
-		infoDialog.setIcon(R.drawable.info);
-		infoDialog.setPositiveButton("Close",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		infoDialog.show();
+		Builder dlg = DialogUtils.getProductInfoDialog(context,item);
+		dlg.show();
+
 	}
 
 }

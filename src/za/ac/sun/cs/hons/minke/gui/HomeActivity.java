@@ -86,6 +86,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
 					.detectAll().build());
 		}
+
 		nextAction();
 	}
 
@@ -107,6 +108,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			return true;
 		case R.id.menu_item_settings:
 			startActivity(IntentUtils.getSettingsIntent(this));
+			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			return true;
 		case android.R.id.home:
 			mTabManager.showParentFragment();
@@ -115,18 +117,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 		return false;
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putString("tab", mTabHost.getCurrentTabTag());
-	}
-
-	public void getView(String tag, String className) {
+	public void changeTab(String tag, String className) {
 		mTabManager.changeTab(tag, className);
 	}
 
 	public void getProductSearch(View view) {
-		getView(VIEW.BROWSE, NAMES.PRODUCT);
+		changeTab(VIEW.BROWSE, NAMES.PRODUCT);
 	}
 
 	public void getProducts(View view) {
@@ -136,10 +132,11 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	public void showHistories(View view) {
 		startActivity(IntentUtils.getGraphIntent(this));
+		overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 	}
 
 	public void setBranch(View view) {
-		getView(VIEW.SCAN, NAMES.SCAN);
+		changeTab(VIEW.SCAN, NAMES.SCAN);
 	}
 
 	public void findStores(View view) {
@@ -200,6 +197,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					public void onClick(DialogInterface dialog, int id) {
 						startActivity(IntentUtils
 								.getMapIntent(HomeActivity.this));
+						overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 					}
 				});
 		builder.setNegativeButton("Cancel",
@@ -315,7 +313,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	protected void editLocation() {
 		Log.v("LOCATION", MapUtils.getLocation().toString());
-		getView(VIEW.SCAN, NAMES.BROWSE);
+		changeTab(VIEW.SCAN, NAMES.BROWSE);
 	}
 
 	private void updatePrice(final BranchProduct found, final Product product) {
@@ -359,6 +357,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		} else {
 			super.onBackPressed();
 		}
+
 	}
 
 	class SearchTask extends ProgressTask {
@@ -371,7 +370,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void success() {
 			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
 			BrowseUtils.setStoreBrowse(false);
-			getView(VIEW.BROWSE, NAMES.BROWSE);
+			changeTab(VIEW.BROWSE, NAMES.BROWSE);
 
 		}
 
@@ -411,7 +410,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void success() {
-			getView(VIEW.SHOP, NAMES.STORE);
+			changeTab(VIEW.SHOP, NAMES.STORE);
 
 		}
 
@@ -433,6 +432,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 						}
 					});
 			dlg.show();
+
 		}
 
 		@Override
@@ -467,6 +467,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 			});
 			dlg.show();
+
 		}
 	}
 
@@ -497,6 +498,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				}
 			});
 			dlg.show();
+
 		}
 
 	}
@@ -529,6 +531,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				}
 			});
 			dlg.show();
+
 		}
 
 	}
@@ -553,12 +556,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 				dlg.setPositiveButton("Create",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								getView(VIEW.SCAN,
-										NAMES.BRANCHPRODUCT);
+								changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
 								dialog.cancel();
 							}
 						});
 				dlg.show();
+
 			} else {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 						code);
@@ -569,6 +572,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 							}
 						});
 				dlg.show();
+
 			}
 		}
 
@@ -621,7 +625,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void success() {
-			getView(VIEW.SCAN, NAMES.BROWSE);
+			changeTab(VIEW.SCAN, NAMES.BROWSE);
 		}
 
 		@Override
@@ -636,6 +640,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 						}
 					});
 			dlg.show();
+
 		}
 	}
 

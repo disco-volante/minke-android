@@ -8,7 +8,6 @@ import android.content.Context;
 
 public class LoadDataBGTask extends LoadTask {
 
-
 	public LoadDataBGTask(Context context) {
 		super(context);
 	}
@@ -21,6 +20,7 @@ public class LoadDataBGTask extends LoadTask {
 	protected void failure(ERROR error_code) {
 		Builder dlg = DialogUtils.getErrorDialog(context, error_code);
 		dlg.show();
+
 	}
 
 	@Override

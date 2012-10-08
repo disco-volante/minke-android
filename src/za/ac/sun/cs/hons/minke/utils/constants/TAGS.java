@@ -10,5 +10,6 @@ public class TAGS {
 	public static final String KEY_PRESS = "KEY_PRESS";
 	public static final String MAP = "MAPPING";
 	public static final String SCAN = "SCAN";
+	public static final String TABS = "TABS";
 
 }

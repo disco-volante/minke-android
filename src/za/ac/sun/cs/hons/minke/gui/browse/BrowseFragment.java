@@ -1,9 +1,6 @@
 package za.ac.sun.cs.hons.minke.gui.browse;
 
-import java.util.ArrayList;
-
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.gui.utils.BPListAdapter;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import android.os.Bundle;
@@ -25,9 +22,13 @@ public class BrowseFragment  extends SherlockFragment{
 		initGUI(v);
 		return v;
 	}
+	@Override
+	public void onResume() {
+		super.onResume();
+		bplistAdapter.notifyDataSetChanged();
+	}
 	private void initGUI(View v) {
-		final ArrayList<BranchProduct> bps = BrowseUtils.getBranchProducts();
-		bplistAdapter = new BPListAdapter(getActivity(), bps);
+		bplistAdapter = new BPListAdapter(getActivity(), BrowseUtils.getBranchProducts());
 		ListView bplist = (ListView) v.findViewById(R.id.bp_list);
 		bplist.setAdapter(bplistAdapter);
 		bplistAdapter.notifyDataSetChanged();

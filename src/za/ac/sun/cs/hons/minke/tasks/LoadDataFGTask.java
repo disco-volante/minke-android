@@ -8,7 +8,6 @@ import android.content.Context;
 
 public class LoadDataFGTask extends ProgressTask {
 
-
 	public LoadDataFGTask(Context context) {
 		super(context, "Loading", "Loading data...");
 	}
@@ -21,6 +20,7 @@ public class LoadDataFGTask extends ProgressTask {
 	protected void failure(ERROR error_code) {
 		Builder dlg = DialogUtils.getErrorDialog(context, error_code);
 		dlg.show();
+
 	}
 
 	@Override

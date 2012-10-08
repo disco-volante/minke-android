@@ -59,7 +59,7 @@ public class ShopListAdapter extends ArrayAdapter<ShopList> {
 	protected void showInfo(ShopList item) {
 		BrowseUtils.setBranchProducts(item.getBranchProducts());
 		BrowseUtils.setStoreBrowse(true);
-		context.getView(VIEW.SHOP, BrowseFragment.class.getName());
+		context.changeTab(VIEW.SHOP, BrowseFragment.class.getName());
 	}
 
 }

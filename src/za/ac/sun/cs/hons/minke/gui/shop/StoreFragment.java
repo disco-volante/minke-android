@@ -29,6 +29,11 @@ public class StoreFragment extends SherlockFragment {
 		initGUI(v);
 		return v;
 	}
+	@Override
+	public void onResume() {
+		super.onResume();
+		shopListAdapter.notifyDataSetChanged();
+	}
 
 	private void initGUI(View v) {
 		shopLists = ShopUtils.getShopLists();

@@ -4,6 +4,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.os.Bundle;
@@ -36,6 +37,16 @@ public class ProductSearchFragment extends SherlockFragment {
 		initLists(v);
 		setItems(true);
 		return v;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		SearchUtils.getAddedCategories().clear();
+		SearchUtils.getAddedProducts().clear();
+		productAdapter.notifyDataSetChanged();
+		categoryAdapter.notifyDataSetChanged();
+		BrowseUtils.getBranchProducts().clear();
 	}
 
 	private void initBoxes(View v) {

@@ -150,10 +150,10 @@ public class TimelineChart {
 	protected XYMultipleSeriesRenderer buildRenderer(int[] colors,
 			PointStyle[] styles) {
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		renderer.setAxisTitleTextSize(16);
-		renderer.setChartTitleTextSize(20);
-		renderer.setLabelsTextSize(15);
-		renderer.setLegendTextSize(15);
+		renderer.setAxisTitleTextSize(25);
+		renderer.setChartTitleTextSize(30);
+		renderer.setLabelsTextSize(20);
+		renderer.setLegendTextSize(25);
 		renderer.setPointSize(5f);
 		renderer.setMargins(new int[] { 20, 30, 15, 20 });
 		int length = colors.length;

@@ -32,11 +32,19 @@ public class LocationSearchFragment  extends SherlockFragment {
 		initLists(v);
 		return v;
 	}
-	
+	@Override
+	public void onResume() {
+		super.onResume();
+		SearchUtils.getAddedLocations().clear();
+		locationListAdapter.notifyDataSetChanged();
+	}
 
 
 	private void initBoxes(View v) {
 		locationBox = (AutoCompleteTextView) v.findViewById(R.id.text_location);
+		locationAdapter = new ArrayAdapter<Object>(this.getActivity(),
+				R.layout.listitem_default, EntityUtils.getLocations());
+		locationBox.setAdapter(locationAdapter);
 		locationBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -46,15 +54,12 @@ public class LocationSearchFragment  extends SherlockFragment {
 			}
 
 		});
-		locationAdapter = new ArrayAdapter<Object>(this.getActivity(),
-				R.layout.listitem_default, EntityUtils.getLocations());
-		locationBox.setAdapter(locationAdapter);
+
 	}
 
 	private void initLists(View v) {
 		locationListAdapter = new ItemListAdapter<Object>(this.getActivity(),
 				SearchUtils.getAddedLocations());
-
 		ListView locationList = (ListView) v.findViewById(R.id.location_list);
 		locationList.setAdapter(locationListAdapter);
 		locationList.setOnItemClickListener(new OnItemClickListener() {

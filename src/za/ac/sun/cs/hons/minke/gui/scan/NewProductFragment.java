@@ -32,7 +32,7 @@ import android.widget.SpinnerAdapter;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class NewProductFragment  extends SherlockFragment {
+public class NewProductFragment extends SherlockFragment {
 
 	private EditText nameText, priceText, sizeText;
 	private AutoCompleteTextView brandBox, categoryBox;
@@ -43,7 +43,8 @@ public class NewProductFragment  extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_new_product, container, false);
+		View v = inflater.inflate(R.layout.fragment_new_product, container,
+				false);
 		initGUI(v);
 		return v;
 	}
@@ -52,8 +53,9 @@ public class NewProductFragment  extends SherlockFragment {
 		nameText = (EditText) v.findViewById(R.id.text_name);
 		nameText.addTextChangedListener(new TextErrorWatcher(nameText, false));
 		brandBox = (AutoCompleteTextView) v.findViewById(R.id.text_brand);
-		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getBrands());
+		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(
+				getActivity(), R.layout.listitem_default,
+				EntityUtils.getBrands());
 		brandBox.setAdapter(brands);
 		brandBox.addTextChangedListener(new TextErrorWatcher(brandBox, false));
 		brandBox.setOnItemClickListener(new OnItemClickListener() {
@@ -66,7 +68,8 @@ public class NewProductFragment  extends SherlockFragment {
 		});
 		categoryBox = (AutoCompleteTextView) v.findViewById(R.id.text_category);
 		final ArrayAdapter<Category> categories = new ArrayAdapter<Category>(
-				getActivity(), R.layout.listitem_default, EntityUtils.getCategories());
+				getActivity(), R.layout.listitem_default,
+				EntityUtils.getCategories());
 		categoryBox.setAdapter(categories);
 		categoryBox.addTextChangedListener(new TextErrorWatcher(categoryBox,
 				false));
@@ -86,13 +89,14 @@ public class NewProductFragment  extends SherlockFragment {
 		SpinnerAdapter units = new ArrayAdapter<String>(getActivity(),
 				R.layout.listitem_default, getMeasures());
 		unitSpinner.setAdapter(units);
-		Button btnCreateProduct = (Button) v.findViewById(R.id.btn_create_product);
-		btnCreateProduct.setOnClickListener(new OnClickListener(){
+		Button btnCreateProduct = (Button) v
+				.findViewById(R.id.btn_create_product);
+		btnCreateProduct.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				createProduct();				
+				createProduct();
 			}
-			
+
 		});
 		clear();
 	}
@@ -100,7 +104,6 @@ public class NewProductFragment  extends SherlockFragment {
 	private String[] getMeasures() {
 		return new String[] { "mg", "g", "kg", "ml", "l", "ea" };
 	}
-
 
 	private void createProduct() {
 		if (nameText.getError() != null || brandBox.getError() != null
@@ -137,7 +140,8 @@ public class NewProductFragment  extends SherlockFragment {
 		} else {
 			String name = nameText.getText().toString();
 			double size = Double.parseDouble(sizeText.getText().toString());
-			int price = (int) Double.parseDouble(priceText.getText().toString()) * 100;
+			int price = (int) Double
+					.parseDouble(priceText.getText().toString()) * 100;
 			CreateProductTask task = new CreateProductTask(name, brand,
 					category, size, unitSpinner.getSelectedItem().toString(),
 					price);
@@ -154,9 +158,7 @@ public class NewProductFragment  extends SherlockFragment {
 		priceText.setText("");
 		sizeText.setText("");
 	}
-	
 
-	
 	class CreateProductTask extends ProgressTask {
 		private String name;
 		private Brand brand;
@@ -167,8 +169,7 @@ public class NewProductFragment  extends SherlockFragment {
 
 		public CreateProductTask(String name, Brand brand, Category category,
 				double size, String measure, int price) {
-			super(getActivity(), "Adding...",
-					"Adding product to the database");
+			super(getActivity(), "Adding...", "Adding product to the database");
 			this.name = name;
 			this.brand = brand;
 			this.category = category;
@@ -179,13 +180,13 @@ public class NewProductFragment  extends SherlockFragment {
 
 		@Override
 		protected void success() {
-			((HomeActivity) getActivity()).getView(VIEW.SCAN, BrowseFragment.class.getName());
+			((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
+					BrowseFragment.class.getName());
 		}
 
 		@Override
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(getActivity(),
-					error_code);
+			Builder dlg = DialogUtils.getErrorDialog(getActivity(), error_code);
 			dlg.setPositiveButton("Retry",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
@@ -196,7 +197,8 @@ public class NewProductFragment  extends SherlockFragment {
 			dlg.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							((HomeActivity) getActivity()).getView(VIEW.SCAN, ScanFragment.class.getName());
+							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
+									ScanFragment.class.getName());
 							dialog.cancel();
 						}
 					});
@@ -206,7 +208,7 @@ public class NewProductFragment  extends SherlockFragment {
 
 		@Override
 		protected ERROR retrieve() {
-			if(!isNetworkAvailable()){
+			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
 			if (brand != null && category != null) {

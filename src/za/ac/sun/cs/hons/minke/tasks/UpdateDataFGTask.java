@@ -26,7 +26,7 @@ public class UpdateDataFGTask extends ProgressTask {
 
 	@Override
 	protected ERROR retrieve() {
-		if(!isNetworkAvailable()){
+		if (!isNetworkAvailable()) {
 			return ERROR.CLIENT;
 		}
 		return RPCUtils.retrieveAll(context);

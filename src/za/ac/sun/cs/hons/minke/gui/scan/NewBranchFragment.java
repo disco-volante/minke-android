@@ -168,7 +168,7 @@ public class NewBranchFragment extends SherlockFragment {
 		location.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						((HomeActivity) getActivity()).getView(VIEW.SCAN, ScanFragment.class.getName());
+						((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
 					}
 				});
 		location.show();
@@ -207,7 +207,7 @@ public class NewBranchFragment extends SherlockFragment {
 
 		@Override
 		protected void success() {
-			((HomeActivity) getActivity()).getView(VIEW.SCAN, ScanFragment.class.getName());
+			((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
 		}
 
 		protected void failure(ERROR error_code) {
@@ -223,12 +223,12 @@ public class NewBranchFragment extends SherlockFragment {
 			dlg.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							((HomeActivity) getActivity()).getView(VIEW.SCAN, ScanFragment.class.getName());
+							((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
 							dialog.cancel();
 						}
 					});
 			dlg.show();
-		}
+	}
 
 		@Override
 		protected ERROR retrieve() {

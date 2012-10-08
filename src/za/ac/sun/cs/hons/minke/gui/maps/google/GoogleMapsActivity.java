@@ -41,6 +41,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 			super(GoogleMapsActivity.this, "Retrieving...",
 					"Retrieving route to store.");
 		}
+
 		@Override
 		protected void success() {
 			mapView.getOverlays().add(routeOverlay);
@@ -64,6 +65,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 						}
 					});
 			dlg.show();
+
 		}
 
 		@Override
@@ -73,6 +75,10 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
 				return ERROR.SUCCESS;
 			} catch (Exception e) {
+				if (e != null) {
+					Log.v(TAGS.MAP, e.getMessage());
+					e.printStackTrace();
+				}
 				return ERROR.MAP;
 			}
 		}
@@ -190,6 +196,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 
 	public void getDirections(View view) {
 		DialogUtils.getDirectionsDialog(this, directions, "Directions").show();
+
 	}
 
 }

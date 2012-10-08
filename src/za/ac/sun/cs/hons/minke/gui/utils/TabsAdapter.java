@@ -4,9 +4,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
-
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -134,6 +134,22 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 				|| className != null) {
 			FragmentTransaction ft = mActivity.getSupportFragmentManager()
 					.beginTransaction();
+			if (className != null) {
+				ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
+			} else if (backPress) {
+				ft.setCustomAnimations(R.anim.rotation_clockwise,
+						R.anim.rotation_anti_clockwise);
+			} else if (tabId.equals(VIEW.SHOP)
+					|| (mCurrentTab != null && mCurrentTab.getTag().equals(
+							VIEW.SCAN))) {
+				ft.setCustomAnimations(R.anim.push_left_in,
+						R.anim.push_left_out);
+			} else if (tabId.equals(VIEW.SCAN)
+					|| (mCurrentTab != null && mCurrentTab.getTag().equals(
+							VIEW.SHOP))) {
+				ft.setCustomAnimations(R.anim.push_right_in,
+						R.anim.push_right_out);
+			}
 			if (mCurrentTab != null) {
 				if (mCurrentTab.getFragment() != null) {
 					ft.detach(mCurrentTab.getFragment());
