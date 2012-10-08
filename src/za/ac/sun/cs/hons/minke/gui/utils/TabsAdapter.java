@@ -4,6 +4,9 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
+import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
+
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -91,6 +94,38 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 	@Override
 	public void onTabChanged(String tabId) {
 		changeTab(tabId, null);
+	}
+
+	public void showParentFragment() {
+		String className = null;
+		if (mCurrentTab.getTag().equals(VIEW.BROWSE)) {
+			if (mCurrentTab.getClassName().equals(NAMES.LOCATION)) {
+				return;
+			} else if (mCurrentTab.getClassName().equals(NAMES.PRODUCT)) {
+				className = NAMES.LOCATION;
+			} else if (mCurrentTab.getClassName().equals(NAMES.BROWSE)) {
+				className = NAMES.PRODUCT;
+			}
+		} else if (mCurrentTab.getTag().equals(VIEW.SHOP)) {
+			if (mCurrentTab.getClassName().equals(NAMES.SHOP)) {
+				return;
+			} else if (mCurrentTab.getClassName().equals(NAMES.STORE)) {
+				className = NAMES.SHOP;
+			} else if (mCurrentTab.getClassName().equals(NAMES.BROWSE)) {
+				className = NAMES.STORE;
+			}
+		} else if (mCurrentTab.getTag().equals(VIEW.SCAN)) {
+			if (mCurrentTab.getClassName().equals(NAMES.SCAN)) {
+				return;
+			} else if (mCurrentTab.getClassName().equals(NAMES.BRANCH)) {
+				className = NAMES.SCAN;
+			} else if (mCurrentTab.getClassName().equals(NAMES.BRANCHPRODUCT)) {
+				className = NAMES.SCAN;
+			} else if (mCurrentTab.getClassName().equals(NAMES.BROWSE)) {
+				className = NAMES.SCAN;
+			}
+		}
+		changeTab(mCurrentTab.getTag(), className);
 	}
 
 	public void changeTab(String tabId, String className) {

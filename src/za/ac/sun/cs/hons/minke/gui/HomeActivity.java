@@ -6,14 +6,6 @@ import za.ac.sun.cs.hons.minke.assets.IntentResult;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.gui.browse.BrowseFragment;
-import za.ac.sun.cs.hons.minke.gui.browse.LocationSearchFragment;
-import za.ac.sun.cs.hons.minke.gui.browse.ProductSearchFragment;
-import za.ac.sun.cs.hons.minke.gui.scan.NewBranchFragment;
-import za.ac.sun.cs.hons.minke.gui.scan.NewProductFragment;
-import za.ac.sun.cs.hons.minke.gui.scan.ScanFragment;
-import za.ac.sun.cs.hons.minke.gui.shop.ShopFragment;
-import za.ac.sun.cs.hons.minke.gui.shop.StoreFragment;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
@@ -33,6 +25,7 @@ import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
@@ -69,18 +62,19 @@ public class HomeActivity extends SherlockFragmentActivity {
 		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
 		mTabManager = new TabsAdapter(this, mTabHost, R.id.tab_real);
 
 		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SCAN).setIndicator("Scan"),
-				ScanFragment.class.getName());
+				NAMES.SCAN);
 		mTabManager.addTab(
 				mTabHost.newTabSpec(VIEW.BROWSE).setIndicator("Browse"),
-				LocationSearchFragment.class.getName());
+				NAMES.LOCATION);
 		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SHOP).setIndicator("Shop"),
-				ShopFragment.class.getName());
+				NAMES.SHOP);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString(VIEW.SCAN));
@@ -108,22 +102,17 @@ public class HomeActivity extends SherlockFragmentActivity {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
 		case R.id.menu_item_info:
-			displayInfo();
+			Builder dlg = DialogUtils.getInfoDialog(this);
+			dlg.show();
 			return true;
 		case R.id.menu_item_settings:
-			displaySettings();
+			startActivity(IntentUtils.getSettingsIntent(this));
+			return true;
+		case android.R.id.home:
+			mTabManager.showParentFragment();
 			return true;
 		}
 		return false;
-	}
-
-	private void displaySettings() {
-		startActivity(IntentUtils.getSettingsIntent(this));
-	}
-
-	private void displayInfo() {
-		Builder dlg = DialogUtils.getInfoDialog(this);
-		dlg.show();
 	}
 
 	@Override
@@ -137,7 +126,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void getProductSearch(View view) {
-		getView(VIEW.BROWSE, ProductSearchFragment.class.getName());
+		getView(VIEW.BROWSE, NAMES.PRODUCT);
 	}
 
 	public void getProducts(View view) {
@@ -150,7 +139,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void setBranch(View view) {
-		getView(VIEW.SCAN, ScanFragment.class.getName());
+		getView(VIEW.SCAN, NAMES.SCAN);
 	}
 
 	public void findStores(View view) {
@@ -326,7 +315,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	protected void editLocation() {
 		Log.v("LOCATION", MapUtils.getLocation().toString());
-		getView(VIEW.SCAN, NewBranchFragment.class.getName());
+		getView(VIEW.SCAN, NAMES.BROWSE);
 	}
 
 	private void updatePrice(final BranchProduct found, final Product product) {
@@ -382,7 +371,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void success() {
 			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
 			BrowseUtils.setStoreBrowse(false);
-			getView(VIEW.BROWSE, BrowseFragment.class.getName());
+			getView(VIEW.BROWSE, NAMES.BROWSE);
 
 		}
 
@@ -422,7 +411,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void success() {
-			getView(VIEW.SHOP, StoreFragment.class.getName());
+			getView(VIEW.SHOP, NAMES.STORE);
 
 		}
 
@@ -565,7 +554,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								getView(VIEW.SCAN,
-										NewProductFragment.class.getName());
+										NAMES.BRANCHPRODUCT);
 								dialog.cancel();
 							}
 						});
@@ -632,7 +621,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void success() {
-			getView(VIEW.SCAN, BrowseFragment.class.getName());
+			getView(VIEW.SCAN, NAMES.BROWSE);
 		}
 
 		@Override
