@@ -38,8 +38,9 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		private GeoPoint dest = MapUtils.getDestination();
 
 		public BuildRouteTask() {
-			super(GoogleMapsActivity.this, "Retrieving...",
-					"Retrieving route to store.");
+			super(GoogleMapsActivity.this, GoogleMapsActivity.this
+					.getString(R.string.retrieving) + "...",
+					GoogleMapsActivity.this.getString(R.string.retrieving_msg));
 		}
 
 		@Override
@@ -51,31 +52,47 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(GoogleMapsActivity.this,
 					error_code);
-			dlg.setPositiveButton("Retry",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							getDirections();
-							dialog.cancel();
-						}
-					});
-			dlg.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
-						}
-					});
+			if (error_code.equals(ERROR.DIRECTIONS)) {
+				dlg.setPositiveButton(
+						GoogleMapsActivity.this.getString(R.string.ok),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+			} else {
+				dlg.setPositiveButton(
+						GoogleMapsActivity.this.getString(R.string.retry),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								getDirections();
+								dialog.cancel();
+							}
+						});
+				dlg.setNegativeButton(
+						GoogleMapsActivity.this.getString(R.string.cancel),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+			}
 			dlg.show();
 
 		}
 
 		@Override
 		protected ERROR retrieve() {
+			if (!isNetworkAvailable()) {
+				return ERROR.DIRECTIONS;
+			}
 			try {
 				Route route = directions(src, dest);
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
 				return ERROR.SUCCESS;
 			} catch (Exception e) {
-				if (e != null) {
+				System.out.println(e);
+				if (e != null && e.getMessage() != null) {
 					Log.v(TAGS.MAP, e.getMessage());
 					e.printStackTrace();
 				}
@@ -122,8 +139,8 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.android),
 				GoogleMapsActivity.this);
-		iconOverlay.addOverlay(new OverlayItem(src, "You",
-				"You are currently here."));
+		iconOverlay.addOverlay(new OverlayItem(src, getString(R.string.you),
+				getString(R.string.str_you)));
 		mapView.getOverlays().add(shopsOverlay);
 		mapView.getOverlays().add(iconOverlay);
 		getDirections();
@@ -195,7 +212,9 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 	}
 
 	public void getDirections(View view) {
-		DialogUtils.getDirectionsDialog(this, directions, "Directions").show();
+		if (directions != null && directions.size() > 0) {
+			DialogUtils.getDirectionsDialog(this, directions).show();
+		}
 
 	}
 

@@ -68,13 +68,15 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		mTabManager = new TabsAdapter(this, mTabHost, R.id.tab_real);
 
-		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SCAN).setIndicator("Scan"),
-				NAMES.SCAN);
 		mTabManager.addTab(
-				mTabHost.newTabSpec(VIEW.BROWSE).setIndicator("Browse"),
-				NAMES.LOCATION);
-		mTabManager.addTab(mTabHost.newTabSpec(VIEW.SHOP).setIndicator("Shop"),
-				NAMES.SHOP);
+				mTabHost.newTabSpec(VIEW.SCAN).setIndicator(
+						getString(R.string.scan)), NAMES.SCAN);
+		mTabManager.addTab(
+				mTabHost.newTabSpec(VIEW.BROWSE).setIndicator(
+						getString(R.string.browse)), NAMES.LOCATION);
+		mTabManager.addTab(
+				mTabHost.newTabSpec(VIEW.SHOP).setIndicator(
+						getString(R.string.shop)), NAMES.SHOP);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString(VIEW.SCAN));
@@ -137,6 +139,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	public void setBranch(View view) {
 		changeTab(VIEW.SCAN, NAMES.SCAN);
+		scan(null);
 	}
 
 	public void findStores(View view) {
@@ -184,7 +187,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			names[i++] = b.toString();
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Directions to?");
+		builder.setTitle(getString(R.string.str_directions));
 		builder.setSingleChoiceItems(names, 0, new OnClickListener() {
 
 			@Override
@@ -192,7 +195,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				MapUtils.setDestination(position);
 			}
 		});
-		builder.setPositiveButton("View Map",
+		builder.setPositiveButton(getString(R.string.view_map),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						startActivity(IntentUtils
@@ -200,7 +203,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 						overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 					}
 				});
-		builder.setNegativeButton("Cancel",
+		builder.setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
@@ -244,19 +247,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 				}
 			}
 		} else if (!downloading && resultCode == Activity.RESULT_CANCELED) {
-			AlertDialog.Builder failed = new AlertDialog.Builder(this);
-			failed.setTitle("Scan Error");
-			failed.setMessage("Unsuccessful scan, please try again.");
-			failed.setPositiveButton("Retry",
+			AlertDialog.Builder failed = DialogUtils.getErrorDialog(this,
+					ERROR.SCAN);
+			failed.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							scan(null);
-							dialog.cancel();
-						}
-					});
-			failed.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
 							dialog.cancel();
 						}
 					});
@@ -277,9 +273,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 			}
 			names[i++] = b.toString();
 		}
-		names[size] = "Other";
+		names[size] = getString(R.string.other);
 		AlertDialog.Builder location = new AlertDialog.Builder(this);
-		location.setTitle("Confirm Location");
+		location.setTitle(getString(R.string.confirm_location));
 		location.setSingleChoiceItems(names, 0, new OnClickListener() {
 
 			@Override
@@ -287,7 +283,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				selectedBranch = position;
 			}
 		});
-		location.setPositiveButton("Get Product",
+		location.setPositiveButton(getString(R.string.get_product),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
@@ -301,7 +297,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 						}
 					}
 				});
-		location.setNegativeButton("Cancel",
+		location.setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
@@ -313,7 +309,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	protected void editLocation() {
 		Log.v("LOCATION", MapUtils.getLocation().toString());
-		changeTab(VIEW.SCAN, NAMES.BROWSE);
+		changeTab(VIEW.SCAN, NAMES.BRANCH);
 	}
 
 	private void updatePrice(final BranchProduct found, final Product product) {
@@ -324,13 +320,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 				.findViewById(R.id.lbl_product);
 		final EditText updatePriceText = (EditText) updateView
 				.findViewById(R.id.text_price);
-		updatePriceText.addTextChangedListener(new TextErrorWatcher(
+		updatePriceText.addTextChangedListener(new TextErrorWatcher(this,
 				updatePriceText, true));
 		productText.setText(product.toString());
 		AlertDialog.Builder success = new AlertDialog.Builder(this);
-		success.setTitle("Product Found");
+		success.setTitle(getString(R.string.product_found));
 		success.setView(updateView);
-		success.setPositiveButton("Update",
+		success.setPositiveButton(getString(R.string.update),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
@@ -363,7 +359,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 	class SearchTask extends ProgressTask {
 
 		public SearchTask() {
-			super(HomeActivity.this, "Searching...", "Searching for products");
+			super(HomeActivity.this, getString(R.string.searching) + "...",
+					getString(R.string.searching_product_msg));
 		}
 
 		@Override
@@ -378,16 +375,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setPositiveButton("Retry",
+			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							getProducts(null);
-							dialog.cancel();
-						}
-					});
-			dlg.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
 							dialog.cancel();
 						}
 					});
@@ -405,7 +396,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 	class FindBranchesTask extends ProgressTask {
 
 		public FindBranchesTask() {
-			super(HomeActivity.this, "Searching", "Searching for branches...");
+			super(HomeActivity.this, getString(R.string.searching) + "...",
+					getString(R.string.searching_branch_msg));
 		}
 
 		@Override
@@ -418,16 +410,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setPositiveButton("Retry",
+			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							findStores(null);
-							dialog.cancel();
-						}
-					});
-			dlg.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
 							dialog.cancel();
 						}
 					});
@@ -458,14 +444,15 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setPositiveButton("Retry", new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dlg, int arg1) {
-					nextAction();
-					dlg.cancel();
-				}
+			dlg.setPositiveButton(getString(R.string.retry),
+					new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dlg, int arg1) {
+							nextAction();
+							dlg.cancel();
+						}
 
-			});
+					});
 			dlg.show();
 
 		}
@@ -473,8 +460,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	class PrefsTask extends ProgressTask {
 		public PrefsTask() {
-			super(HomeActivity.this, "Initialising...",
-					"Getting your preferences");
+			super(HomeActivity.this, getString(R.string.initialising) + "...",
+					getString(R.string.initialising_msg));
 		}
 
 		@Override
@@ -491,12 +478,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					nextAction();
-					dialog.cancel();
-				}
-			});
+			dlg.setNegativeButton(getString(R.string.ok),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							nextAction();
+							dialog.cancel();
+						}
+					});
 			dlg.show();
 
 		}
@@ -505,8 +493,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	class GetLocationTask extends ProgressTask {
 		public GetLocationTask() {
-			super(HomeActivity.this, "Pinpointing...",
-					"Determining your location");
+			super(HomeActivity.this, getString(R.string.pinpointing) + "...",
+					getString(R.string.pinpointing_msg));
 		}
 
 		@Override
@@ -524,12 +512,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					nextAction();
-					dialog.cancel();
-				}
-			});
+			dlg.setNegativeButton(getString(R.string.ok),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							nextAction();
+							dialog.cancel();
+						}
+					});
 			dlg.show();
 
 		}
@@ -539,8 +528,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 	class FindProductTask extends ProgressTask {
 
 		public FindProductTask() {
-			super(HomeActivity.this, "Searching",
-					"Locating product, please wait...");
+			super(HomeActivity.this, getString(R.string.searching) + "...",
+					getString(R.string.searching_product_msg));
 		}
 
 		@Override
@@ -553,7 +542,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (code == ERROR.NOT_FOUND) {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 						code);
-				dlg.setPositiveButton("Create",
+				dlg.setPositiveButton(getString(R.string.create),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
@@ -565,7 +554,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			} else {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 						code);
-				dlg.setPositiveButton("Ok",
+				dlg.setPositiveButton(getString(R.string.ok),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
@@ -611,7 +600,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 		BranchProduct bp;
 
 		public UpdateProductTask(BranchProduct bp, double price) {
-			super(HomeActivity.this, "Updating", "Updating product price...");
+			super(HomeActivity.this, getString(R.string.updating) + "...",
+					getString(R.string.updating_product_msg));
 			this.bp = bp;
 		}
 
@@ -632,7 +622,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 					error_code);
-			dlg.setPositiveButton("Retry",
+			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							updatePrice(bp, ScanUtils.getProduct());

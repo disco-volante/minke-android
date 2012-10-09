@@ -106,11 +106,6 @@ public final class IntentIntegrator {
 
 	public static final int REQUEST_CODE = 1; // get it?
 
-	public static final String DEFAULT_TITLE = "Install Barcode Scanner?";
-	public static final String DEFAULT_MESSAGE = "This application requires Barcode Scanner. Would you like to install it?";
-	public static final String DEFAULT_YES = "Yes";
-	public static final String DEFAULT_NO = "No";
-
 	// supported barcode formats
 	public static final String PRODUCT_CODE_TYPES = "UPC_A,UPC_E,EAN_8,EAN_13";
 	public static final String ONE_D_CODE_TYPES = PRODUCT_CODE_TYPES
@@ -119,56 +114,6 @@ public final class IntentIntegrator {
 	public static final String ALL_CODE_TYPES = null;
 
 	private IntentIntegrator() {
-	}
-
-	/**
-	 * See
-	 * {@link #initiateScan(Activity, CharSequence, CharSequence, CharSequence, CharSequence)}
-	 * -- same, but uses default English labels.
-	 */
-	public static AlertDialog initiateScan(Activity activity) {
-		return initiateScan(activity, DEFAULT_TITLE, DEFAULT_MESSAGE,
-				DEFAULT_YES, DEFAULT_NO);
-	}
-
-	/**
-	 * See
-	 * {@link #initiateScan(Activity, CharSequence, CharSequence, CharSequence, CharSequence)}
-	 * -- same, but takes string IDs which refer to the {@link Activity}'s
-	 * resource bundle entries.
-	 */
-	public static AlertDialog initiateScan(Activity activity, int stringTitle,
-			int stringMessage, int stringButtonYes, int stringButtonNo) {
-		return initiateScan(activity, activity.getString(stringTitle),
-				activity.getString(stringMessage),
-				activity.getString(stringButtonYes),
-				activity.getString(stringButtonNo));
-	}
-
-	/**
-	 * See
-	 * {@link #initiateScan(Activity, CharSequence, CharSequence, CharSequence, CharSequence, CharSequence)}
-	 * -- same, but scans for all supported barcode types.
-	 * 
-	 * @param stringTitle
-	 *            title of dialog prompting user to download Barcode Scanner
-	 * @param stringMessage
-	 *            text of dialog prompting user to download Barcode Scanner
-	 * @param stringButtonYes
-	 *            text of button user clicks when agreeing to download Barcode
-	 *            Scanner (e.g. "Yes")
-	 * @param stringButtonNo
-	 *            text of button user clicks when declining to download Barcode
-	 *            Scanner (e.g. "No")
-	 * @return an {@link AlertDialog} if the user was prompted to download the
-	 *         app, null otherwise
-	 */
-	public static AlertDialog initiateScan(Activity activity,
-			CharSequence stringTitle, CharSequence stringMessage,
-			CharSequence stringButtonYes, CharSequence stringButtonNo) {
-
-		return initiateScan(activity, stringTitle, stringMessage,
-				stringButtonYes, stringButtonNo, ALL_CODE_TYPES);
 	}
 
 	/**
@@ -191,26 +136,19 @@ public final class IntentIntegrator {
 	 * @throws InterruptedException
 	 *             if timeout expires before a scan completes
 	 */
-	public static AlertDialog initiateScan(Activity activity,
-			CharSequence stringTitle, CharSequence stringMessage,
-			CharSequence stringButtonYes, CharSequence stringButtonNo,
-			CharSequence stringDesiredBarcodeFormats) {
+	public static AlertDialog initiateScan(Activity activity) {
 		Intent intentScan = new Intent("com.google.zxing.client.android.SCAN");
 		intentScan.addCategory(Intent.CATEGORY_DEFAULT);
-
-		// check which types of codes to scan for
-		if (stringDesiredBarcodeFormats != null) {
-			// set the desired barcode types
-			intentScan.putExtra("SCAN_FORMATS", stringDesiredBarcodeFormats);
-		}
-
 		try {
 			activity.startActivityForResult(intentScan, REQUEST_CODE);
 			activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			return null;
 		} catch (ActivityNotFoundException e) {
-			return showDownloadDialog(activity, stringTitle, stringMessage,
-					stringButtonYes, stringButtonNo);
+			return showDownloadDialog(activity,
+					activity.getString(R.string.scanner_title),
+					activity.getString(R.string.scanner_msg),
+					activity.getString(R.string.yes),
+					activity.getString(R.string.no));
 		}
 	}
 
@@ -271,8 +209,10 @@ public final class IntentIntegrator {
 	 * -- same, but uses default English labels.
 	 */
 	public static void shareText(Activity activity, CharSequence text) {
-		shareText(activity, text, DEFAULT_TITLE, DEFAULT_MESSAGE, DEFAULT_YES,
-				DEFAULT_NO);
+		shareText(activity, text, activity.getString(R.string.scanner_title),
+				activity.getString(R.string.scanner_msg),
+				activity.getString(R.string.yes),
+				activity.getString(R.string.no));
 	}
 
 	/**

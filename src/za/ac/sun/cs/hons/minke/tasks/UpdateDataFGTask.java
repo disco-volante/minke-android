@@ -1,5 +1,6 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
+import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
@@ -7,11 +8,9 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 
 public class UpdateDataFGTask extends ProgressTask {
-	private Context context;
 
 	public UpdateDataFGTask(Context context) {
-		super(context, "Downloading", "Downloading data, please wait...");
-		this.context = context;
+		super(context, context.getString(R.string.updating), context.getString(R.string.updating_msg));
 	}
 
 	@Override

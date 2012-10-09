@@ -5,6 +5,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -59,26 +61,32 @@ public class LocationSearchFragment  extends SherlockFragment {
 
 	private void initLists(View v) {
 		locationListAdapter = new ItemListAdapter<Object>(this.getActivity(),
-				SearchUtils.getAddedLocations());
+				SearchUtils.getAddedLocations()){
+					@Override
+					public void removeFromSearch(Object loc) {
+						SearchUtils.removeLocation(loc);
+						notifyDataSetChanged();
+					}
+			
+		};
 		ListView locationList = (ListView) v.findViewById(R.id.location_list);
 		locationList.setAdapter(locationListAdapter);
-		locationList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				SearchUtils.removeLocation(position);
-				locationListAdapter.notifyDataSetChanged();
-
-			}
-		});
 	}
 
 	protected void addItem(Object location) {
-		if (location != null) {
+		if (location != null && !SearchUtils.getAddedLocations().contains(location)) {
 			SearchUtils.addLocation(location);
 			locationListAdapter.notifyDataSetChanged();
-			locationBox.setText("");
 		}
+		else{
+			Toast msg = Toast.makeText(this.getActivity(), getString(R.string.str_added),
+					Toast.LENGTH_LONG);
+			msg.setGravity(Gravity.CENTER_VERTICAL,
+					Gravity.CENTER_HORIZONTAL, 0);
+			msg.show();
+		}
+		locationBox.setText("");
+
 	}
 
 	

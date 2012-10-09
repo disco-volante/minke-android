@@ -21,7 +21,7 @@ import android.widget.TextView;
 public class DialogUtils {
 	public static Builder getErrorDialog(Context context, ERROR notLoaded) {
 		AlertDialog.Builder errorDlg = new AlertDialog.Builder(context);
-		errorDlg.setTitle(getErrorTitle(notLoaded));
+		errorDlg.setTitle(getErrorTitle(notLoaded, context));
 		errorDlg.setIcon(R.drawable.error);
 		errorDlg.setNegativeButton(context.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
@@ -29,7 +29,7 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		errorDlg.setMessage(getErrorMessage(notLoaded));
+		errorDlg.setMessage(getErrorMessage(notLoaded, context));
 		return errorDlg;
 	}
 
@@ -57,7 +57,7 @@ public class DialogUtils {
 	}
 
 	public static Builder getDirectionsDialog(Context context,
-			List<Segment> items, String title) {
+			List<Segment> items) {
 		StringBuilder msg = new StringBuilder();
 		int i = 0;
 		double prev = 0.0;
@@ -73,7 +73,7 @@ public class DialogUtils {
 			prev = s.getDistance();
 		}
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
-		dlg.setTitle(title);
+		dlg.setTitle(context.getString(R.string.directions));
 		dlg.setIcon(R.drawable.directions);
 		dlg.setPositiveButton(context.getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
@@ -107,11 +107,12 @@ public class DialogUtils {
 		dlg.setTitle(item.getProduct().toString());
 		dlg.setView(infoView);
 		dlg.setIcon(R.drawable.info);
-		dlg.setPositiveButton(context.getString(R.string.close), new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-			}
-		});
+		dlg.setPositiveButton(context.getString(R.string.close),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
 		return dlg;
 	}
 
@@ -124,54 +125,62 @@ public class DialogUtils {
 		}
 	}
 
-	private static CharSequence getErrorMessage(ERROR error) {
+	private static CharSequence getErrorMessage(ERROR error, Context context) {
 		switch (error) {
 		case CLIENT:
-			return "Could not connect to the server, please make sure data is enabled.";
+			return context.getString(R.string.err_client_msg);
 		case SERVER:
-			return "Unfortunately the server is down, please try again later.";
+			return context.getString(R.string.err_server_msg);
 		case PARSE:
-			return "Something went wrong when retrieving data, please notify the developers.";
+			return context.getString(R.string.err_parse_msg);
 		case INPUT:
-			return "Invalid input entered.";
+			return context.getString(R.string.err_input_msg);
 		case LOCATION:
-			return "Your location could not be determined.";
+			return context.getString(R.string.err_location_msg);
 		case MAP:
-			return "Something went wrong while creating map.";
+			return context.getString(R.string.err_map_msg);
 		case DB:
-			return "An error occurred when accessing your local database.";
+			return context.getString(R.string.err_db_msg);
 		case NOT_LOADED:
-			return "No data is currently available for this action, please wait for it to load.";
+			return context.getString(R.string.err_not_loaded_msg);
 		case NOT_FOUND:
-			return "Product was not found. Create product?";
+			return context.getString(R.string.err_not_found_msg);
+		case DIRECTIONS:
+			return context.getString(R.string.err_directions_msg);
+		case SCAN:
+			return context.getString(R.string.err_scan_msg);
 		case SUCCESS:
-			return "Action successfully completed.";
+			return context.getString(R.string.err_success_msg);
 		}
 		return null;
 	}
 
-	private static CharSequence getErrorTitle(ERROR error) {
+	private static CharSequence getErrorTitle(ERROR error, Context context) {
 		switch (error) {
 		case CLIENT:
-			return "Network Error";
+			return context.getString(R.string.err_client);
 		case SERVER:
-			return "Server Error";
+			return context.getString(R.string.err_server);
 		case PARSE:
-			return "Parsing Error";
+			return context.getString(R.string.err_parse);
 		case INPUT:
-			return "Input Error";
+			return context.getString(R.string.err_input);
 		case LOCATION:
-			return "Location Error";
+			return context.getString(R.string.err_location);
 		case MAP:
-			return "Map Error";
+			return context.getString(R.string.err_map);
 		case DB:
-			return "Database Error.";
+			return context.getString(R.string.err_db);
 		case NOT_LOADED:
-			return "Data Unavailable.";
+			return context.getString(R.string.err_not_loaded);
 		case NOT_FOUND:
-			return "Not found.";
+			return context.getString(R.string.err_not_found);
+		case DIRECTIONS:
+			return context.getString(R.string.err_directions);
+		case SCAN:
+			return context.getString(R.string.err_scan);
 		case SUCCESS:
-			return "Success";
+			return context.getString(R.string.err_success);
 		}
 		return null;
 	}

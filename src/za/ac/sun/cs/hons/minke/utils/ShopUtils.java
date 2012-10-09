@@ -76,4 +76,8 @@ public class ShopUtils {
 		branches = new ArrayList<Branch>();
 		branches.addAll(branchMap.keySet());
 	}
+
+	public static void removeProduct(Product product) {
+		addedProducts.remove(product);
+	}
 }

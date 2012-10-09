@@ -51,13 +51,15 @@ public class NewProductFragment extends SherlockFragment {
 
 	private void initGUI(View v) {
 		nameText = (EditText) v.findViewById(R.id.text_name);
-		nameText.addTextChangedListener(new TextErrorWatcher(nameText, false));
+		nameText.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				nameText, false));
 		brandBox = (AutoCompleteTextView) v.findViewById(R.id.text_brand);
 		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(
 				getActivity(), R.layout.listitem_default,
 				EntityUtils.getBrands());
 		brandBox.setAdapter(brands);
-		brandBox.addTextChangedListener(new TextErrorWatcher(brandBox, false));
+		brandBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				brandBox, false));
 		brandBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -71,8 +73,8 @@ public class NewProductFragment extends SherlockFragment {
 				getActivity(), R.layout.listitem_default,
 				EntityUtils.getCategories());
 		categoryBox.setAdapter(categories);
-		categoryBox.addTextChangedListener(new TextErrorWatcher(categoryBox,
-				false));
+		categoryBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				categoryBox, false));
 		categoryBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -82,9 +84,11 @@ public class NewProductFragment extends SherlockFragment {
 
 		});
 		priceText = (EditText) v.findViewById(R.id.text_price);
-		priceText.addTextChangedListener(new TextErrorWatcher(priceText, true));
+		priceText.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				priceText, true));
 		sizeText = (EditText) v.findViewById(R.id.text_size);
-		sizeText.addTextChangedListener(new TextErrorWatcher(sizeText, true));
+		sizeText.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				sizeText, true));
 		unitSpinner = (Spinner) v.findViewById(R.id.spinner_unit);
 		SpinnerAdapter units = new ArrayAdapter<String>(getActivity(),
 				R.layout.listitem_default, getMeasures());
@@ -102,7 +106,9 @@ public class NewProductFragment extends SherlockFragment {
 	}
 
 	private String[] getMeasures() {
-		return new String[] { "mg", "g", "kg", "ml", "l", "ea" };
+		return new String[] { getString(R.string.mg), getString(R.string.g),
+				getString(R.string.kg), getString(R.string.ml),
+				getString(R.string.l), getString(R.string.ea) };
 	}
 
 	private void createProduct() {
@@ -111,26 +117,31 @@ public class NewProductFragment extends SherlockFragment {
 				|| sizeText.getError() != null || priceText.getError() != null) {
 			AlertDialog.Builder errors = new AlertDialog.Builder(getActivity());
 			StringBuilder msg = new StringBuilder();
-			msg.append("Please enter a valid: ");
+			msg.append(getString(R.string.str_invalid_msg));
 			if (nameText.getError() != null) {
-				msg.append("product name, ");
+				msg.append(getString(R.string.product));
+				msg.append(",");
 			}
 			if (brandBox.getError() != null) {
-				msg.append("brand name, ");
+				msg.append(getString(R.string.brand));
+				msg.append(",");
 			}
 			if (categoryBox.getError() != null) {
-				msg.append("category name, ");
+				msg.append(getString(R.string.category));
+				msg.append(",");
 			}
 			if (sizeText.getError() != null) {
-				msg.append("product size, ");
+				msg.append(getString(R.string.size));
+				msg.append(",");
 			}
 			if (priceText.getError() != null) {
-				msg.append("product price, ");
+				msg.append(getString(R.string.price));
+				msg.append(",");
 			}
 			msg.replace(msg.length() - 2, msg.length(), ".");
-			errors.setTitle("Invalid input");
+			errors.setTitle(getString(R.string.str_invalid_title));
 			errors.setMessage(msg.toString());
-			errors.setPositiveButton("Ok",
+			errors.setPositiveButton(getString(R.string.ok),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.cancel();
@@ -169,7 +180,8 @@ public class NewProductFragment extends SherlockFragment {
 
 		public CreateProductTask(String name, Brand brand, Category category,
 				double size, String measure, int price) {
-			super(getActivity(), "Adding...", "Adding product to the database");
+			super(getActivity(), getString(R.string.adding) + "...",
+					getString(R.string.adding_product));
 			this.name = name;
 			this.brand = brand;
 			this.category = category;
@@ -187,14 +199,14 @@ public class NewProductFragment extends SherlockFragment {
 		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(getActivity(), error_code);
-			dlg.setPositiveButton("Retry",
+			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							createProduct();
 							dialog.cancel();
 						}
 					});
-			dlg.setNegativeButton("Cancel",
+			dlg.setNegativeButton(getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,

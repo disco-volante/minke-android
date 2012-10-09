@@ -91,7 +91,9 @@ public class SearchUtils {
 	public static void removeProduct(int position) {
 		addedProducts.remove(position);
 	}
-
+	public static void removeProduct(Product product) {
+		addedProducts.remove(product);
+	}
 	public static void addProduct(Product product) {
 		addedProducts.add(product);
 	}
@@ -105,6 +107,10 @@ public class SearchUtils {
 
 	public static void removeCategory(int position) {
 		addedCategories.remove(position);
+	}
+	
+	public static void removeCategory(Category category) {
+		addedCategories.remove(category);
 	}
 
 	public static void addCategory(Category category) {
@@ -128,6 +134,19 @@ public class SearchUtils {
 
 	public static void setSearched(ArrayList<BranchProduct> _new) {
 		searched = _new;
+	}
+
+	public static void removeLocation(Object loc) {
+		if (addedLocations.remove(loc)) {
+			if (loc instanceof City) {
+				addedCities.remove((City) loc);
+			} else if (loc instanceof Province) {
+				addedProvinces.remove((Province) loc);
+			} else if (loc instanceof Country) {
+				addedCountries.remove((Country) loc);
+
+			}
+		}
 	}
 
 }

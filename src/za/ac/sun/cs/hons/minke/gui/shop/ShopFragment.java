@@ -55,19 +55,16 @@ public class ShopFragment extends SherlockFragment {
 
 		});
 		shoplistAdapter = new ItemListAdapter<Product>(getActivity(),
-				ShopUtils.getAddedProducts(true));
+				ShopUtils.getAddedProducts(true)){
+					@Override
+					public void removeFromSearch(Product product) {
+						ShopUtils.removeProduct(product);
+						notifyDataSetChanged();
+					}
+			
+		};
 		ListView shoplist = (ListView) v.findViewById(R.id.list_shopping);
 		shoplist.setAdapter(shoplistAdapter);
-		shoplist.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				ShopUtils.removeProduct(position);
-				shoplistAdapter.notifyDataSetChanged();
-
-			}
-		});
-
 	}
 
 	private void addItem(Product item) {

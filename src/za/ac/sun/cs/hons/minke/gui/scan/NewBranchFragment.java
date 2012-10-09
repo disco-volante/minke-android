@@ -38,11 +38,11 @@ public class NewBranchFragment extends SherlockFragment {
 	private City city;
 	private Store store;
 
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_new_branch, container, false);
+		View v = inflater.inflate(R.layout.fragment_new_branch, container,
+				false);
 		initGUI(v);
 		return v;
 	}
@@ -50,10 +50,11 @@ public class NewBranchFragment extends SherlockFragment {
 	private void initGUI(View v) {
 		branchBox = (AutoCompleteTextView) v.findViewById(R.id.box_branch);
 		final ArrayAdapter<Branch> branchAdapter = new ArrayAdapter<Branch>(
-				getActivity(), R.layout.listitem_default, EntityUtils.getBranches());
+				getActivity(), R.layout.listitem_default,
+				EntityUtils.getBranches());
 		branchBox.setAdapter(branchAdapter);
-		branchBox
-				.addTextChangedListener(new TextErrorWatcher(branchBox, false));
+		branchBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				branchBox, false));
 		branchBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -63,13 +64,15 @@ public class NewBranchFragment extends SherlockFragment {
 
 		});
 		branchText = (EditText) v.findViewById(R.id.text_branch);
-		branchText.addTextChangedListener(new TextErrorWatcher(branchText,
-				false));
+		branchText.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				branchText, false));
 		storeBox = (AutoCompleteTextView) v.findViewById(R.id.text_store);
-		final ArrayAdapter<Store> storeAdapter = new ArrayAdapter<Store>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getStores());
+		final ArrayAdapter<Store> storeAdapter = new ArrayAdapter<Store>(
+				getActivity(), R.layout.listitem_default,
+				EntityUtils.getStores());
 		storeBox.setAdapter(storeAdapter);
-		storeBox.addTextChangedListener(new TextErrorWatcher(storeBox, false));
+		storeBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				storeBox, false));
 		storeBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -80,10 +83,12 @@ public class NewBranchFragment extends SherlockFragment {
 
 		});
 		cityBox = (AutoCompleteTextView) v.findViewById(R.id.text_city);
-		final ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCities());
+		final ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(
+				getActivity(), R.layout.listitem_default,
+				EntityUtils.getCities());
 		cityBox.setAdapter(cityAdapter);
-		cityBox.addTextChangedListener(new TextErrorWatcher(cityBox, false));
+		cityBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
+				cityBox, false));
 		cityBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -94,13 +99,12 @@ public class NewBranchFragment extends SherlockFragment {
 
 		});
 		Button btnBranch = (Button) v.findViewById(R.id.btn_create_branch);
-		btnBranch.setOnClickListener(new OnClickListener(){
+		btnBranch.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				createLocation();				
+				createLocation();
 			}
 
-		
 		});
 		clear();
 	}
@@ -112,8 +116,6 @@ public class NewBranchFragment extends SherlockFragment {
 		cityBox.setText("");
 	}
 
-	
-
 	public void createLocation() {
 		if (branchText.getError() != null || storeBox.getError() != null
 				|| cityBox.getError() != null) {
@@ -121,8 +123,9 @@ public class NewBranchFragment extends SherlockFragment {
 		}
 		if (city != null) {
 			CreateBranchTask task = new CreateBranchTask(MapUtils.getLocation()
-					.getLatitudeE6()/1E6, MapUtils.getLocation().getLongitudeE6()/1E6,
-					city, store, branchText.getText().toString());
+					.getLatitudeE6() / 1E6, MapUtils.getLocation()
+					.getLongitudeE6() / 1E6, city, store, branchText.getText()
+					.toString());
 
 			task.execute();
 
@@ -145,15 +148,19 @@ public class NewBranchFragment extends SherlockFragment {
 			names[i++] = p.toString();
 		}
 		AlertDialog.Builder location = new AlertDialog.Builder(getActivity());
-		location.setTitle("Choose Province");
-		location.setSingleChoiceItems(names, 0, new android.content.DialogInterface.OnClickListener() {
+		location.setTitle(NewBranchFragment.this
+				.getString(R.string.str_province));
+		location.setSingleChoiceItems(names, 0,
+				new android.content.DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface arg0, int position) {
-				province = EntityUtils.getProvinces().get(position);
-			}
-		});
-		location.setPositiveButton("Add Branch",
+					@Override
+					public void onClick(DialogInterface arg0, int position) {
+						province = EntityUtils.getProvinces().get(position);
+					}
+				});
+		location.setPositiveButton(
+				NewBranchFragment.this.getString(R.string.add) + " "
+						+ NewBranchFragment.this.getString(R.string.branch),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						CreateBranchTask task = new CreateBranchTask(MapUtils
@@ -165,14 +172,17 @@ public class NewBranchFragment extends SherlockFragment {
 						dialog.cancel();
 					}
 				});
-		location.setNegativeButton("Cancel",
+		location.setNegativeButton(
+				NewBranchFragment.this.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
+						((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
+								ScanFragment.class.getName());
 					}
 				});
 		location.show();
 	}
+
 	class CreateBranchTask extends ProgressTask {
 		private City city;
 		private double lat, lon;
@@ -182,8 +192,9 @@ public class NewBranchFragment extends SherlockFragment {
 		private String cityName;
 
 		private CreateBranchTask(double lat, double lon) {
-			super(NewBranchFragment.this.getActivity(), "Adding...",
-					"Adding branch to the database");
+			super(NewBranchFragment.this.getActivity(), NewBranchFragment.this
+					.getString(R.string.adding) + "...", NewBranchFragment.this
+					.getString(R.string.adding_branch));
 			this.lat = lat;
 			this.lon = lon;
 		}
@@ -207,28 +218,33 @@ public class NewBranchFragment extends SherlockFragment {
 
 		@Override
 		protected void success() {
-			((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
+			((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
+					ScanFragment.class.getName());
+			((HomeActivity) getActivity()).scan(null);
 		}
 
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(NewBranchFragment.this.getActivity(),
-					error_code);
-			dlg.setPositiveButton("Retry",
+			Builder dlg = DialogUtils.getErrorDialog(
+					NewBranchFragment.this.getActivity(), error_code);
+			dlg.setPositiveButton(
+					NewBranchFragment.this.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
 							createLocation();
 							dialog.cancel();
 						}
 					});
-			dlg.setNegativeButton("Cancel",
+			dlg.setNegativeButton(
+					NewBranchFragment.this.getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							((HomeActivity) getActivity()).changeTab(VIEW.SCAN, ScanFragment.class.getName());
+							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
+									ScanFragment.class.getName());
 							dialog.cancel();
 						}
 					});
 			dlg.show();
-	}
+		}
 
 		@Override
 		protected ERROR retrieve() {

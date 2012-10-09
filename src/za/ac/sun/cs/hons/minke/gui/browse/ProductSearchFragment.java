@@ -87,27 +87,25 @@ public class ProductSearchFragment extends SherlockFragment {
 
 	private void initLists(View v) {
 		productListAdapter = new ItemListAdapter<Product>(getActivity(),
-				SearchUtils.getAddedProducts());
+				SearchUtils.getAddedProducts()){
+					@Override
+					public void removeFromSearch(Product product) {
+						SearchUtils.removeProduct(product);
+						notifyDataSetChanged();
+					}
+			
+		};
 		categoryListAdapter = new ItemListAdapter<Category>(getActivity(),
-				SearchUtils.getAddedCategories());
+				SearchUtils.getAddedCategories()){
+					@Override
+					public void removeFromSearch(Category category) {
+						SearchUtils.removeCategory(category);
+						notifyDataSetChanged();
+					}
+			
+		};
 		searchList = (ListView) v.findViewById(R.id.search_list);
 		searchList.setAdapter(productListAdapter);
-		searchList.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				if (SearchUtils.isProductsActive()) {
-					SearchUtils.removeProduct(position);
-					productListAdapter.notifyDataSetChanged();
-
-				} else {
-					SearchUtils.removeCategory(position);
-					categoryListAdapter.notifyDataSetChanged();
-
-				}
-
-			}
-		});
 	}
 
 	protected void addItem(Object entity) {
