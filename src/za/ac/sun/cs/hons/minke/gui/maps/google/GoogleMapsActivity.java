@@ -137,7 +137,7 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 					.toString()));
 		}
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.android),
+				.getResources().getDrawable(R.drawable.user),
 				GoogleMapsActivity.this);
 		iconOverlay.addOverlay(new OverlayItem(src, getString(R.string.you),
 				getString(R.string.str_you)));

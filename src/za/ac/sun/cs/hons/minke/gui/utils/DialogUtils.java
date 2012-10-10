@@ -55,7 +55,6 @@ public class DialogUtils {
 		infoDlg.setMessage(context.getString(R.string.dlg_info));
 		return infoDlg;
 	}
-
 	public static Builder getDirectionsDialog(Context context,
 			List<Segment> items) {
 		StringBuilder msg = new StringBuilder();
@@ -184,5 +183,7 @@ public class DialogUtils {
 		}
 		return null;
 	}
+
+
 
 }

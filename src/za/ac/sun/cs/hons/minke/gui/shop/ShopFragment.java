@@ -2,7 +2,7 @@ package za.ac.sun.cs.hons.minke.gui.shop;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
-import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.gui.utils.ProductListAdapter;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 public class ShopFragment extends SherlockFragment {
 	private ArrayAdapter<Product> productAdapter;
 	AutoCompleteTextView shopping;
-	ItemListAdapter<Product> shoplistAdapter;
+	ProductListAdapter shoplistAdapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,15 +54,8 @@ public class ShopFragment extends SherlockFragment {
 			}
 
 		});
-		shoplistAdapter = new ItemListAdapter<Product>(getActivity(),
-				ShopUtils.getAddedProducts(true)){
-					@Override
-					public void removeFromSearch(Product product) {
-						ShopUtils.removeProduct(product);
-						notifyDataSetChanged();
-					}
-			
-		};
+		shoplistAdapter = new ProductListAdapter(getActivity(),
+				ShopUtils.getAddedProducts(true));
 		ListView shoplist = (ListView) v.findViewById(R.id.list_shopping);
 		shoplist.setAdapter(shoplistAdapter);
 	}

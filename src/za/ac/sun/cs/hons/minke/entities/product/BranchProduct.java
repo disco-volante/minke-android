@@ -10,6 +10,7 @@ public class BranchProduct {
 	private Product product;
 	private DatePrice datePrice;
 	private Branch branch;
+	private int quantity = 1;
 
 	public BranchProduct(long id, long productId, long branchId,
 			long datePriceId) {
@@ -145,5 +146,13 @@ public class BranchProduct {
 		if (productId != other.productId)
 			return false;
 		return true;
+	}
+
+	public void setQuantity(int _quantity) {
+		this.quantity  = _quantity;
+	}
+
+	public int getQuantity() {
+		return quantity;
 	}
 }

@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.entities.product;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 /**
  * DB Entity used to store data about a specific {@link Product}, e.g. Milk,
  * Dairy, Consumables.
@@ -12,11 +11,12 @@ import org.json.JSONObject;
  * 
  */
 
-public class Product  {
+public class Product {
 	private long id, brandId;
 	private String name, measure;
 	private double size;
 	private Brand brand;
+	private int quantity = 1;
 
 	public Product() {
 	}
@@ -72,12 +72,13 @@ public class Product  {
 
 	@Override
 	public String toString() {
-		if(brand == null){
+		if (brand == null) {
 			return name;
 		}
-		return brand.toString()+" "+name;
+		return brand.toString() + " " + name;
 	}
-	public JSONObject toJSON() throws JSONException{
+
+	public JSONObject toJSON() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "product");
 		obj.put("id", id);
@@ -143,5 +144,13 @@ public class Product  {
 				.doubleToLongBits(other.size))
 			return false;
 		return true;
+	}
+
+	public void setQuantity(int _quantity) {
+		this.quantity = _quantity;
+	}
+
+	public int getQuantity() {
+		return quantity;
 	}
 }

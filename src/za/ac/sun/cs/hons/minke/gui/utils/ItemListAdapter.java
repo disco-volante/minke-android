@@ -14,6 +14,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,15 +22,26 @@ import android.widget.Toast;
 public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 	private Activity activity;
 	private HashSet<T> items = new HashSet<T>();
+	private int rowType;
 
 	static class ViewHolder {
 		public TextView text;
 		public ImageButton btn;
+		public Button other_btn;
+
+	}
+
+	public ItemListAdapter(Activity activity, ArrayList<T> added, int _rowType) {
+		super(activity, _rowType, added);
+		this.setActivity(activity);
+		rowType = _rowType;
+
 	}
 
 	public ItemListAdapter(Activity activity, ArrayList<T> added) {
 		super(activity, R.layout.row_default, added);
-		this.activity = activity;
+		this.setActivity(activity);
+		rowType = R.layout.row_default;
 
 	}
 
@@ -46,23 +58,31 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 		View rowView = convertView;
 		final T item = getItem(position);
 		if (rowView == null) {
-			LayoutInflater inflater = activity.getLayoutInflater();
-			rowView = inflater.inflate(R.layout.row_default, null);
-			ViewHolder viewHolder = new ViewHolder();
-			viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_remove);
-
-			viewHolder.btn = (ImageButton) rowView
-					.findViewById(R.id.btn_remove);
-			rowView.setVisibility(View.INVISIBLE);
-			rowView.setTag(viewHolder);
+			rowView = inflate(rowView);
 		}
+		initHolder(item, rowView);
+		animateItem(item, rowView);
+		return rowView;
+	}
+
+	protected void animateItem(T item, View rowView) {
+		if (!items.contains(item)) {
+			Animation down = AnimationUtils.loadAnimation(getActivity(),
+					R.anim.slide_down);
+			rowView.setVisibility(View.VISIBLE);
+			rowView.startAnimation(down);
+		}
+		items.add(item);
+	}
+
+	protected ViewHolder initHolder(final T item, View rowView) {
 		final ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.text.setText(item.toString());
 		holder.text.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Toast msg = Toast.makeText(activity, holder.text.getText(),
-						Toast.LENGTH_LONG);
+				Toast msg = Toast.makeText(getActivity(),
+						holder.text.getText(), Toast.LENGTH_LONG);
 				msg.setGravity(Gravity.CENTER_VERTICAL,
 						Gravity.CENTER_HORIZONTAL, 0);
 				msg.show();
@@ -72,7 +92,7 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 
 			@Override
 			public void onClick(View view) {
-				Animation up = AnimationUtils.loadAnimation(activity,
+				Animation up = AnimationUtils.loadAnimation(getActivity(),
 						R.anim.slide_up);
 				up.setAnimationListener(new AnimationListener() {
 					@Override
@@ -80,7 +100,6 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 						items.remove(item);
 						removeFromSearch(item);
 					}
-
 
 					@Override
 					public void onAnimationRepeat(Animation arg0) {
@@ -94,16 +113,32 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 				((View) view.getParent()).startAnimation(up);
 			}
 		});
-		if (!items.contains(item)) {
-			Animation down = AnimationUtils.loadAnimation(activity,
-					R.anim.slide_down);
-			rowView.setVisibility(View.VISIBLE);
-			rowView.startAnimation(down);
+		return holder;
+	}
+
+	protected View inflate(View rowView) {
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		rowView = inflater.inflate(rowType, null);
+		ViewHolder viewHolder = new ViewHolder();
+		viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_remove);
+		viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_remove);
+		if (rowType == R.layout.row_product) {
+			viewHolder.other_btn = (Button) rowView
+					.findViewById(R.id.btn_quantity);
 		}
-		items.add(item);
+		rowView.setVisibility(View.INVISIBLE);
+		rowView.setTag(viewHolder);
 		return rowView;
 	}
-	
+
 	public abstract void removeFromSearch(T item);
-		
+
+	public Activity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(Activity activity) {
+		this.activity = activity;
+	}
+
 }

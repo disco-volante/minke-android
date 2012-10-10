@@ -285,6 +285,7 @@ public class EntityUtils {
 							branchMap.put(bp.getBranch(),
 									new ArrayList<BranchProduct>());
 						}
+						bp.setQuantity(p.getQuantity());
 						branchMap.get(bp.getBranch()).add(bp);
 					}
 				}
