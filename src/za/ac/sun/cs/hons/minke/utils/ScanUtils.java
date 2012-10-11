@@ -2,11 +2,11 @@ package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
 public class ScanUtils {
 	private static Product product;
 	private static BranchProduct branchProduct;
+	private static long barCode;
 
 	public static Product getProduct() {
 		return product;
@@ -22,12 +22,18 @@ public class ScanUtils {
 
 	public static void setBranchProduct(BranchProduct branchProduct) {
 		ScanUtils.branchProduct = branchProduct;
-		BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(branchProduct.getProductId(),branchProduct));
+		if (branchProduct != null) {
+			BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(
+					branchProduct.getProductId(), branchProduct));
+		}
 	}
 
-	public static void setBranch(Branch b) {
-		// TODO Auto-generated method stub
-		
+	public static void setBarCode(long _barCode) {
+		barCode = _barCode;
+	}
+
+	public static long getBarCode() {
+		return barCode;
 	}
 
 }

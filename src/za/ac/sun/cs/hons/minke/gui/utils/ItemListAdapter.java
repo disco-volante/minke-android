@@ -1,7 +1,6 @@
 package za.ac.sun.cs.hons.minke.gui.utils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import za.ac.sun.cs.hons.minke.R;
 import android.app.Activity;
@@ -10,9 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,7 +17,6 @@ import android.widget.Toast;
 
 public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 	private Activity activity;
-	private HashSet<T> items = new HashSet<T>();
 	private int rowType;
 
 	static class ViewHolder {
@@ -48,9 +43,7 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
-		if (getCount() == 0) {
-			items = new HashSet<T>();
-		}
+		
 	}
 
 	@Override
@@ -61,19 +54,16 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 			rowView = inflate(rowView);
 		}
 		initHolder(item, rowView);
-		animateItem(item, rowView);
+	//	animateItem(item, rowView);
 		return rowView;
 	}
 
-	protected void animateItem(T item, View rowView) {
-		if (!items.contains(item)) {
+/*	protected void animateItem(T item, View rowView) {
 			Animation down = AnimationUtils.loadAnimation(getActivity(),
 					R.anim.slide_down);
 			rowView.setVisibility(View.VISIBLE);
 			rowView.startAnimation(down);
-		}
-		items.add(item);
-	}
+	}*/
 
 	protected ViewHolder initHolder(final T item, View rowView) {
 		final ViewHolder holder = (ViewHolder) rowView.getTag();
@@ -92,12 +82,13 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 
 			@Override
 			public void onClick(View view) {
-				Animation up = AnimationUtils.loadAnimation(getActivity(),
+				removeFromSearch(item);
+
+			/*	Animation up = AnimationUtils.loadAnimation(getActivity(),
 						R.anim.slide_up);
 				up.setAnimationListener(new AnimationListener() {
 					@Override
 					public void onAnimationEnd(Animation arg0) {
-						items.remove(item);
 						removeFromSearch(item);
 					}
 
@@ -110,7 +101,7 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 					}
 
 				});
-				((View) view.getParent()).startAnimation(up);
+				((View) view.getParent()).startAnimation(up);*/
 			}
 		});
 		return holder;
@@ -126,7 +117,7 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 			viewHolder.other_btn = (Button) rowView
 					.findViewById(R.id.btn_quantity);
 		}
-		rowView.setVisibility(View.INVISIBLE);
+		//rowView.setVisibility(View.INVISIBLE);
 		rowView.setTag(viewHolder);
 		return rowView;
 	}

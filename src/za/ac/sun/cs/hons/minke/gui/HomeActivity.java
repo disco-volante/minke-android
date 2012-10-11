@@ -53,7 +53,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
 	TabsAdapter mTabManager;
 	TabInfo browse, shop, scan;
-	public long code;
 	protected boolean downloading;
 	protected int selectedBranch;
 
@@ -138,8 +137,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void setBranch(View view) {
-		changeTab(VIEW.SCAN, NAMES.SCAN);
-		scan(null);
+		if (MapUtils.getUserBranch() != null) {
+			changeTab(VIEW.SCAN, NAMES.SCAN);
+			scan(null);
+		} else {
+			DialogUtils.getErrorDialog(this, ERROR.INPUT).show();
+		}
 	}
 
 	public void findStores(View view) {
@@ -238,7 +241,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 					requestCode, resultCode, data);
 			if (scanResult != null) {
 				try {
-					code = Long.parseLong(scanResult.getContents());
+					ScanUtils.setBarCode(Long.parseLong(scanResult
+							.getContents()));
 					FindProductTask task = new FindProductTask();
 					task.execute();
 					return;
@@ -330,8 +334,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
-							double price = (Double.parseDouble(updatePriceText
-									.getText().toString()));
+							int price = (int)(Double.parseDouble(updatePriceText
+									.getText().toString())*100);
 							UpdateProductTask task = new UpdateProductTask(
 									found, price);
 							task.execute();
@@ -540,16 +544,25 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected void failure(ERROR code) {
 			if (code == ERROR.NOT_FOUND) {
-				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-						code);
-				dlg.setPositiveButton(getString(R.string.create),
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
-								dialog.cancel();
-							}
-						});
-				dlg.show();
+				if (ScanUtils.getProduct() != null) {
+					ScanUtils.setBranchProduct(new BranchProduct(0L, ScanUtils
+							.getProduct().getId(), MapUtils.getUserBranch()
+							.getId(), 0L));
+					updatePrice(ScanUtils.getBranchProduct(),
+							ScanUtils.getProduct());
+				} else {
+					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+							code);
+					dlg.setPositiveButton(getString(R.string.create),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
 
 			} else {
 				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
@@ -567,29 +580,37 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected ERROR retrieve() {
-			Product p = EntityUtils.retrieveProduct(code);
+			ScanUtils.setProduct(null);
+			ScanUtils.setBranchProduct(null);
+			Product p = EntityUtils.retrieveProduct(ScanUtils.getBarCode());
 			if (p == null) {
+				if (!PreferencesUtils.checkServer()) {
+					return ERROR.NOT_FOUND;
+				}
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				p = EntityUtils.retrieveProductServer(code);
+				p = EntityUtils.retrieveProductServer(ScanUtils.getBarCode());
 				if (p == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
-			BranchProduct bp = EntityUtils.retrieveBranchProduct(code, MapUtils
-					.getUserBranch().getId());
+			ScanUtils.setProduct(p);
+			BranchProduct bp = EntityUtils.retrieveBranchProduct(
+					ScanUtils.getBarCode(), MapUtils.getUserBranch().getId());
 			if (bp == null) {
+				if (!PreferencesUtils.checkServer()) {
+					return ERROR.NOT_FOUND;
+				}
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				bp = EntityUtils.retrieveBranchProductServer(code, MapUtils
-						.getUserBranch().getId());
+				bp = EntityUtils.retrieveBranchProductServer(ScanUtils
+						.getBarCode(), MapUtils.getUserBranch().getId());
 				if (bp == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
-			ScanUtils.setProduct(p);
 			ScanUtils.setBranchProduct(bp);
 			return ERROR.SUCCESS;
 		}
@@ -598,11 +619,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	class UpdateProductTask extends ProgressTask {
 		BranchProduct bp;
+		private int price;
 
-		public UpdateProductTask(BranchProduct bp, double price) {
+		public UpdateProductTask(BranchProduct bp, int price) {
 			super(HomeActivity.this, getString(R.string.updating) + "...",
 					getString(R.string.updating_product_msg));
 			this.bp = bp;
+			this.price = price;
 		}
 
 		@Override
@@ -610,7 +633,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
-			return RPCUtils.updateBranchProduct(bp);
+			return RPCUtils.updateBranchProduct(bp, price);
 		}
 
 		@Override

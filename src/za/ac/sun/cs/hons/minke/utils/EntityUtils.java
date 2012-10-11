@@ -270,40 +270,62 @@ public class EntityUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static ERROR retrieveBranches(ArrayList<Product> addedProducts) {
 		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
-		HashMap<Branch, ArrayList<BranchProduct>> temp = new HashMap<Branch, ArrayList<BranchProduct>>();
-		for (Product p : addedProducts) {
-			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
-					new String[] { DBConstants.PRODUCT_ID },
-					new String[] { String.valueOf(p.getId()) });
-			if (branchMap.size() == 0) {
+		HashSet<Branch> notfound = new HashSet<Branch>();
+		if (addedProducts.size() == 0) {
+			ShopUtils.setShopLists(getAllBranchProducts());
+			return ERROR.SUCCESS;
+		} else {
+			boolean firstIter = true;
+			for (Product p : addedProducts) {
+				ArrayList<BranchProduct> bps = branchProductDAO
+						.getAllByParameters(
+								new String[] { DBConstants.PRODUCT_ID },
+								new String[] { String.valueOf(p.getId()) });
 				for (BranchProduct bp : bps) {
 					if (bp.getBranch() != null) {
-						if (!branchMap.containsKey(bp.getBranch())) {
+						if (!branchMap.containsKey(bp.getBranch())
+								&& !firstIter) {
+							continue;
+						} else if (!branchMap.containsKey(bp.getBranch())) {
 							branchMap.put(bp.getBranch(),
 									new ArrayList<BranchProduct>());
 						}
 						bp.setQuantity(p.getQuantity());
 						branchMap.get(bp.getBranch()).add(bp);
+						if (notfound.contains(bp.getBranch())) {
+							notfound.remove(bp.getBranch());
+						}
 					}
 				}
-			} else {
-				for (BranchProduct bp : bps) {
-					if (bp.getBranch() != null
-							&& branchMap.containsKey(bp.getBranch())) {
-						temp.put(bp.getBranch(), branchMap.get(bp.getBranch()));
+				if (!notfound.isEmpty()) {
+					for (Branch b : notfound) {
+						branchMap.remove(b);
 					}
 				}
-				branchMap = (HashMap<Branch, ArrayList<BranchProduct>>) temp
-						.clone();
-				temp = new HashMap<Branch, ArrayList<BranchProduct>>();
-			}
+				firstIter = false;
+				notfound.addAll(branchMap.keySet());
 
+			}
 		}
 		ShopUtils.setShopLists(branchMap);
 		return ERROR.SUCCESS;
+	}
+
+	private static HashMap<Branch, ArrayList<BranchProduct>> getAllBranchProducts() {
+		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
+		ArrayList<BranchProduct> bps = branchProductDAO.getAll();
+		for (BranchProduct bp : bps) {
+			if (bp.getBranch() != null) {
+				if (!branchMap.containsKey(bp.getBranch())) {
+					branchMap.put(bp.getBranch(),
+							new ArrayList<BranchProduct>());
+				}
+				branchMap.get(bp.getBranch()).add(bp);
+			}
+		}
+		return branchMap;
 	}
 
 	public static ArrayList<DatePrice> getDatePrices(long id) {
@@ -315,28 +337,29 @@ public class EntityUtils {
 	public static ERROR retrieveBranchProducts(boolean productsActive) {
 		HashSet<Product> _p = new HashSet<Product>();
 		if (!productsActive) {
-			for (Category c : SearchUtils.getAddedCategories()) {
-				ArrayList<Product> matches = productCategoryDAO.getProducts(c
-						.getId());
-				_p.addAll(matches);
+			if (SearchUtils.getAddedCategories().size() > 0) {
+				for (Category c : SearchUtils.getAddedCategories()) {
+					ArrayList<Product> matches = productCategoryDAO
+							.getProducts(c.getId());
+					_p.addAll(matches);
+				}
+			} else {
+				_p.addAll(products);
 			}
 		} else {
 			_p.addAll(SearchUtils.getAddedProducts());
 		}
 		HashSet<BranchProduct> found = new HashSet<BranchProduct>();
+		if (_p.size() == 0) {
+			_p.addAll(products);
+		}
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
 					new String[] { DBConstants.PRODUCT_ID },
 					new String[] { String.valueOf(p.getId()) });
 			for (BranchProduct bp : bps) {
-				Log.v(TAGS.ENTITY, bp.toString());
 				City c = bp.getBranch().getCityLocation().getCity();
-				Log.v(TAGS.ENTITY, c.toString());
-				if (SearchUtils.getAddedCities().contains(c)
-						|| SearchUtils.getAddedProvinces().contains(
-								c.getProvince())
-						|| SearchUtils.getAddedCountries().contains(
-								c.getProvince().getCountry())) {
+				if (inLocations(c)) {
 					if (found.add(bp)) {
 						SearchUtils.getSearched().add(bp);
 					}
@@ -346,9 +369,24 @@ public class EntityUtils {
 		return ERROR.SUCCESS;
 	}
 
+	private static boolean inLocations(City city) {
+		return SearchUtils.getAddedLocations().size() == 0
+				|| SearchUtils.getAddedCities().contains(city)
+				|| SearchUtils.getAddedProvinces().contains(city.getProvince())
+				|| SearchUtils.getAddedCountries().contains(
+						city.getProvince().getCountry());
+	}
+
 	public static BranchProduct addBranchProduct(BranchProduct bp) {
 		long id = branchProductDAO.add(bp);
 		return branchProductDAO.getByID(id);
+	}
+
+	public static BranchProduct updateBranchProduct(BranchProduct bp) {
+		if (!branchProductDAO.updateByCloudID(bp, bp.getId())) {
+			return addBranchProduct(bp);
+		}
+		return branchProductDAO.getByCloudID(bp.getId());
 	}
 
 	public static Product addProduct(Product p) {
@@ -405,7 +443,11 @@ public class EntityUtils {
 	}
 
 	public static Product retrieveProduct(long code) {
-		return productDAO.getByID(code);
+		System.out.println("bc " + code);
+		for (Product p : products) {
+			System.out.println(p.toString() + " " + p.getId());
+		}
+		return productDAO.getByCloudID(code);
 	}
 
 	public static Product retrieveProductServer(long code) {

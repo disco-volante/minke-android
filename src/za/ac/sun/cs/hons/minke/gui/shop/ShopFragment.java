@@ -6,6 +6,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.ProductListAdapter;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -61,10 +63,17 @@ public class ShopFragment extends SherlockFragment {
 	}
 
 	private void addItem(Product item) {
-		if (item != null) {
+		if (item != null && !ShopUtils.getAddedProducts(false).contains(item)) {
 			ShopUtils.addProduct(item);
 			shoplistAdapter.notifyDataSetChanged();
+		} else {
+			Toast msg = Toast.makeText(this.getActivity(),
+					getString(R.string.str_added), Toast.LENGTH_LONG);
+			msg.setGravity(Gravity.CENTER_VERTICAL, Gravity.CENTER_HORIZONTAL,
+					0);
+			msg.show();
 		}
+
 		shopping.setText("");
 	}
 }

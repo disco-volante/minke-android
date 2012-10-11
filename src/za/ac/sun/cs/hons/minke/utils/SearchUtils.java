@@ -49,7 +49,7 @@ public class SearchUtils {
 	}
 
 	public static void addLocation(Object location) {
-		addedLocations.add(location);
+		addedLocations.add(0, location);
 		if (location instanceof City) {
 			addedCities.add((City) location);
 		} else if (location instanceof Province) {
@@ -95,7 +95,7 @@ public class SearchUtils {
 		addedProducts.remove(product);
 	}
 	public static void addProduct(Product product) {
-		addedProducts.add(product);
+		addedProducts.add(0,product);
 	}
 
 	public static ArrayList<Category> getAddedCategories() {
@@ -114,7 +114,7 @@ public class SearchUtils {
 	}
 
 	public static void addCategory(Category category) {
-		addedCategories.add(category);
+		addedCategories.add(0,category);
 	}
 
 	public static boolean isProductsActive() {

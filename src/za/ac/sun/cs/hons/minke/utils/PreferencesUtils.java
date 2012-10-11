@@ -14,6 +14,7 @@ public class PreferencesUtils {
 	private static long lastUpdate = -1;
 	private static boolean firstTime = false;
 	private static boolean loaded = false;
+	private static boolean 		checkServer;
 
 	public static int getUpdateFrequency() {
 		return updateFrequency;
@@ -72,6 +73,7 @@ public class PreferencesUtils {
 				.getDefaultSharedPreferences(context);
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
 				Constants.NO_FREQUENCY_SET + "")));
+		setCheckServer(prefs.getBoolean("check_server", false));
 		setUpdateInterval();
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
@@ -82,6 +84,10 @@ public class PreferencesUtils {
 				+ firstTime);
 		return ERROR.SUCCESS;
 
+	}
+
+	private static void setCheckServer(boolean _checkServer) {
+		checkServer = _checkServer;		
 	}
 
 	public static void loadLastUpdate(long found) {
@@ -96,6 +102,10 @@ public class PreferencesUtils {
 
 	public static void setLoaded(boolean loaded) {
 		PreferencesUtils.loaded = loaded;
+	}
+
+	public static boolean checkServer() {
+		return checkServer;
 	}
 
 }

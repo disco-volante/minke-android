@@ -19,13 +19,22 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import android.content.Context;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
 public class TimelineChart {
+
+	private XYMultipleSeriesDataset dataset;
+	private GraphActivity activity;
+	private boolean loaded;
+	private XYMultipleSeriesRenderer renderer;
+	private String[] titles;
+
+	public TimelineChart(GraphActivity _activity) {
+		this.activity = _activity;
+	}
 
 	/**
 	 * Executes the chart demo.
@@ -34,8 +43,7 @@ public class TimelineChart {
 	 *            the context
 	 * @return the built intent
 	 */
-	public GraphicalView execute(final Context context,
-			ArrayList<BranchProduct> bps) {
+	public void buildData(ArrayList<BranchProduct> bps) {
 		PointStyle[] values = PointStyle.values();
 		PointStyle[] styles = new PointStyle[bps.size()];
 		if (bps.size() > values.length) {
@@ -46,7 +54,7 @@ public class TimelineChart {
 			System.arraycopy(values, 0, styles, 0, styles.length);
 		}
 
-		final String[] titles = new String[bps.size()];
+		titles = new String[bps.size()];
 		List<double[]> prices = new ArrayList<double[]>();
 		List<Date[]> dates = new ArrayList<Date[]>();
 		Random color = new Random();
@@ -57,7 +65,7 @@ public class TimelineChart {
 		for (BranchProduct bp : bps) {
 			colors[i] = Color.argb(255, color.nextInt(256), color.nextInt(256),
 					color.nextInt(256));
-			titles[i++] = bp.getProduct().toString();
+			titles[i++] = bp.getProduct().toString()+" ("+bp.getBranch().toString()+")";
 			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(bp.getId());
 			double[] p = new double[hist.size()];
 			Date[] d = new Date[hist.size()];
@@ -84,10 +92,10 @@ public class TimelineChart {
 			dates.add(d);
 
 		}
-		XYMultipleSeriesRenderer renderer = buildRenderer(colors, styles);
-		setChartSettings(renderer, context.getString(R.string.chart_title),
-				context.getString(R.string.chart_xaxis),
-				context.getString(R.string.chart_yaxis), minDate, maxDate,
+		renderer = buildRenderer(colors, styles);
+		setChartSettings(renderer, activity.getString(R.string.chart_title),
+				activity.getString(R.string.chart_xaxis),
+				activity.getString(R.string.chart_yaxis), minDate, maxDate,
 				minPrice, maxPrice);
 		renderer.setXLabels(5);
 		renderer.setYLabels(5);
@@ -96,8 +104,16 @@ public class TimelineChart {
 			((XYSeriesRenderer) renderer.getSeriesRendererAt(k))
 					.setFillPoints(true);
 		}
-		final GraphicalView view = ChartFactory.getTimeChartView(context,
-				buildDataset(titles, dates, prices), renderer, "dd/MM/yyyy");
+		dataset = buildDataset(titles, dates, prices);
+		loaded = true;
+	}
+
+	public GraphicalView getChart() {
+		if (!loaded) {
+			return null;
+		}
+		final GraphicalView view = ChartFactory.getTimeChartView(activity,
+				dataset, renderer, "dd/MM/yyyy");
 		renderer.setClickEnabled(true);
 		renderer.setSelectableBuffer(100);
 		view.setOnClickListener(new View.OnClickListener() {
@@ -109,16 +125,16 @@ public class TimelineChart {
 					Date date = new Date();
 					date.setTime((long) seriesSelection.getXValue());
 					Toast msg = Toast.makeText(
-							context,
-							context.getString(R.string.product)
+							activity,
+							activity.getString(R.string.product)
 									+ ": "
 									+ titles[seriesSelection.getSeriesIndex()]
 									+ "\n"
-									+ context.getString(R.string.date)
+									+ activity.getString(R.string.date)
 									+ ": "
 									+ DateFormat.getDateInstance(
 											DateFormat.MEDIUM).format(date)
-									+ "\n" + context.getString(R.string.price)
+									+ "\n" + activity.getString(R.string.price)
 									+ ": R " + seriesSelection.getValue(),
 							Toast.LENGTH_LONG);
 					msg.setGravity(Gravity.CENTER_VERTICAL,
@@ -159,11 +175,12 @@ public class TimelineChart {
 	protected XYMultipleSeriesRenderer buildRenderer(int[] colors,
 			PointStyle[] styles) {
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-		renderer.setAxisTitleTextSize(30);
+		renderer.setAxisTitleTextSize(20);
 		renderer.setChartTitleTextSize(40);
-		renderer.setLabelsTextSize(25);
-		renderer.setLegendTextSize(35);
+		renderer.setLabelsTextSize(20);
+		renderer.setLegendTextSize(20);
 		renderer.setPointSize(5f);
+		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int length = colors.length;
 		for (int i = 0; i < length; i++) {
@@ -213,6 +230,14 @@ public class TimelineChart {
 		renderer.setYAxisMax(yMax);
 		renderer.setShowGridY(true);
 		renderer.setShowGridX(true);
+	}
+
+	public GraphActivity getGraphActivity() {
+		return activity;
+	}
+
+	public boolean isLoaded() {
+		return loaded;
 	}
 
 }

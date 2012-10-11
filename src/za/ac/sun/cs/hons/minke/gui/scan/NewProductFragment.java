@@ -11,6 +11,7 @@ import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
+import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog;
@@ -225,19 +226,21 @@ public class NewProductFragment extends SherlockFragment {
 			}
 			if (brand != null && category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brand, category, size, measure, price);
+						name, brand, category, size, measure, price,
+						ScanUtils.getBarCode());
 			} else if (brand != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
 						name, brand, categoryBox.getText().toString(), size,
-						measure, price);
+						measure, price, ScanUtils.getBarCode());
 			} else if (category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
 						name, brandBox.getText().toString(), category, size,
-						measure, price);
+						measure, price, ScanUtils.getBarCode());
 			} else {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
 						name, brandBox.getText().toString(), categoryBox
-								.getText().toString(), size, measure, price);
+								.getText().toString(), size, measure, price,
+						ScanUtils.getBarCode());
 			}
 		}
 	}

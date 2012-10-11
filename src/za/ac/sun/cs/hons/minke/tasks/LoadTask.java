@@ -38,9 +38,6 @@ public abstract class LoadTask extends AsyncTask<Void, Integer, Void> {
 	protected abstract ERROR retrieve();
 
 	protected boolean isNetworkAvailable() {
-		if(context == null){
-			return false;
-		}
 		ConnectivityManager connectivityManager = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager

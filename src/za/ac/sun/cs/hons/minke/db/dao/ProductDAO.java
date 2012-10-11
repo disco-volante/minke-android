@@ -36,6 +36,7 @@ public class ProductDAO extends BaseDAO<Product> {
 	protected ContentValues getContentValues(Product item) {
 		ContentValues cv = new ContentValues();
 		cv.put(DBConstants.CLOUD_ID, item.getId());
+		System.out.println("id"+item.getId());
 		cv.put(DBConstants.BRAND_ID, item.getBrandId());
 		cv.put(DBConstants.NAME, item.getName());
 		cv.put(DBConstants.SIZE, item.getSize());

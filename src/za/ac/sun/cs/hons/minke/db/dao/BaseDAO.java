@@ -67,8 +67,11 @@ public abstract class BaseDAO<T> {
 	public T getByParameters(String[] params, String[] vals) {
 		Cursor cursor = database.query(table, columns, getSelection(params),
 				vals, null, null, null);
-		cursor.moveToFirst();
-		T ret =  parse(cursor);
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
+			cursor.close();
+			return null;
+		}
+		T ret = parse(cursor);
 		cursor.close();
 		return ret;
 	}
@@ -77,7 +80,10 @@ public abstract class BaseDAO<T> {
 		ArrayList<T> entries = new ArrayList<T>();
 		Cursor cursor = database.query(table, columns, getSelection(params),
 				vals, null, null, null);
-		cursor.moveToFirst();
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
+			cursor.close();
+			return null;
+		}
 		while (!cursor.isAfterLast()) {
 			T entry = parse(cursor);
 			entries.add(entry);
@@ -91,7 +97,7 @@ public abstract class BaseDAO<T> {
 	public T getByID(long id) {
 		Cursor cursor = database.query(table, columns, DBConstants.ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
-		if (!cursor.moveToFirst()) {
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
 			cursor.close();
 			return null;
 		}
@@ -102,11 +108,11 @@ public abstract class BaseDAO<T> {
 		Cursor cursor = database.query(table, columns,
 				DBConstants.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
-		if (!cursor.moveToFirst()) {
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
 			cursor.close();
 			return null;
 		}
-		T ret =  parse(cursor);
+		T ret = parse(cursor);
 		cursor.close();
 		return ret;
 	}
@@ -115,7 +121,10 @@ public abstract class BaseDAO<T> {
 		ArrayList<T> entries = new ArrayList<T>();
 		Cursor cursor = database.query(table, columns, null, null, null, null,
 				null);
-		cursor.moveToFirst();
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
+			cursor.close();
+			return null;
+		}
 		while (!cursor.isAfterLast()) {
 			T entry = parse(cursor);
 			entries.add(entry);

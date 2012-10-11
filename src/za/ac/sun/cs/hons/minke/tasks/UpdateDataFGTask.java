@@ -28,6 +28,10 @@ public class UpdateDataFGTask extends ProgressTask {
 		if (!isNetworkAvailable()) {
 			return ERROR.CLIENT;
 		}
-		return RPCUtils.retrieveAll(context);
+		ERROR error = RPCUtils.retrieveAll(context);
+		if(!error.equals(ERROR.SUCCESS)){
+			error = RPCUtils.retrieveAll(context);
+		}
+		return error;
 	}
 }

@@ -27,7 +27,7 @@ public class DBConstants {
 
 	public static final String ID_FILTER = ID + " = ?";
 	public static final String CLOUD_ID_FILTER = CLOUD_ID + " = ?";
-	public static final String AND_FILTER = " = ? AND";
+	public static final String AND_FILTER = " = ? AND ";
 	public static final String FILTER = " = ?";
 
 	public static final String BP_TABLE = "branch_product";

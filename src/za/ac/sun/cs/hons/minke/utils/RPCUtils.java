@@ -78,13 +78,17 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR updateBranchProduct(BranchProduct bp) {
+	public static ERROR updateBranchProduct(BranchProduct bp, int price) {
 		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
-			bp = JSONParser.parseBranchProduct(HTTPUtils.doJSONPost(url,
-					bp.toJSON()));
-			bp = EntityUtils.addBranchProduct(bp);
+			JSONObject obj = HTTPUtils.doJSONPost(url,
+					bp.toJSON(), JSONBuilder.toJSON("price", price));
+			Log.v(TAGS.JSON, obj.toString());
+			bp = JSONParser.parseBranchProduct(obj.getJSONObject("branchProduct"));
+			DatePrice dp = JSONParser.parseDatePrice(obj.getJSONObject("datePrice"));
+			EntityUtils.addDatePrice(dp);
+			bp = EntityUtils.updateBranchProduct(bp);
 			ScanUtils.setBranchProduct(bp);
 			if (bp == null) {
 				return ERROR.SERVER;
@@ -110,9 +114,9 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, null, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON(),
-					store.toJSON());
-			if(response.length() == 0){
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+					city.toJSON(), store.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
@@ -125,7 +129,6 @@ public class RPCUtils {
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
 			MapUtils.setBranches(EntityUtils.getBranches());
-			ScanUtils.setBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -146,8 +149,9 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, storeName, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, city.toJSON());
-			if(response.length() == 0){
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+					city.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
@@ -162,7 +166,6 @@ public class RPCUtils {
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
 			MapUtils.setBranches(EntityUtils.getBranches());
-			ScanUtils.setBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -183,9 +186,9 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, null, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, store.toJSON(),
-					province.toJSON());
-			if(response.length() == 0){
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+					store.toJSON(), province.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			Branch b = JSONParser.parseBranch(response.getJSONObject("branch"));
@@ -200,7 +203,6 @@ public class RPCUtils {
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
 			MapUtils.setBranches(EntityUtils.getBranches());
-			ScanUtils.setBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -221,8 +223,9 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, storeName, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON, province.toJSON());
-			if(response.length() == 0){
+			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+					province.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			Store s = JSONParser.parseStore(response.getJSONObject("store"));
@@ -239,7 +242,6 @@ public class RPCUtils {
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
 			MapUtils.setBranches(EntityUtils.getBranches());
-			ScanUtils.setBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -255,15 +257,15 @@ public class RPCUtils {
 
 	public static ERROR createBranchProduct(Branch branch, String name,
 			Brand brand, Category category, double size, String measure,
-			int price) {
+			int price, long barCode) {
 		String suffix = "create_branchproduct0";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
-					null, null, size, measure, price);
-			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
-					brand.toJSON(), category.toJSON());
-			if(response.length() == 0){
+					null, null, size, measure, price, barCode);
+			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+					bpJSON, brand.toJSON(), category.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
@@ -293,15 +295,16 @@ public class RPCUtils {
 	}
 
 	public static ERROR createBranchProduct(Branch branch, String name,
-			Brand brand, String category, double size, String measure, int price) {
+			Brand brand, String category, double size, String measure,
+			int price, long barCode) {
 		String suffix = "create_branchproduct1";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
-					category, null, size, measure, price);
-			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON,
-					brand.toJSON());
-			if(response.length() == 0){
+					category, null, size, measure, price, barCode);
+			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+					bpJSON, brand.toJSON());
+			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
 			BranchProduct bp = JSONParser.parseBranchProduct(response
@@ -335,12 +338,12 @@ public class RPCUtils {
 
 	public static ERROR createBranchProduct(Branch branch, String name,
 			String brand, Category category, double size, String measure,
-			int price) {
+			int price, long barCode) {
 		String suffix = "create_branchproduct2";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
-					null, brand, size, measure, price);
+					null, brand, size, measure, price, barCode);
 			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
 					bpJSON, category.toJSON());
 			if (response.length() == 0) {
@@ -377,12 +380,12 @@ public class RPCUtils {
 
 	public static ERROR createBranchProduct(Branch branch, String name,
 			String brand, String category, double size, String measure,
-			int price) {
+			int price, long barCode) {
 		String suffix = "create_branchproduct3";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
-					category, brand, size, measure, price);
+					category, brand, size, measure, price, barCode);
 			JSONObject response;
 			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON);
 			if (response.length() == 0) {
@@ -447,8 +450,7 @@ public class RPCUtils {
 		try {
 			JSONObject pId = JSONBuilder.toJSON("productId", productId);
 			JSONObject bId = JSONBuilder.toJSON("branchId", branchId);
-			JSONObject obj = HTTPUtils.doJSONPost(url, pId,
-					bId);
+			JSONObject obj = HTTPUtils.doJSONPost(url, pId, bId);
 			if (obj.length() == 0) {
 				return null;
 			}

@@ -13,9 +13,6 @@ import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,9 +23,8 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
-public class GoogleMapsActivity extends MapActivity implements LocationListener {
+public class GoogleMapsActivity extends MapActivity {
 	private GeoPoint src;
-	private LocationManager locationManager;
 	private MapView mapView;
 	private MapController mapController;
 	private List<Segment> directions;
@@ -105,18 +101,6 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		src = MapUtils.getLocation();
-		locationManager = (LocationManager) this
-				.getSystemService(LOCATION_SERVICE);
-		Location location = locationManager
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		if (location == null) {
-			location = locationManager
-					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		}
-		if (location != null) {
-			Log.d(TAGS.LOCATION, location.toString());
-			onLocationChanged(location);
-		}
 		createGoogle();
 	}
 
@@ -169,41 +153,6 @@ public class GoogleMapsActivity extends MapActivity implements LocationListener 
 		Route r = parser.parse();
 		directions = r.getSegments();
 		return r;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-				1000, 10, this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		locationManager.removeUpdates(this);
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		Log.d(TAGS.LOCATION,
-				"onLocationChanged with location " + location.toString());
-		src = new GeoPoint((int) (location.getLatitude() * 1E6),
-				(int) (location.getLongitude() * 1E6));
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-
 	}
 
 	@Override

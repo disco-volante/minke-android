@@ -26,6 +26,9 @@ public class UpdateDataBGTask extends LoadTask {
 			return ERROR.CLIENT;
 		}
 		ERROR error = RPCUtils.retrieveAll(context);
+		if(!error.equals(ERROR.SUCCESS)){
+			error = RPCUtils.retrieveAll(context);
+		}
 		if(error == ERROR.SUCCESS){
 			return EntityUtils.loadAll(context);
 		}

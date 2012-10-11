@@ -35,7 +35,7 @@ public class ProductListAdapter extends ItemListAdapter<Product> {
 
 			}
 		});
-		animateItem(product, rowView);
+		//animateItem(product, rowView);
 		return rowView;
 	}
 

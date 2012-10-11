@@ -95,13 +95,14 @@ public class JSONBuilder {
 	}
 
 	public static JSONObject BranchProductProtoToJSON(String name,
-			String category, String brand, double size, String measure, int price)
+			String category, String brand, double size, String measure, int price, long barCode)
 			throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "branchProductProto");
 		obj.put("name", name);
 		obj.put("size", size);
 		obj.put("price", price);
+		obj.put("barCode", barCode);
 		obj.put("measure", measure);
 		if (category != null) {
 			obj.put("categoryName", category);
@@ -127,5 +128,7 @@ public class JSONBuilder {
 		}
 		return obj;
 	}
+	
+	
 
 }

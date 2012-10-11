@@ -116,6 +116,10 @@ public class MapUtils {
 	}
 
 	public static ERROR refreshLocation(LocationManager locationManager) {
+		branch = null;
+		if(point != null){
+			return ERROR.SUCCESS;
+		}
 		if (Debug.EMULATOR) {
 			point = new GeoPoint((int) (-33 * 1E6), (int) (18 * 1E6));
 			return ERROR.SUCCESS;
@@ -145,6 +149,12 @@ public class MapUtils {
 
 	public static void setUserBranch(Branch _branch) {
 		branch = _branch;
+	}
+
+	public static void setLocation(float lastLat, float lastLong) {
+		point = new GeoPoint((int) (lastLat * 1E6),
+				(int) (lastLong * 1E6));
+		branch = null;
 	}
 
 }

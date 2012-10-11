@@ -5,18 +5,18 @@ import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.TextView;
+import android.widget.EditText;
 
 public class TextErrorWatcher implements TextWatcher {
-	TextView view;
+	EditText view;
 	private boolean numeric;
 	private Context context;
 
-	public TextErrorWatcher(Context context, TextView view, boolean numeric) {
+	public TextErrorWatcher(Context context, EditText view, boolean numeric) {
 		this.view = view;
 		this.numeric = numeric;
-		afterTextChanged(view.getEditableText());
 		this.context = context;
+		afterTextChanged(view.getEditableText());
 	}
 
 	@Override
@@ -26,6 +26,9 @@ public class TextErrorWatcher implements TextWatcher {
 		}
 		else if (numeric && !s.toString().matches(Constants.DECIMALS)) {
 			view.setError(context.getString(R.string.str_input_numeric));
+		}
+		else{
+			view.setError(null);
 		}
 	}
 

@@ -155,7 +155,10 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 					ft.detach(mCurrentTab.getFragment());
 				}
 			}
-			if (mCurrentTab != null && !backPress) {
+			if (mCurrentTab != null
+					&& !backPress
+					&& !(mCurrentTab.getClassName().equals(NAMES.BRANCH) || mCurrentTab
+							.getClassName().equals(NAMES.BRANCHPRODUCT))) {
 				tagStack.push(mCurrentTab.getTag());
 				classStack.push(mCurrentTab.getClassName());
 			}

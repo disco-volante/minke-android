@@ -8,6 +8,7 @@ import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -109,7 +111,7 @@ public class ProductSearchFragment extends SherlockFragment {
 	}
 
 	protected void addItem(Object entity) {
-		if (entity != null) {
+		if (entity != null && !SearchUtils.getAddedCategories().contains(entity)&& !SearchUtils.getAddedProducts().contains(entity)) {
 			if (SearchUtils.isProductsActive()) {
 				SearchUtils.addProduct((Product) entity);
 				productListAdapter.notifyDataSetChanged();
@@ -118,6 +120,13 @@ public class ProductSearchFragment extends SherlockFragment {
 				categoryListAdapter.notifyDataSetChanged();
 			}
 			searchBox.setText("");
+		}
+		else{
+			Toast msg = Toast.makeText(this.getActivity(), getString(R.string.str_added),
+					Toast.LENGTH_LONG);
+			msg.setGravity(Gravity.CENTER_VERTICAL,
+					Gravity.CENTER_HORIZONTAL, 0);
+			msg.show();
 		}
 
 	}
