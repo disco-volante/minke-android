@@ -109,13 +109,24 @@ public class HomeActivity extends SherlockFragmentActivity {
 			return true;
 		case R.id.menu_item_settings:
 			startActivity(IntentUtils.getSettingsIntent(this));
-			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+			return true;
+		case R.id.menu_item_refresh:
+			update();
 			return true;
 		case android.R.id.home:
 			mTabManager.showParentFragment();
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void startActivity(Intent intent) {
+		super.startActivity(intent);
+		if (PreferencesUtils.getAnimationLevel() != Constants.NONE) {
+			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+		}
+
 	}
 
 	public void changeTab(String tag, String className) {
@@ -133,7 +144,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	public void showHistories(View view) {
 		startActivity(IntentUtils.getGraphIntent(this));
-		overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 	}
 
 	public void setBranch(View view) {
@@ -203,7 +213,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 					public void onClick(DialogInterface dialog, int id) {
 						startActivity(IntentUtils
 								.getMapIntent(HomeActivity.this));
-						overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 					}
 				});
 		builder.setNegativeButton(getString(R.string.cancel),
@@ -225,13 +234,17 @@ public class HomeActivity extends SherlockFragmentActivity {
 		} else if (!EntityUtils.isLoaded()) {
 			if (PreferencesUtils.isFirstTime()
 					|| PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
-				Updater updater = new Updater();
-				updater.execute();
+				update();
 			} else {
 				LoadDataFGTask local = new LoadDataFGTask(this);
 				local.execute();
 			}
 		}
+	}
+
+	private void update() {
+		Updater updater = new Updater();
+		updater.execute();
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -334,8 +347,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
-							int price = (int)(Double.parseDouble(updatePriceText
-									.getText().toString())*100);
+							int price = (int) (Double
+									.parseDouble(updatePriceText.getText()
+											.toString()) * 100);
 							UpdateProductTask task = new UpdateProductTask(
 									found, price);
 							task.execute();

@@ -14,7 +14,8 @@ public class PreferencesUtils {
 	private static long lastUpdate = -1;
 	private static boolean firstTime = false;
 	private static boolean loaded = false;
-	private static boolean 		checkServer;
+	private static boolean checkServer;
+	private static int animationLevel;
 
 	public static int getUpdateFrequency() {
 		return updateFrequency;
@@ -74,6 +75,7 @@ public class PreferencesUtils {
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
 				Constants.NO_FREQUENCY_SET + "")));
 		setCheckServer(prefs.getBoolean("check_server", false));
+		setAnimationLevel(prefs.getInt("animation", 1));
 		setUpdateInterval();
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
@@ -86,8 +88,12 @@ public class PreferencesUtils {
 
 	}
 
+	private static void setAnimationLevel(int level) {
+		animationLevel = level;
+	}
+
 	private static void setCheckServer(boolean _checkServer) {
-		checkServer = _checkServer;		
+		checkServer = _checkServer;
 	}
 
 	public static void loadLastUpdate(long found) {
@@ -106,6 +112,10 @@ public class PreferencesUtils {
 
 	public static boolean checkServer() {
 		return checkServer;
+	}
+
+	public static int getAnimationLevel() {
+		return animationLevel;
 	}
 
 }

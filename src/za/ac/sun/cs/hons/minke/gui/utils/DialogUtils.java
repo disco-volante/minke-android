@@ -1,10 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.utils;
 
-import java.util.List;
-
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
-import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.app.Activity;
@@ -55,22 +52,7 @@ public class DialogUtils {
 		infoDlg.setMessage(context.getString(R.string.dlg_info));
 		return infoDlg;
 	}
-	public static Builder getDirectionsDialog(Context context,
-			List<Segment> items) {
-		StringBuilder msg = new StringBuilder();
-		int i = 0;
-		double prev = 0.0;
-		for (Segment s : items) {
-			i++;
-			msg.append(i);
-			msg.append(") ");
-			msg.append(prev + " -> " + s.getDistance());
-			msg.append(" km : ");
-			msg.append(s.getInstruction());
-			msg.append(context.getString(R.string.str_continue));
-			msg.append(getDist(s.getLength()));
-			prev = s.getDistance();
-		}
+	public static Builder getDirectionsDialog(Context context) {
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
 		dlg.setTitle(context.getString(R.string.directions));
 		dlg.setIcon(R.drawable.directions);
@@ -80,7 +62,6 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		dlg.setMessage(msg.toString());
 		return dlg;
 	}
 
@@ -115,14 +96,7 @@ public class DialogUtils {
 		return dlg;
 	}
 
-	private static String getDist(int length) {
-		if (length > 1000) {
-			double actual = ((double) length) / 1000;
-			return actual + "km.\n";
-		} else {
-			return length + "m.\n";
-		}
-	}
+
 
 	private static CharSequence getErrorMessage(ERROR error, Context context) {
 		switch (error) {

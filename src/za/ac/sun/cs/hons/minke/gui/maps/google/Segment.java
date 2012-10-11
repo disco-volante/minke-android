@@ -11,6 +11,7 @@ public class Segment {
     private int length;
     /** Distance covered. **/
     private double distance;
+	private String message;
 
     /**
      * Create an empty segment.
@@ -98,7 +99,15 @@ public class Segment {
     }
     @Override
     public String toString(){
+    	if(message != null){
+    		return message;
+    	}
     	return instruction;
     }
+
+
+	public void setMessage(String _message) {
+		this.message = _message;		
+	}
 
 }

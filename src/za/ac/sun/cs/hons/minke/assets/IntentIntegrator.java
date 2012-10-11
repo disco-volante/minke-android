@@ -141,7 +141,6 @@ public final class IntentIntegrator {
 		intentScan.addCategory(Intent.CATEGORY_DEFAULT);
 		try {
 			activity.startActivityForResult(intentScan, REQUEST_CODE);
-			activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 			return null;
 		} catch (ActivityNotFoundException e) {
 			return showDownloadDialog(activity,
@@ -165,9 +164,6 @@ public final class IntentIntegrator {
 								.parse("market://search?q=pname:com.google.zxing.client.android");
 						Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 						activity.startActivity(intent);
-						activity.overridePendingTransition(R.anim.fadein,
-								R.anim.fadeout);
-
 					}
 				});
 		downloadDialog.setNegativeButton(stringButtonNo,
@@ -257,7 +253,6 @@ public final class IntentIntegrator {
 		intent.putExtra("ENCODE_DATA", text);
 		try {
 			activity.startActivity(intent);
-			activity.overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		} catch (ActivityNotFoundException e) {
 			showDownloadDialog(activity, stringTitle, stringMessage,
 					stringButtonYes, stringButtonNo);

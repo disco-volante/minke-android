@@ -24,5 +24,8 @@ public class Constants {
 	public static final long DAY = 86400000;
 	public static final long WEEK = 604800000;
 	public static final String WEBSITE = "https://github.com/pieterjordaan/minke-android";
+	public static final int FULL = 0;
+	public static final int STANDARD = 1;
+	public static final int NONE = 2;
 
 }

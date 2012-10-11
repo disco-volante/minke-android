@@ -1,19 +1,13 @@
 package za.ac.sun.cs.hons.minke.receivers;
 
-import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
-
-import com.littlefluffytoys.littlefluffylocationlibrary.LocationInfo;
-import com.littlefluffytoys.littlefluffylocationlibrary.LocationLibraryConstants;
-
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import com.littlefluffytoys.littlefluffylocationlibrary.LocationInfo;
+import com.littlefluffytoys.littlefluffylocationlibrary.LocationLibraryConstants;
 
 public class LocationBroadcastReceiver extends BroadcastReceiver {
 	@Override
@@ -23,36 +17,6 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
 
 		final LocationInfo locationInfo = (LocationInfo) intent
 				.getSerializableExtra(LocationLibraryConstants.LOCATION_BROADCAST_EXTRA_LOCATIONINFO);
-
-		// The broadcast has woken up your app, and so you could do anything now
-		// -
-		// perhaps send the location to a server, or refresh an on-screen
-		// widget.
-		// We're gonna create a notification.
-
-		// Construct the notification.
-		Notification notification = new Notification(R.drawable.ic_launcher,
-				"Locaton updated " + locationInfo.getTimestampAgeInSeconds()
-						+ " seconds ago", System.currentTimeMillis());
-
-		Intent contentIntent = new Intent(context, HomeActivity.class);
-		PendingIntent contentPendingIntent = PendingIntent.getActivity(context,
-				0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		notification
-				.setLatestEventInfo(
-						context,
-						"Location update broadcast received",
-						"Timestamped "
-								+ LocationInfo
-										.formatTimeAndDay(
-												locationInfo.lastLocationUpdateTimestamp,
-												true), contentPendingIntent);
-
-		// Trigger the notification.
-		((NotificationManager) context
-				.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1234,
-				notification);
 		MapUtils.setLocation(locationInfo.lastLat, locationInfo.lastLong);
 
 	}

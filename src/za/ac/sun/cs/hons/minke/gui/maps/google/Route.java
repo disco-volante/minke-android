@@ -8,7 +8,7 @@ import com.google.android.maps.GeoPoint;
 public class Route {
     private String name;
     private final List<GeoPoint> points;
-	private List<Segment> segments;
+	private ArrayList<Segment> segments;
     private String copyright;
     private String warning;
     private String country;
@@ -36,7 +36,7 @@ public class Route {
             segments.add(s);
     }
 
-    public List<Segment> getSegments() {
+    public ArrayList<Segment> getSegments() {
             return segments;
     }
 

@@ -3,12 +3,17 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
+import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.app.Activity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,16 +39,16 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 	}
 
 	public ItemListAdapter(Activity activity, ArrayList<T> added) {
-		super(activity, R.layout.row_default, added);
+		super(activity, R.layout.row_removable, added);
 		this.setActivity(activity);
-		rowType = R.layout.row_default;
+		rowType = R.layout.row_removable;
 
 	}
 
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
-		
+
 	}
 
 	@Override
@@ -54,16 +59,18 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 			rowView = inflate(rowView);
 		}
 		initHolder(item, rowView);
-	//	animateItem(item, rowView);
+		if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
+			animateItem(item, rowView);
+		}
 		return rowView;
 	}
 
-/*	protected void animateItem(T item, View rowView) {
-			Animation down = AnimationUtils.loadAnimation(getActivity(),
-					R.anim.slide_down);
-			rowView.setVisibility(View.VISIBLE);
-			rowView.startAnimation(down);
-	}*/
+	protected void animateItem(T item, View rowView) {
+		Animation down = AnimationUtils.loadAnimation(getActivity(),
+				R.anim.slide_down);
+		rowView.setVisibility(View.VISIBLE);
+		rowView.startAnimation(down);
+	}
 
 	protected ViewHolder initHolder(final T item, View rowView) {
 		final ViewHolder holder = (ViewHolder) rowView.getTag();
@@ -82,26 +89,31 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 
 			@Override
 			public void onClick(View view) {
-				removeFromSearch(item);
+				if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
+					Animation up = AnimationUtils.loadAnimation(getActivity(),
+							R.anim.slide_up);
+					up.setAnimationListener(new AnimationListener() {
 
-			/*	Animation up = AnimationUtils.loadAnimation(getActivity(),
-						R.anim.slide_up);
-				up.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation arg0) {
-						removeFromSearch(item);
-					}
+						@Override
+						public void onAnimationEnd(Animation arg0) {
+							removeFromSearch(item);
+						}
 
-					@Override
-					public void onAnimationRepeat(Animation arg0) {
-					}
+						@Override
+						public void onAnimationRepeat(Animation arg0) {
+						}
 
-					@Override
-					public void onAnimationStart(Animation arg0) {
-					}
+						@Override
+						public void onAnimationStart(Animation arg0) {
+						}
 
-				});
-				((View) view.getParent()).startAnimation(up);*/
+					});
+					((View) view.getParent()).startAnimation(up);
+
+				} else {
+					removeFromSearch(item);
+				}
+
 			}
 		});
 		return holder;
@@ -117,7 +129,9 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 			viewHolder.other_btn = (Button) rowView
 					.findViewById(R.id.btn_quantity);
 		}
-		//rowView.setVisibility(View.INVISIBLE);
+		if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
+			rowView.setVisibility(View.INVISIBLE);
+		}
 		rowView.setTag(viewHolder);
 		return rowView;
 	}
