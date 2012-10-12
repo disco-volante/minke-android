@@ -56,13 +56,17 @@ public class PreferencesUtils {
 		editor.commit();
 	}
 
-	public static void setFirstTime(SharedPreferences prefs) {
-		firstTime = prefs.getBoolean("first_time", true);
-		if (firstTime) {
-			SharedPreferences.Editor editor = prefs.edit();
-			editor.putBoolean("first_time", false);
-			editor.commit();
-		}
+	public static void setFirstTime(boolean _firstTime) {
+		firstTime = _firstTime;
+	}
+
+	public static void changeFirstTime(Context context, boolean _firstTime) {
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean("first_time", _firstTime);
+		editor.commit();
+		firstTime = _firstTime;
 	}
 
 	public static boolean isFirstTime() {
@@ -79,7 +83,8 @@ public class PreferencesUtils {
 		setUpdateInterval();
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
-		setFirstTime(prefs);
+
+		setFirstTime(prefs.getBoolean("first_time", true));
 		Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
 				+ updateFrequency + ";\n interval-> " + updateInterval
 				+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "

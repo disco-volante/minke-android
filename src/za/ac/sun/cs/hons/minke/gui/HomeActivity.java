@@ -454,6 +454,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected void success() {
 			super.success();
+			if (PreferencesUtils.isFirstTime()) {
+				PreferencesUtils.changeFirstTime(context, false);
+			}
 			LoadDataFGTask local = new LoadDataFGTask(HomeActivity.this);
 			local.execute();
 		}
