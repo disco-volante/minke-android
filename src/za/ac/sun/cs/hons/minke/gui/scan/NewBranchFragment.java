@@ -251,6 +251,9 @@ public class NewBranchFragment extends SherlockFragment {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
+			if(RPCUtils.startServer() == ERROR.SERVER){
+				return ERROR.SERVER;
+			}
 			if (store == null) {
 				if (city == null) {
 					return RPCUtils.createBranch(province, lat, lon, cityName,

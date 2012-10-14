@@ -224,6 +224,9 @@ public class NewProductFragment extends SherlockFragment {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
+			if(RPCUtils.startServer() == ERROR.SERVER){
+				return ERROR.SERVER;
+			}
 			if (brand != null && category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
 						name, brand, category, size, measure, price,

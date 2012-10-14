@@ -25,6 +25,19 @@ import android.content.Context;
 import android.util.Log;
 
 public class RPCUtils {
+	public static ERROR startServer() {
+		String url = Constants.URL_PREFIX;
+		try {
+			if (HTTPUtils.startServer(url)) {
+				return ERROR.SUCCESS;
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return ERROR.SERVER;
+	}
 
 	public static ERROR retrieveAll(Context context) {
 		String suffix = "get_all";
@@ -32,7 +45,7 @@ public class RPCUtils {
 
 		try {
 			JSONObject obj;
-			obj = HTTPUtils.doGetWithResponse(url);
+			obj = HTTPUtils.doJSONGet(url);
 
 			if (obj == null || obj.isNull("branches")) {
 				return ERROR.SERVER;
@@ -82,11 +95,13 @@ public class RPCUtils {
 		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
-			JSONObject obj = HTTPUtils.doJSONPost(url,
-					bp.toJSON(), JSONBuilder.toJSON("price", price));
+			JSONObject obj = HTTPUtils.doJSONPost(url, bp.toJSON(),
+					JSONBuilder.toJSON("price", price));
 			Log.v(TAGS.JSON, obj.toString());
-			bp = JSONParser.parseBranchProduct(obj.getJSONObject("branchProduct"));
-			DatePrice dp = JSONParser.parseDatePrice(obj.getJSONObject("datePrice"));
+			bp = JSONParser.parseBranchProduct(obj
+					.getJSONObject("branchProduct"));
+			DatePrice dp = JSONParser.parseDatePrice(obj
+					.getJSONObject("datePrice"));
 			EntityUtils.addDatePrice(dp);
 			bp = EntityUtils.updateBranchProduct(bp);
 			ScanUtils.setBranchProduct(bp);

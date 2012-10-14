@@ -69,8 +69,18 @@ public class HTTPUtils {
 		}
 		return total.toString();
 	}
-
-	public static JSONObject doGetWithResponse(String mUrl)
+	public static boolean startServer(String mUrl) throws ClientProtocolException, IOException {
+		Log.v(TAGS.HTTP, mUrl);
+		HttpGet getMethod = new HttpGet(mUrl+"start");
+		DefaultHttpClient httpClient = getClient();
+		HttpResponse httpresponse = httpClient.execute(getMethod);
+		HttpEntity resultentity = httpresponse.getEntity();
+		InputStream inputstream = resultentity.getContent();
+		String resultstring = convertStreamToString(inputstream);
+		Log.v(TAGS.JSON, resultstring);
+		return resultstring.equals("STARTED");
+	}
+	public static JSONObject doJSONGet(String mUrl)
 			throws JSONException, ClientProtocolException, IOException {
 		Log.v(TAGS.HTTP, mUrl);
 		HttpGet getMethod = new HttpGet(mUrl);
@@ -104,5 +114,7 @@ public class HTTPUtils {
 		ret = new DefaultHttpClient(manager, params);
 		return ret;
 	}
+
+
 
 }

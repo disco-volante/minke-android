@@ -43,7 +43,7 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 		View rowView = convertView;
 		final Segment item = getItem(position);
 		if (rowView == null) {
-			rowView = inflate(rowView);
+			rowView = inflate();
 		}
 		initHolder(item, rowView);
 		return rowView;
@@ -75,9 +75,9 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 		return holder;
 	}
 
-	protected View inflate(View rowView) {
+	protected View inflate() {
 		LayoutInflater inflater = activity.getLayoutInflater();
-		rowView = inflater.inflate(rowType, null);
+		View rowView = inflater.inflate(rowType, null);
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_dir);
 		viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_dir);

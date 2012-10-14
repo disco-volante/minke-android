@@ -3,6 +3,7 @@ package za.ac.sun.cs.hons.minke.gui.prefs;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.services.IUpdateService;
 import za.ac.sun.cs.hons.minke.services.UpdateService;
+import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class SettingsActivity extends PreferenceActivity {
 					e.printStackTrace();
 				}
 			}
+			PreferencesUtils.loadPreferences(SettingsActivity.this);
 		}
 	};
 
@@ -49,6 +51,7 @@ public class SettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 		prefs = PreferenceManager

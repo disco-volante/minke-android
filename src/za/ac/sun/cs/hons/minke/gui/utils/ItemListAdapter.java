@@ -56,7 +56,7 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 		View rowView = convertView;
 		final T item = getItem(position);
 		if (rowView == null) {
-			rowView = inflate(rowView);
+			rowView = inflate();
 		}
 		initHolder(item, rowView);
 		if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
@@ -119,9 +119,9 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 		return holder;
 	}
 
-	protected View inflate(View rowView) {
+	protected View inflate() {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		rowView = inflater.inflate(rowType, null);
+		View rowView = inflater.inflate(rowType, null);
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_remove);
 		viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_remove);

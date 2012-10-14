@@ -24,7 +24,7 @@ public class ProductListAdapter extends ItemListAdapter<Product> {
 		View rowView = convertView;
 		final Product product = getItem(position);
 		if (rowView == null) {
-			rowView = inflate(rowView);
+			rowView = inflate();
 		}
 		final ViewHolder holder = initHolder(product, rowView);
 

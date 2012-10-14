@@ -469,7 +469,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					new OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dlg, int arg1) {
-							nextAction();
+							update();
 							dlg.cancel();
 						}
 
@@ -649,6 +649,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected ERROR retrieve() {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
+			}
+			if(RPCUtils.startServer() == ERROR.SERVER){
+				return ERROR.SERVER;
 			}
 			return RPCUtils.updateBranchProduct(bp, price);
 		}

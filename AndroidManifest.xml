@@ -8,6 +8,18 @@
         android:minSdkVersion="11"
         android:targetSdkVersion="15" />
 
+    <permission
+        android:name="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION"
+        android:description="@string/update_location_desc"
+        android:label="@string/update_location"
+        android:permissionGroup="android.permission-group.LOCATION"
+        android:protectionLevel="normal" />
+    
+    <instrumentation
+        android:targetPackage="za.ac.sun.cs.hons.minke"
+        android:name="android.test.InstrumentationTestRunner" />
+
+    <uses-permission android:name="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -59,7 +71,8 @@
         </receiver>
         <receiver
             android:name="com.littlefluffytoys.littlefluffylocationlibrary.PassiveLocationChangedReceiver"
-            android:exported="true" />
+            android:exported="true"
+            android:permission="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" />
         <receiver
             android:name="com.littlefluffytoys.littlefluffylocationlibrary.StartupBroadcastReceiver"
             android:exported="true" >
@@ -67,7 +80,9 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receivers.LocationBroadcastReceiver" >
+        <receiver
+            android:name=".receivers.LocationBroadcastReceiver"
+            android:permission="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" >
             <intent-filter>
                 <action
                     android:name="mobi.littlefluffytoys.littlefluffytestclient.littlefluffylocationlibrary.LOCATION_CHANGED"

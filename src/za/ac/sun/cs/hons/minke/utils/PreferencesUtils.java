@@ -79,7 +79,7 @@ public class PreferencesUtils {
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
 				Constants.NO_FREQUENCY_SET + "")));
 		setCheckServer(prefs.getBoolean("check_server", false));
-		setAnimationLevel(prefs.getInt("animation", 1));
+		setAnimationLevel(Integer.parseInt(prefs.getString("animation", Constants.STANDARD+"")));
 		setUpdateInterval();
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
@@ -88,7 +88,7 @@ public class PreferencesUtils {
 		Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
 				+ updateFrequency + ";\n interval-> " + updateInterval
 				+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
-				+ firstTime);
+				+ firstTime +";\n animation-> "+animationLevel);
 		return ERROR.SUCCESS;
 
 	}

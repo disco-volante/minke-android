@@ -105,6 +105,7 @@ public class GoogleMapsActivity extends MapActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
 		src = MapUtils.getLocation();
 		createGoogle();

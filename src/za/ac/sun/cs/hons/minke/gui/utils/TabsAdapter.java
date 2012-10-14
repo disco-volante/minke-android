@@ -8,10 +8,12 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.widget.TabHost;
 
@@ -172,6 +174,7 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 
 	private void setAnimation(String tabId, String className,
 			FragmentTransaction ft) {
+		Log.v(TAGS.TABS,"animation level"+PreferencesUtils.getAnimationLevel());
 		if (PreferencesUtils.getAnimationLevel() == Constants.NONE) {
 			return;
 		}

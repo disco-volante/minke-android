@@ -2,7 +2,10 @@ package za.ac.sun.cs.hons.minke.gui.graph;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -31,6 +34,8 @@ public class TimelineChart {
 	private boolean loaded;
 	private XYMultipleSeriesRenderer renderer;
 	private String[] titles;
+	public HashMap<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
+	public HashSet<String> added, removed;
 
 	public TimelineChart(GraphActivity _activity) {
 		this.activity = _activity;
@@ -159,10 +164,26 @@ public class TimelineChart {
 				series.add(xV[k], yV[k]);
 			}
 			dataset.addSeries(series);
+			seriesMap.put(titles[i], series);
 		}
+		added = new HashSet<String>();
+		removed = new HashSet<String>();
+		added.addAll(Arrays.asList(titles));
 		return dataset;
 	}
 
+	public void removeSeries(String title){
+		added.remove(title);
+		removed.add(title);
+		dataset.removeSeries(seriesMap.get(title));
+	}
+	
+	public void addSeries(String title){
+		added.add(title);
+		removed.remove(title);
+		dataset.addSeries(seriesMap.get(title));
+	}
+	
 	/**
 	 * Builds an XY multiple series renderer.
 	 * 
@@ -179,7 +200,7 @@ public class TimelineChart {
 		renderer.setChartTitleTextSize(40);
 		renderer.setLabelsTextSize(20);
 		renderer.setLegendTextSize(20);
-		renderer.setPointSize(5f);
+		renderer.setPointSize(3f);
 		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int length = colors.length;
@@ -238,6 +259,14 @@ public class TimelineChart {
 
 	public boolean isLoaded() {
 		return loaded;
+	}
+
+	public  HashSet<String> getAdded() {
+		return added;
+	}
+	
+	public  HashSet<String> getRemoved() {
+		return removed;
 	}
 
 }

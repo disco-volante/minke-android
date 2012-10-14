@@ -1,9 +1,11 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
 import android.content.Context;
+import android.util.Log;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 
 public class UpdateDataBGTask extends LoadTask {
 
@@ -17,13 +19,16 @@ public class UpdateDataBGTask extends LoadTask {
 
 	@Override
 	protected void failure(ERROR error_code) {
-		UpdateDataBGTask.this.execute();
+		Log.v(TAGS.HTTP, "ERROR");
 	}
 
 	@Override
 	protected ERROR retrieve() {
 		if(!isNetworkAvailable()){
 			return ERROR.CLIENT;
+		}
+		if(RPCUtils.startServer() == ERROR.SERVER){
+			return ERROR.SERVER;
 		}
 		ERROR error = RPCUtils.retrieveAll(context);
 		if(!error.equals(ERROR.SUCCESS)){

@@ -52,6 +52,20 @@ public class DialogUtils {
 		infoDlg.setMessage(context.getString(R.string.dlg_info));
 		return infoDlg;
 	}
+
+	public static Builder getChartDialog(Context context) {
+		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
+		dlg.setTitle(context.getString(R.string.edit_chart));
+		dlg.setIcon(R.drawable.chart);
+		dlg.setNegativeButton(context.getString(R.string.cancel),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
+					}
+				});
+		return dlg;
+	}
+
 	public static Builder getDirectionsDialog(Context context) {
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
 		dlg.setTitle(context.getString(R.string.directions));
@@ -95,8 +109,6 @@ public class DialogUtils {
 				});
 		return dlg;
 	}
-
-
 
 	private static CharSequence getErrorMessage(ERROR error, Context context) {
 		switch (error) {
@@ -157,7 +169,5 @@ public class DialogUtils {
 		}
 		return null;
 	}
-
-
 
 }

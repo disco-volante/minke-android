@@ -60,11 +60,30 @@ public class EntityUtils {
 	private static BranchDAO branchDAO;
 	private static BranchProductDAO branchProductDAO;
 	private static ProductCategoryDAO productCategoryDAO;
+	private static Object lock = new Object();
+
+	public static ERROR init(Context context) {
+		synchronized (lock) {
+			dbHelper = new BaseDBHelper(context);
+			countryDAO = new CountryDAO(dbHelper);
+			storeDAO = new StoreDAO(dbHelper);
+			categoryDAO = new CategoryDAO(dbHelper);
+			brandDAO = new BrandDAO(dbHelper);
+			datePriceDAO = new DatePriceDAO(dbHelper);
+			provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
+			cityDAO = new CityDAO(dbHelper, provinceDAO);
+			cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
+			productDAO = new ProductDAO(dbHelper, brandDAO);
+			branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
+			branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
+					productDAO, branchDAO);
+			productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
+					categoryDAO);
+		}
+		return ERROR.SUCCESS;
+	}
 
 	public static List<Category> getCategories() {
-		if (categories == null) {
-			categories = new ArrayList<Category>();
-		}
 		return categories;
 	}
 
@@ -73,9 +92,6 @@ public class EntityUtils {
 	}
 
 	public static ArrayList<Product> getProducts() {
-		if (products == null) {
-			products = new ArrayList<Product>();
-		}
 		return products;
 	}
 
@@ -84,9 +100,6 @@ public class EntityUtils {
 	}
 
 	public static ArrayList<Branch> getBranches() {
-		if (branches == null) {
-			branches = new ArrayList<Branch>();
-		}
 		return branches;
 	}
 
@@ -96,9 +109,6 @@ public class EntityUtils {
 	}
 
 	public static ArrayList<Brand> getBrands() {
-		if (brands == null) {
-			brands = new ArrayList<Brand>();
-		}
 		return brands;
 	}
 
@@ -164,75 +174,62 @@ public class EntityUtils {
 
 	public static void persistBranchProducts(Context context,
 			ArrayList<BranchProduct> _bps) {
-		init(context);
 		branchProductDAO.addAll(_bps);
 	}
 
 	public static void persistProductCategories(Context context,
 			ArrayList<ProductCategory> _pcs) {
-		init(context);
 		productCategoryDAO.addAll(_pcs);
 	}
 
 	public static void persistBranches(Context context,
 			ArrayList<Branch> _branches) {
-		init(context);
 		branchDAO.addAll(_branches);
 	}
 
 	public static void persistCountries(Context context,
 			ArrayList<Country> _countries) {
-		init(context);
 		countryDAO.addAll(_countries);
 	}
 
 	public static void persistStores(Context context, ArrayList<Store> _stores) {
-		init(context);
 		storeDAO.addAll(_stores);
 	}
 
 	public static void persistBrands(Context context, ArrayList<Brand> _brands) {
-		init(context);
 		brandDAO.addAll(_brands);
 	}
 
 	public static void persistDatePrices(Context context,
 			ArrayList<DatePrice> _datePrices) {
-		init(context);
 		datePriceDAO.addAll(_datePrices);
 	}
 
 	public static void persistProvinces(Context context,
 			ArrayList<Province> _provinces) {
-		init(context);
 		provinceDAO.addAll(_provinces);
 	}
 
 	public static void persistCities(Context context, ArrayList<City> _cities) {
-		init(context);
 		cityDAO.addAll(_cities);
 	}
 
 	public static void persistCityLocations(Context context,
 			ArrayList<CityLocation> _cityLocations) {
-		init(context);
 		cityLocationDAO.addAll(_cityLocations);
 	}
 
 	public static void persistProducts(Context context,
 			ArrayList<Product> _products) {
-		init(context);
 		productDAO.addAll(_products);
 	}
 
 	public static void persistCategories(Context context,
 			ArrayList<Category> _categories) {
-		init(context);
 		categoryDAO.addAll(_categories);
 	}
 
 	public static ERROR loadAll(Context context) {
-		init(context);
 		setCountries(countryDAO.getAll());
 		setStores(storeDAO.getAll());
 		setCategories(categoryDAO.getAll());
@@ -248,26 +245,6 @@ public class EntityUtils {
 		loaded = true;
 		Log.v(TAGS.ENTITY, products.toString());
 		return ERROR.SUCCESS;
-	}
-
-	private static void init(Context context) {
-		if (dbHelper == null) {
-			dbHelper = new BaseDBHelper(context);
-			countryDAO = new CountryDAO(dbHelper);
-			storeDAO = new StoreDAO(dbHelper);
-			categoryDAO = new CategoryDAO(dbHelper);
-			brandDAO = new BrandDAO(dbHelper);
-			datePriceDAO = new DatePriceDAO(dbHelper);
-			provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
-			cityDAO = new CityDAO(dbHelper, provinceDAO);
-			cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
-			productDAO = new ProductDAO(dbHelper, brandDAO);
-			branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
-			branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
-					productDAO, branchDAO);
-			productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
-					categoryDAO);
-		}
 	}
 
 	public static ERROR retrieveBranches(ArrayList<Product> addedProducts) {
