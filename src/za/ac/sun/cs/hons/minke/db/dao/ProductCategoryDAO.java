@@ -7,23 +7,22 @@ import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-public class ProductCategoryDAO extends BaseDAO<ProductCategory>{
-
-	
+public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 
 	private ProductDAO productDAO;
 	private CategoryDAO categoryDAO;
 
-	public ProductCategoryDAO(BaseDBHelper dbHelper, ProductDAO productDAO, CategoryDAO categoryDAO) {
+	public ProductCategoryDAO(BaseDBHelper dbHelper, ProductDAO productDAO,
+			CategoryDAO categoryDAO) {
 		super(dbHelper, DBConstants.PC_TABLE, DBConstants.PC_COLUMNS);
 		this.productDAO = productDAO;
 		this.categoryDAO = categoryDAO;
 	}
-
 
 	@Override
 	protected ContentValues getContentValues(ProductCategory pc) {
@@ -34,14 +33,17 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory>{
 		return cv;
 	}
 
-
 	public ArrayList<ProductCategory> getAllByPID(long pid) {
-		return super.getAllByParameters(new String[] { DBConstants.PRODUCT_ID }, new String[] { String.valueOf(pid) });
+		return super.getAllByParameters(
+				new String[] { DBConstants.PRODUCT_ID },
+				new String[] { String.valueOf(pid) });
 
 	}
 
 	public ArrayList<ProductCategory> getAllByCID(long cid) {
-		return super.getAllByParameters(new String[] { DBConstants.CATEGORY_ID }, new String[] { String.valueOf(cid) });
+		return super.getAllByParameters(
+				new String[] { DBConstants.CATEGORY_ID },
+				new String[] { String.valueOf(cid) });
 
 	}
 
@@ -54,18 +56,20 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory>{
 	protected ProductCategory parse(Cursor cursor) {
 		ProductCategory pc = new ProductCategory();
 		pc.setId(cursor.getLong(cursor.getColumnIndex(DBConstants.CLOUD_ID)));
-		pc.setProductID(cursor.getLong(cursor.getColumnIndex(DBConstants.PRODUCT_ID)));
-		pc.setCategoryID(cursor.getLong(cursor.getColumnIndex(DBConstants.CATEGORY_ID)));
+		pc.setProductID(cursor.getLong(cursor
+				.getColumnIndex(DBConstants.PRODUCT_ID)));
+		pc.setCategoryID(cursor.getLong(cursor
+				.getColumnIndex(DBConstants.CATEGORY_ID)));
 		pc.setCategory(categoryDAO.getByCloudID(pc.getCategoryID()));
 		pc.setProduct(productDAO.getByCloudID(pc.getProductID()));
 		return pc;
 	}
 
-
 	public ArrayList<Product> getProducts(long id) {
 		ArrayList<Product> entries = new ArrayList<Product>();
-		Cursor cursor = database.query(table, columns, getSelection(new String[]{DBConstants.CATEGORY_ID}),
-				new String[]{String.valueOf(id)}, null, null, null);
+		Cursor cursor = database.query(table, columns,
+				getSelection(new String[] { DBConstants.CATEGORY_ID }),
+				new String[] { String.valueOf(id) }, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			ProductCategory entry = parse(cursor);
@@ -73,14 +77,17 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory>{
 			cursor.moveToNext();
 		}
 		cursor.close();
-		Log.d("DB", entries + " retrieved");
+		if (Debug.ON) {
+			Log.d("DB", entries + " retrieved");
+		}
 		return entries;
 	}
-	
+
 	public ArrayList<Category> getCategories(long id) {
 		ArrayList<Category> entries = new ArrayList<Category>();
-		Cursor cursor = database.query(table, columns, getSelection(new String[]{DBConstants.PRODUCT_ID}),
-				new String[]{String.valueOf(id)}, null, null, null);
+		Cursor cursor = database.query(table, columns,
+				getSelection(new String[] { DBConstants.PRODUCT_ID }),
+				new String[] { String.valueOf(id) }, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			ProductCategory entry = parse(cursor);
@@ -88,9 +95,10 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory>{
 			cursor.moveToNext();
 		}
 		cursor.close();
-		Log.d("DB", entries + " retrieved");
+		if (Debug.ON) {
+			Log.d("DB", entries + " retrieved");
+		}
 		return entries;
 	}
 
-	
 }

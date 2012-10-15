@@ -4,6 +4,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.services.IUpdateService;
 import za.ac.sun.cs.hons.minke.services.UpdateService;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,11 +13,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class SettingsActivity extends PreferenceActivity {
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
+
+public class SettingsActivity extends SherlockPreferenceActivity {
 	private IUpdateService updater;
 	private SharedPreferences prefs;
 	private UpdateConnection uConnection;
@@ -25,7 +28,9 @@ public class SettingsActivity extends PreferenceActivity {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences prefs,
 				String key) {
-			Log.d("PREF_CHANGE", key + " = " + prefs.getAll().get(key));
+			if (Debug.ON) {
+				Log.d("PREF_CHANGE", key + " = " + prefs.getAll().get(key));
+			}
 			if (key.equals("updating") && updater != null) {
 				try {
 					updater.iRestart();
@@ -51,13 +56,24 @@ public class SettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		addPreferencesFromResource(R.xml.preferences);
 		prefs = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
 		prefs.registerOnSharedPreferenceChangeListener(spChanged);
 		initService();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			onBackPressed();
+			return true;
+		}
+		return false;
 	}
 
 	private void initService() {

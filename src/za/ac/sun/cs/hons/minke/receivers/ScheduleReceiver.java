@@ -2,6 +2,7 @@ package za.ac.sun.cs.hons.minke.receivers;
 
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -12,7 +13,9 @@ import android.util.Log;
 public class ScheduleReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d("SCHEDULER", " Scheduler started");
+		if (Debug.ON) {
+			Log.d("SCHEDULER", " Scheduler started");
+		}
 		if (!PreferencesUtils.isLoaded()) {
 			PreferencesUtils.loadPreferences(context);
 		}

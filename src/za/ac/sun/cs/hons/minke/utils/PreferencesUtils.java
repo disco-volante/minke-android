@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -53,7 +54,7 @@ public class PreferencesUtils {
 				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putLong("last_update", lastUpdate);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static void setFirstTime(boolean _firstTime) {
@@ -65,7 +66,7 @@ public class PreferencesUtils {
 				.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putBoolean("first_time", _firstTime);
-		editor.commit();
+		editor.apply();
 		firstTime = _firstTime;
 	}
 
@@ -79,16 +80,18 @@ public class PreferencesUtils {
 		setUpdateFrequency(Integer.parseInt(prefs.getString("updating",
 				Constants.NO_FREQUENCY_SET + "")));
 		setCheckServer(prefs.getBoolean("check_server", false));
-		setAnimationLevel(Integer.parseInt(prefs.getString("animation", Constants.STANDARD+"")));
+		setAnimationLevel(Integer.parseInt(prefs.getString("animation",
+				Constants.STANDARD + "")));
 		setUpdateInterval();
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
-
 		setFirstTime(prefs.getBoolean("first_time", true));
-		Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
-				+ updateFrequency + ";\n interval-> " + updateInterval
-				+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
-				+ firstTime +";\n animation-> "+animationLevel);
+		if (Debug.ON) {
+			Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
+					+ updateFrequency + ";\n interval-> " + updateInterval
+					+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
+					+ firstTime + ";\n animation-> " + animationLevel);
+		}
 		return ERROR.SUCCESS;
 
 	}

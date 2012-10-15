@@ -1,5 +1,6 @@
 package za.ac.sun.cs.hons.minke.gui;
 
+import za.ac.sun.cs.hons.minke.MinkeApplication;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.assets.IntentIntegrator;
 import za.ac.sun.cs.hons.minke.assets.IntentResult;
@@ -34,7 +35,6 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -58,10 +58,17 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
+		if (Debug.ON) {
+			Log.v(TAGS.STATE, "started");
+			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+					.detectDiskReads().detectDiskWrites().detectNetwork()
+					.penaltyLog().build());
+			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+					.detectAll().build());
+		}
 		setContentView(R.layout.activity_home);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup();
 
@@ -76,19 +83,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 		mTabManager.addTab(
 				mTabHost.newTabSpec(VIEW.SHOP).setIndicator(
 						getString(R.string.shop)), NAMES.SHOP);
-
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString(VIEW.SCAN));
 		}
-		if (Debug.ON) {
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectDiskReads().detectDiskWrites().detectNetwork()
-					.penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().build());
-		}
-
-		nextAction();
+		new WaitTask().execute();
 	}
 
 	@Override
@@ -126,7 +124,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 		if (PreferencesUtils.getAnimationLevel() != Constants.NONE) {
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		}
-
 	}
 
 	public void changeTab(String tag, String className) {
@@ -224,22 +221,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		builder.create().show();
 	}
 
-	protected void nextAction() {
-		if (!PreferencesUtils.isLoaded()) {
-			PrefsTask prefTask = new PrefsTask();
-			prefTask.execute();
-		} else if (MapUtils.getLocation() == null) {
-			GetLocationTask task = new GetLocationTask();
-			task.execute();
-		} else if (!EntityUtils.isLoaded()) {
-			if (PreferencesUtils.isFirstTime()
-					|| PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
-				update();
-			} else {
-				LoadDataFGTask local = new LoadDataFGTask(this);
-				local.execute();
-			}
-		}
+	private void loadData() {
+		LoadDataFGTask local = new LoadDataFGTask(this);
+		local.execute();
 	}
 
 	private void update() {
@@ -325,7 +309,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	protected void editLocation() {
-		Log.v("LOCATION", MapUtils.getLocation().toString());
+		if (Debug.ON) {
+			Log.v("LOCATION", MapUtils.getLocation().toString());
+		}
 		changeTab(VIEW.SCAN, NAMES.BRANCH);
 	}
 
@@ -364,12 +350,18 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	@Override
 	public void onBackPressed() {
-		Log.v(TAGS.KEY_PRESS, "BACK PRESSED");
-		mTabManager.setBackPress(true);
-		if (!mTabManager.isStackEmpty()) {
-			mTabManager.goBack();
-		} else {
+		if (Debug.ON) {
+			Log.v(TAGS.KEY_PRESS, "BACK PRESSED");
+		}
+		if (mTabManager == null) {
 			super.onBackPressed();
+		} else {
+			mTabManager.setBackPress(true);
+			if (!mTabManager.isStackEmpty()) {
+				mTabManager.goBack();
+			} else {
+				super.onBackPressed();
+			}
 		}
 
 	}
@@ -457,8 +449,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (PreferencesUtils.isFirstTime()) {
 				PreferencesUtils.changeFirstTime(context, false);
 			}
-			LoadDataFGTask local = new LoadDataFGTask(HomeActivity.this);
-			local.execute();
+			loadData();
 		}
 
 		@Override
@@ -479,69 +470,37 @@ public class HomeActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	class PrefsTask extends ProgressTask {
-		public PrefsTask() {
+	class WaitTask extends ProgressTask {
+		public WaitTask() {
 			super(HomeActivity.this, getString(R.string.initialising) + "...",
 					getString(R.string.initialising_msg));
 		}
 
 		@Override
 		protected ERROR retrieve() {
-			return PreferencesUtils.loadPreferences(HomeActivity.this);
+			while (!((MinkeApplication) getApplication()).loaded()) {
+				try {
+					Thread.sleep(100, 10);
+				} catch (InterruptedException e) {
+					return ERROR.PARSE;
+				}
+			}
+			return ERROR.SUCCESS;
 		}
 
 		@Override
 		protected void success() {
-			nextAction();
+			if (PreferencesUtils.isFirstTime()
+					|| PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
+				update();
+			} else {
+				loadData();
+			}
 		}
 
 		@Override
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setNegativeButton(getString(R.string.ok),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							nextAction();
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-
-		}
-
-	}
-
-	class GetLocationTask extends ProgressTask {
-		public GetLocationTask() {
-			super(HomeActivity.this, getString(R.string.pinpointing) + "...",
-					getString(R.string.pinpointing_msg));
-		}
-
-		@Override
-		protected ERROR retrieve() {
-			return MapUtils.refreshLocation((LocationManager) HomeActivity.this
-					.getSystemService(Activity.LOCATION_SERVICE));
-		}
-
-		@Override
-		protected void success() {
-			nextAction();
-		}
-
-		@Override
-		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setNegativeButton(getString(R.string.ok),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							nextAction();
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-
+			DialogUtils.getErrorDialog(HomeActivity.this, error_code).show();
 		}
 
 	}
@@ -650,7 +609,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
-			if(RPCUtils.startServer() == ERROR.SERVER){
+			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
 			return RPCUtils.updateBranchProduct(bp, price);

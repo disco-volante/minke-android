@@ -17,6 +17,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.json.JSONBuilder;
@@ -32,9 +33,13 @@ public class RPCUtils {
 				return ERROR.SUCCESS;
 			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		}
 		return ERROR.SERVER;
 	}
@@ -50,7 +55,9 @@ public class RPCUtils {
 			if (obj == null || obj.isNull("branches")) {
 				return ERROR.SERVER;
 			}
-			Log.v(TAGS.JSON, obj.toString());
+			if (Debug.ON) {
+				Log.v(TAGS.JSON, obj.toString());
+			}
 			EntityUtils.persistBranches(context,
 					JSONParser.parseBranches(obj.getJSONObject("branches")));
 			EntityUtils.persistProducts(context,
@@ -80,13 +87,19 @@ public class RPCUtils {
 					JSONParser.parseBrands(obj.getJSONObject("brands")));
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -97,7 +110,9 @@ public class RPCUtils {
 		try {
 			JSONObject obj = HTTPUtils.doJSONPost(url, bp.toJSON(),
 					JSONBuilder.toJSON("price", price));
-			Log.v(TAGS.JSON, obj.toString());
+			if (Debug.ON) {
+				Log.v(TAGS.JSON, obj.toString());
+			}
 			bp = JSONParser.parseBranchProduct(obj
 					.getJSONObject("branchProduct"));
 			DatePrice dp = JSONParser.parseDatePrice(obj
@@ -110,13 +125,19 @@ public class RPCUtils {
 			}
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 
@@ -146,13 +167,19 @@ public class RPCUtils {
 			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -183,13 +210,19 @@ public class RPCUtils {
 			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -220,12 +253,18 @@ public class RPCUtils {
 			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 		return ERROR.PARSE;
@@ -259,13 +298,19 @@ public class RPCUtils {
 			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -298,12 +343,18 @@ public class RPCUtils {
 			ScanUtils.setBranchProduct(bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 		return ERROR.PARSE;
@@ -340,12 +391,18 @@ public class RPCUtils {
 			ScanUtils.setBranchProduct(bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 		return ERROR.PARSE;
@@ -382,13 +439,19 @@ public class RPCUtils {
 			ScanUtils.setBranchProduct(bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -427,13 +490,19 @@ public class RPCUtils {
 			ScanUtils.setBranchProduct(bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.PARSE;
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.CLIENT;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 			return ERROR.SERVER;
 		}
 	}
@@ -449,11 +518,17 @@ public class RPCUtils {
 			}
 			return JSONParser.parseProduct(obj);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		}
 		return null;
 	}
@@ -471,11 +546,17 @@ public class RPCUtils {
 			}
 			return JSONParser.parseBranchProduct(obj);
 		} catch (JSONException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			if (Debug.ON) {
+				Log.v(TAGS.ERROR, e.getMessage());
+			}
 		}
 		return null;
 	}

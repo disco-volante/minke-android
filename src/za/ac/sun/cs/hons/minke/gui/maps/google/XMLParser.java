@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+
 import android.util.Log;
 
 public class XMLParser {
@@ -18,7 +20,9 @@ public class XMLParser {
 		try {
 			this.feedUrl = new URL(feedUrl);
 		} catch (MalformedURLException e) {
-			Log.e(e.getMessage(), "XML parser - " + feedUrl);
+			if (Debug.ON) {
+				Log.e(e.getMessage(), "XML parser - " + feedUrl);
+			}
 		}
 	}
 
@@ -26,8 +30,10 @@ public class XMLParser {
 		try {
 			return feedUrl.openConnection().getInputStream();
 		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e(e.getMessage(), "XML parser - " + feedUrl);
+			if (Debug.ON) {
+				e.printStackTrace();
+				Log.e(e.getMessage(), "XML parser - " + feedUrl);
+			}
 			return null;
 		}
 	}

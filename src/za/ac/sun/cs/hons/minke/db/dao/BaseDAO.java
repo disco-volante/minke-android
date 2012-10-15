@@ -6,6 +6,7 @@ import java.util.List;
 
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -28,15 +29,19 @@ public abstract class BaseDAO<T> {
 		if (obj == null || getByCloudID(getID(obj)) != null) {
 			return -1;
 		}
-		Log.d(TAGS.DB,
-				"adding " + obj + " to " + table + " with "
-						+ Arrays.asList(columns));
+		if (Debug.ON) {
+			Log.d(TAGS.DB,
+					"adding " + obj + " to " + table + " with "
+							+ Arrays.asList(columns));
+		}
 		return database.insert(table, null, getContentValues(obj));
 
 	}
 
 	public void addAll(List<T> objects) {
-		Log.d(TAGS.DB, "adding " + objects);
+		if (Debug.ON) {
+			Log.d(TAGS.DB, "adding " + objects);
+		}
 		if (objects == null) {
 			return;
 		}
@@ -90,7 +95,9 @@ public abstract class BaseDAO<T> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		Log.d("DB", entries + " retrieved");
+		if (Debug.ON) {
+			Log.d("DB", entries + " retrieved");
+		}
 		return entries;
 	}
 
@@ -101,7 +108,9 @@ public abstract class BaseDAO<T> {
 			cursor.close();
 			return null;
 		}
-		return parse(cursor);
+		T ret = parse(cursor);
+		cursor.close();
+		return ret;
 	}
 
 	public T getByCloudID(long id) {
@@ -131,7 +140,9 @@ public abstract class BaseDAO<T> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		Log.d(TAGS.DB, entries + " retrieved");
+		if (Debug.ON) {
+			Log.d(TAGS.DB, entries + " retrieved");
+		}
 		return entries;
 
 	}

@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.db.helper;
 
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,15 +18,21 @@ public class BaseDBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase database) {
 		for (String c : DBConstants.CREATORS) {
+			if (Debug.ON) {
+				Log.v(TAGS.DB, "Creating table " + c);
+			}
 			database.execSQL(c);
 		}
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		for (String t : DBConstants.TABLES) {
+		if (Debug.ON) {
 			Log.v(TAGS.DB, "Upgrading database from version " + oldVersion
-					+ " to " + newVersion + ", which will destroy all old data");
+					+ " to " + newVersion
+					+ ", which will destroy all old data");
+		}
+		for (String t : DBConstants.TABLES) {
 			db.execSQL("DROP TABLE IF EXISTS " + t);
 		}
 		onCreate(db);

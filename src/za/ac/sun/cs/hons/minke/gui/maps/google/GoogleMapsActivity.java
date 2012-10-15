@@ -9,6 +9,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.DirectionsListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.AlertDialog;
@@ -21,22 +22,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockMapActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
-public class GoogleMapsActivity extends MapActivity {
+
+public class GoogleMapsActivity extends SherlockMapActivity {
 	private GeoPoint src;
 	private MapView mapView;
 	private MapController mapController;
 	private ArrayList<Segment> directions;
 	private AlertDialog dirDlg;
+	private GeoPoint dest;
 
 	class BuildRouteTask extends ProgressTask {
 		private RouteOverlay routeOverlay;
-		private GeoPoint dest = MapUtils.getDestination();
 
 		public BuildRouteTask() {
 			super(GoogleMapsActivity.this, GoogleMapsActivity.this
@@ -95,8 +100,10 @@ public class GoogleMapsActivity extends MapActivity {
 			} catch (Exception e) {
 				System.out.println(e);
 				if (e != null && e.getMessage() != null) {
-					Log.v(TAGS.MAP, e.getMessage());
-					e.printStackTrace();
+					if (Debug.ON) {
+						Log.v(TAGS.MAP, e.getMessage());
+						e.printStackTrace();
+					}
 				}
 				return ERROR.MAP;
 			}
@@ -105,10 +112,39 @@ public class GoogleMapsActivity extends MapActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		src = MapUtils.getLocation();
+		dest = MapUtils.getDestination();
 		createGoogle();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.menu_map, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case R.id.menu_item_directions:
+			showDirections();
+			return true;
+		case R.id.menu_item_user:
+			mapController.animateTo(src);
+			return true;
+		case R.id.menu_item_destination:
+			mapController.animateTo(dest);
+			return true;
+		case android.R.id.home:
+			onBackPressed();
+			return true;
+		}
+		return false;
 	}
 
 	private void createGoogle() {
@@ -182,12 +218,34 @@ public class GoogleMapsActivity extends MapActivity {
 				msg.append(getString(R.string.str_continue));
 				msg.append(getDist(s.getLength()));
 				prev = s.getDistance();
+				while (true) {
+					int pos = getMistakes(msg.toString().toCharArray());
+					if (pos == msg.length()) {
+						break;
+					}
+					msg.insert(pos, ". ");
+				}
 				s.setMessage(msg.toString());
 			}
 		}
 	}
 
-	public void getDirections(View view) {
+	private int getMistakes(char[] chars) {
+		char c0 = ' ';
+		int pos = 0;
+		for (char c1 : chars) {
+			if (c0 != ' '
+					&& (Character.isLowerCase(c0) && Character.isUpperCase(c1))
+					|| (Character.isDigit(c0) && Character.isUpperCase(c1))) {
+				return pos;
+			}
+			c0 = c1;
+			pos++;
+		}
+		return chars.length;
+	}
+
+	public void showDirections() {
 		if (directions != null && directions.size() > 0) {
 			LayoutInflater factory = LayoutInflater.from(this);
 			final View directionsView = factory.inflate(

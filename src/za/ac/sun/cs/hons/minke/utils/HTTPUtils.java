@@ -26,6 +26,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.util.Log;
 
@@ -46,7 +47,9 @@ public class HTTPUtils {
 		InputStream inputstream = resultentity.getContent();
 		String resultstring = convertStreamToString(inputstream);
 		inputstream.close();
-		Log.v(TAGS.JSON, resultstring);
+		if (Debug.ON) {
+			Log.v(TAGS.JSON, resultstring);
+		}
 		return new JSONObject(resultstring);
 	}
 
@@ -69,20 +72,27 @@ public class HTTPUtils {
 		}
 		return total.toString();
 	}
-	public static boolean startServer(String mUrl) throws ClientProtocolException, IOException {
+
+	public static boolean startServer(String mUrl)
+			throws ClientProtocolException, IOException {
 		Log.v(TAGS.HTTP, mUrl);
-		HttpGet getMethod = new HttpGet(mUrl+"start");
+		HttpGet getMethod = new HttpGet(mUrl + "start");
 		DefaultHttpClient httpClient = getClient();
 		HttpResponse httpresponse = httpClient.execute(getMethod);
 		HttpEntity resultentity = httpresponse.getEntity();
 		InputStream inputstream = resultentity.getContent();
 		String resultstring = convertStreamToString(inputstream);
-		Log.v(TAGS.JSON, resultstring);
+		if (Debug.ON) {
+			Log.v(TAGS.JSON, resultstring);
+		}
 		return resultstring.equals("STARTED");
 	}
-	public static JSONObject doJSONGet(String mUrl)
-			throws JSONException, ClientProtocolException, IOException {
-		Log.v(TAGS.HTTP, mUrl);
+
+	public static JSONObject doJSONGet(String mUrl) throws JSONException,
+			ClientProtocolException, IOException {
+		if (Debug.ON) {
+			Log.v(TAGS.HTTP, mUrl);
+		}
 		HttpGet getMethod = new HttpGet(mUrl);
 		DefaultHttpClient httpClient = getClient();
 		HttpResponse httpresponse = httpClient.execute(getMethod);
@@ -90,7 +100,9 @@ public class HTTPUtils {
 		InputStream inputstream = resultentity.getContent();
 		String resultstring = convertStreamToString(inputstream);
 		inputstream.close();
-		Log.v(TAGS.JSON, resultstring);
+		if (Debug.ON) {
+			Log.v(TAGS.JSON, resultstring);
+		}
 		return new JSONObject(resultstring);
 	}
 
@@ -114,7 +126,5 @@ public class HTTPUtils {
 		ret = new DefaultHttpClient(manager, params);
 		return ret;
 	}
-
-
 
 }

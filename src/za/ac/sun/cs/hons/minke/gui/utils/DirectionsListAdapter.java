@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 	private GoogleMapsActivity activity;
@@ -52,16 +50,6 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 	protected ViewHolder initHolder(final Segment item, View rowView) {
 		final ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.text.setText(item.toString());
-		holder.text.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Toast msg = Toast.makeText(activity, holder.text.getText(),
-						Toast.LENGTH_LONG);
-				msg.setGravity(Gravity.CENTER_VERTICAL,
-						Gravity.CENTER_HORIZONTAL, 0);
-				msg.show();
-			}
-		});
 		holder.btn.setOnClickListener(new OnClickListener() {
 
 			@Override

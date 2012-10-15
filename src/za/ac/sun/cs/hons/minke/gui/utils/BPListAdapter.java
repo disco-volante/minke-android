@@ -6,6 +6,8 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,9 +55,31 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		return rowView;
 	}
 
-	protected void showInfo(BranchProduct item) {
-		Builder dlg = DialogUtils.getProductInfoDialog(context,item);
+	protected void showInfo(final BranchProduct item) {
+		Builder dlg = DialogUtils.getProductInfoDialog(context, item);
+		dlg.setNeutralButton(R.string.share,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						shareItem(item);
+						dialog.cancel();
+					}
+
+				});
 		dlg.show();
+
+	}
+
+	protected void shareItem(BranchProduct item) {
+		Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		intent.putExtra(Intent.EXTRA_SUBJECT, R.string.found_deal);
+		intent.putExtra(Intent.EXTRA_TEXT, item.getProduct().toString() + "\n "
+				+ item.getBranch().toString() + "\n R "
+				+ item.getDatePrice().getActualPrice());
+		context.startActivity(Intent.createChooser(intent, context.getString(R.string.how_share)));
 
 	}
 

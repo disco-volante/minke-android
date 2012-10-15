@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 
@@ -19,22 +20,24 @@ public class UpdateDataBGTask extends LoadTask {
 
 	@Override
 	protected void failure(ERROR error_code) {
-		Log.v(TAGS.HTTP, "ERROR");
+		if (Debug.ON) {
+			Log.v(TAGS.HTTP, "ERROR");
+		}
 	}
 
 	@Override
 	protected ERROR retrieve() {
-		if(!isNetworkAvailable()){
+		if (!isNetworkAvailable()) {
 			return ERROR.CLIENT;
 		}
-		if(RPCUtils.startServer() == ERROR.SERVER){
+		if (RPCUtils.startServer() == ERROR.SERVER) {
 			return ERROR.SERVER;
 		}
 		ERROR error = RPCUtils.retrieveAll(context);
-		if(!error.equals(ERROR.SUCCESS)){
+		if (!error.equals(ERROR.SUCCESS)) {
 			error = RPCUtils.retrieveAll(context);
 		}
-		if(error == ERROR.SUCCESS){
+		if (error == ERROR.SUCCESS) {
 			return EntityUtils.loadAll(context);
 		}
 		return error;

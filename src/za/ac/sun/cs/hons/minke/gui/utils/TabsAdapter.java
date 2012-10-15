@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
@@ -174,7 +175,10 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 
 	private void setAnimation(String tabId, String className,
 			FragmentTransaction ft) {
-		Log.v(TAGS.TABS,"animation level"+PreferencesUtils.getAnimationLevel());
+		if (Debug.ON) {
+			Log.v(TAGS.TABS,
+					"animation level" + PreferencesUtils.getAnimationLevel());
+		}
 		if (PreferencesUtils.getAnimationLevel() == Constants.NONE) {
 			return;
 		}
@@ -182,7 +186,7 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 			if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
 				ft.setCustomAnimations(R.anim.rotation_clockwise,
 						R.anim.rotation_anti_clockwise);
-			}else{
+			} else {
 				ft.setCustomAnimations(R.anim.fadein, R.anim.fadeout);
 			}
 		} else if (className != null) {

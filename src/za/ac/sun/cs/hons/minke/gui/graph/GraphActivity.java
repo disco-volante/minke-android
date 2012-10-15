@@ -8,7 +8,6 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
-import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -23,13 +22,14 @@ public class GraphActivity extends SherlockActivity {
 
 	private TimelineChart chart;
 	private GraphicalView view;
+	private RelativeLayout holder;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		setTheme(R.style.Theme_Sherlock_Light);
 		super.onCreate(savedInstanceState);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_graph);
+		holder = (RelativeLayout) findViewById(R.id.graph_holder);
 		if (BrowseUtils.getBranchProducts().size() != 0) {
 			chart = new TimelineChart(this);
 			ChartTask task = new ChartTask(chart);
@@ -39,7 +39,6 @@ public class GraphActivity extends SherlockActivity {
 	}
 
 	public void showChart() {
-		RelativeLayout holder = (RelativeLayout) findViewById(R.id.graph_holder);
 		view = chart.getChart();
 		holder.addView(view);
 
@@ -57,6 +56,9 @@ public class GraphActivity extends SherlockActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
+		case R.id.menu_item_refresh:
+			reset();
+			return true;
 		case R.id.menu_item_add:
 			showEditDlg(true, chart.getRemoved(), getString(R.string.add));
 			return true;
@@ -64,7 +66,7 @@ public class GraphActivity extends SherlockActivity {
 			showEditDlg(false, chart.getAdded(), getString(R.string.remove));
 			return true;
 		case android.R.id.home:
-			startActivity(IntentUtils.getHomeIntent(this));
+			onBackPressed();
 			return true;
 		}
 		return false;
@@ -98,6 +100,15 @@ public class GraphActivity extends SherlockActivity {
 			}
 		});
 		dlg.show();
+	}
+
+	private void reset() {
+		HashSet<String> itr = new HashSet<String>();
+		itr.addAll(chart.getRemoved());
+		for (String s : itr) {
+			chart.addSeries(s);
+		}
+		view.repaint();
 	}
 
 	protected void editItems(HashSet<String> changed, boolean add) {

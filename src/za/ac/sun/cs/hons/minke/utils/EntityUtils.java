@@ -31,6 +31,7 @@ import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.Context;
@@ -243,7 +244,9 @@ public class EntityUtils {
 			MapUtils.setBranches(branches);
 		}
 		loaded = true;
-		Log.v(TAGS.ENTITY, products.toString());
+		if (Debug.ON) {
+			Log.v(TAGS.ENTITY, products.toString());
+		}
 		return ERROR.SUCCESS;
 	}
 
@@ -428,7 +431,9 @@ public class EntityUtils {
 	}
 
 	public static Product retrieveProductServer(long code) {
-		Log.v(TAGS.SCAN, String.valueOf(code));
+		if (Debug.ON) {
+			Log.v(TAGS.SCAN, String.valueOf(code));
+		}
 		Product product = RPCUtils.retrieveProduct(code);
 		if (product != null) {
 			return addProduct(product);

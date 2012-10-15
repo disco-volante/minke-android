@@ -50,7 +50,8 @@ public class MapUtils {
 	}
 
 	public static void setDestination(int position) {
-		destination = ((Branch) branches.get(position)).getCityLocation().getGeoPoint();
+		destination = ((Branch) branches.get(position)).getCityLocation()
+				.getGeoPoint();
 		if (Debug.ON) {
 			Log.v(TAGS.MAP,
 					"latitude = "
@@ -70,8 +71,9 @@ public class MapUtils {
 			int curMaxIndex = -1;
 			for (Branch cur : _branches) {
 				double curDist = dist(cur.getCityLocation().getLat(), cur
-						.getCityLocation().getLon(), point.getLatitudeE6()/1E6,
-						point.getLongitudeE6()/1E6);
+						.getCityLocation().getLon(),
+						point.getLatitudeE6() / 1E6,
+						point.getLongitudeE6() / 1E6);
 				if (branches.size() < 5) {
 					branches.add(cur);
 					if (curDist > curMax) {
@@ -87,8 +89,8 @@ public class MapUtils {
 						for (Branch b : branches) {
 							double dis = dist(b.getCityLocation().getLat(), b
 									.getCityLocation().getLon(),
-									point.getLatitudeE6()/1E6,
-									point.getLongitudeE6()/1E6);
+									point.getLatitudeE6() / 1E6,
+									point.getLongitudeE6() / 1E6);
 							if (dis > curDist) {
 								curMaxIndex = branches.indexOf(b);
 								curMax = dis;
@@ -103,7 +105,8 @@ public class MapUtils {
 		}
 	}
 
-	private static double dist(double latS, double lonS, double latD, double lonD) {
+	private static double dist(double latS, double lonS, double latD,
+			double lonD) {
 		return Math.sqrt(Math.pow(latS - latD, 2) + Math.pow(lonS - lonD, 2));
 	}
 
@@ -117,7 +120,7 @@ public class MapUtils {
 
 	public static ERROR refreshLocation(LocationManager locationManager) {
 		branch = null;
-		if(point != null){
+		if (point != null) {
 			return ERROR.SUCCESS;
 		}
 		if (Debug.EMULATOR) {
@@ -133,7 +136,9 @@ public class MapUtils {
 		if (location != null) {
 			point = new GeoPoint((int) (location.getLatitude() * 1E6),
 					(int) (location.getLongitude() * 1E6));
-			Log.d("MAPUTILS", location.toString());
+			if (Debug.ON) {
+				Log.d("MAPUTILS", location.toString());
+			}
 			return ERROR.SUCCESS;
 		}
 		return ERROR.LOCATION;
@@ -152,8 +157,7 @@ public class MapUtils {
 	}
 
 	public static void setLocation(float lastLat, float lastLong) {
-		point = new GeoPoint((int) (lastLat * 1E6),
-				(int) (lastLong * 1E6));
+		point = new GeoPoint((int) (lastLat * 1E6), (int) (lastLong * 1E6));
 		branch = null;
 	}
 
