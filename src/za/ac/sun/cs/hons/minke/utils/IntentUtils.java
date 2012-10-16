@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
-import za.ac.sun.cs.hons.minke.gui.graph.GraphActivity;
+import za.ac.sun.cs.hons.minke.gui.graph.ChartActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
 import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
@@ -17,7 +17,7 @@ public class IntentUtils {
 	}
 
 	public static Intent getGraphIntent(Context context) {
-		Intent graph = new Intent(context, GraphActivity.class);
+		Intent graph = new Intent(context, ChartActivity.class);
 		graph.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return graph;
 	}

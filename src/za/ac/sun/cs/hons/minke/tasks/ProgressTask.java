@@ -29,5 +29,10 @@ public abstract class ProgressTask extends LoadTask {
 		progressDialog.dismiss();
 		super.onPostExecute(result);
 	}
+	@Override
+	public void onCancelled(){
+		progressDialog.setCancelable(true);
+		progressDialog.cancel();
+	}
 
 }

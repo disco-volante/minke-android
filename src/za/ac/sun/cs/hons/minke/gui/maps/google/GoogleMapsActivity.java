@@ -16,7 +16,9 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +32,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
-
 
 public class GoogleMapsActivity extends SherlockMapActivity {
 	private GeoPoint src;
@@ -175,8 +176,28 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 	}
 
 	private void getDirections() {
-		BuildRouteTask task = new BuildRouteTask();
+		final BuildRouteTask task = new BuildRouteTask();
 		task.execute();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+					task.cancel(true);
+					Builder dlg = DialogUtils.getErrorDialog(
+							GoogleMapsActivity.this, ERROR.TIME_OUT);
+					dlg.setPositiveButton(getString(R.string.retry),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									getDirections();
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
+			}
+		}, 5000);
 	}
 
 	private Route directions(GeoPoint start, GeoPoint dest) {

@@ -9,7 +9,9 @@ public class Constants {
 	public final static String KEY = "5fd0b37cd7dbbb00f97ba6ce92bf5add503d2db5495ad7.42776752";
 	public static final int ROUTING_CLOUDMADE = 0;
 	public static final int ROUTING_YOURNAVIGATION = 1;
-	public static final String DECIMALS = "([1-9][0-9]*)+(\\.[0-9]{1,2}+)?";
+	public static final String DECIMALS_0 = "([1-9][0-9]*)+(\\.[0-9]{1,2}+)?";
+	public static final String DECIMALS_1 = "[0-9]+(\\.[0-9][1-9])";
+	public static final String DECIMALS_2 = "[0-9]+(\\.[1-9][0-9]?)";
 	public static final String INTS = "([1-9][0-9]*)";
 	public static final boolean GOOGLE_MAPS = true;
 	public static final String EMULATOR_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";

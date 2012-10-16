@@ -106,7 +106,7 @@
         <activity android:name=".gui.browse.ProductSearchFragment" />
         <activity android:name=".gui.browse.LocationSearchFragment" />
         <activity
-            android:name=".gui.graph.GraphActivity"
+            android:name=".gui.graph.ChartActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".gui.maps.google.GoogleMapsActivity" />
         <activity android:name=".gui.prefs.SettingsActivity" >

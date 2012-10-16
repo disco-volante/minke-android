@@ -33,14 +33,14 @@ import android.widget.Toast;
 public class TimelineChart {
 
 	private XYMultipleSeriesDataset dataset;
-	private GraphActivity activity;
+	private ChartActivity activity;
 	private boolean loaded;
 	private XYMultipleSeriesRenderer renderer;
 	private String[] titles;
 	private HashMap<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
 	private HashSet<String> added, removed;
 
-	public TimelineChart(GraphActivity _activity) {
+	public TimelineChart(ChartActivity _activity) {
 		this.activity = _activity;
 	}
 
@@ -282,7 +282,7 @@ public class TimelineChart {
 
 	}
 
-	public GraphActivity getGraphActivity() {
+	public ChartActivity getGraphActivity() {
 		return activity;
 	}
 

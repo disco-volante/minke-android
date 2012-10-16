@@ -17,7 +17,9 @@ import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -99,7 +101,7 @@ public class NewProductFragment extends SherlockFragment {
 		btnCreateProduct.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				createProduct();
+				checkProduct();
 			}
 
 		});
@@ -112,7 +114,7 @@ public class NewProductFragment extends SherlockFragment {
 				getString(R.string.l), getString(R.string.ea) };
 	}
 
-	private void createProduct() {
+	private void checkProduct() {
 		if (nameText.getError() != null || brandBox.getError() != null
 				|| categoryBox.getError() != null
 				|| sizeText.getError() != null || priceText.getError() != null) {
@@ -152,15 +154,42 @@ public class NewProductFragment extends SherlockFragment {
 		} else {
 			String name = nameText.getText().toString();
 			double size = Double.parseDouble(sizeText.getText().toString());
-			int price = (int) Double
-					.parseDouble(priceText.getText().toString()) * 100;
-			CreateProductTask task = new CreateProductTask(name, brand,
-					category, size, unitSpinner.getSelectedItem().toString(),
-					price);
-			task.execute();
-
+			int price = (int) (Double.parseDouble(priceText.getText()
+					.toString()) * 100);
+			createProduct(name, brand, category, size, unitSpinner
+					.getSelectedItem().toString(), price);
 		}
 
+	}
+
+	public void createProduct(final String _name, final Brand _brand,
+			final Category _category, final double _size,
+			final String _measure, final int _price) {
+		final CreateProductTask task = new CreateProductTask(_name, _brand,
+				_category, _size, _measure, _price);
+		task.execute();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+					task.cancel(true);
+					Builder dlg = DialogUtils.getErrorDialog(
+							NewProductFragment.this.getActivity(),
+							ERROR.TIME_OUT);
+					dlg.setPositiveButton(getString(R.string.retry),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									createProduct(_name, _brand, _category,
+											_size, _measure, _price);
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
+			}
+		}, 10000);
 	}
 
 	private void clear() {
@@ -203,7 +232,8 @@ public class NewProductFragment extends SherlockFragment {
 			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							createProduct();
+							createProduct(name, brand, category, size, measure,
+									price);
 							dialog.cancel();
 						}
 					});
@@ -224,7 +254,7 @@ public class NewProductFragment extends SherlockFragment {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
-			if(RPCUtils.startServer() == ERROR.SERVER){
+			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
 			if (brand != null && category != null) {

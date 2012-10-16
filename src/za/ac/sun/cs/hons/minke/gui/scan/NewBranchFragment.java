@@ -17,7 +17,9 @@ import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -122,12 +124,9 @@ public class NewBranchFragment extends SherlockFragment {
 			return;
 		}
 		if (city != null) {
-			CreateBranchTask task = new CreateBranchTask(MapUtils.getLocation()
-					.getLatitudeE6() / 1E6, MapUtils.getLocation()
-					.getLongitudeE6() / 1E6, city, store, branchText.getText()
-					.toString());
-
-			task.execute();
+			createBranch(MapUtils.getLocation().getLatitudeE6() / 1E6, MapUtils
+					.getLocation().getLongitudeE6() / 1E6, city, store,
+					branchText.getText().toString());
 
 		} else {
 			requestLocations();
@@ -163,12 +162,11 @@ public class NewBranchFragment extends SherlockFragment {
 						+ NewBranchFragment.this.getString(R.string.branch),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						CreateBranchTask task = new CreateBranchTask(MapUtils
-								.getLocation().getLatitudeE6(), MapUtils
-								.getLocation().getLongitudeE6(), province,
-								store, cityBox.getText().toString(), branchText
-										.getText().toString());
-						task.execute();
+						createBranch(
+								MapUtils.getLocation().getLatitudeE6() / 1E6,
+								MapUtils.getLocation().getLongitudeE6() / 1E6,
+								province, store, cityBox.getText().toString(),
+								branchText.getText().toString());
 						dialog.cancel();
 					}
 				});
@@ -181,6 +179,65 @@ public class NewBranchFragment extends SherlockFragment {
 					}
 				});
 		location.show();
+	}
+
+	private void createBranch(final double _lat, final double _lon,
+			final City _city, final Store _store, final String _branch) {
+		final CreateBranchTask task = new CreateBranchTask(_lat, _lon, _city,
+				_store, _branch);
+		task.execute();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+					task.cancel(true);
+					Builder dlg = DialogUtils.getErrorDialog(
+							NewBranchFragment.this.getActivity(),
+							ERROR.TIME_OUT);
+					dlg.setPositiveButton(getString(R.string.retry),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									createBranch(_lat, _lon, _city, _store,
+											_branch);
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
+			}
+		}, 10000);
+	}
+
+	private void createBranch(final double _lat, final double _lon,
+			final Province _province, final Store _store, final String _city,
+			final String _branch) {
+		final CreateBranchTask task = new CreateBranchTask(_lat, _lon,
+				_province, _store, _city, _branch);
+		task.execute();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+					task.cancel(true);
+					Builder dlg = DialogUtils.getErrorDialog(
+							NewBranchFragment.this.getActivity(),
+							ERROR.TIME_OUT);
+					dlg.setPositiveButton(getString(R.string.retry),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									createBranch(_lat, _lon, _province, _store,
+											_city, _branch);
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
+			}
+		}, 10000);
 	}
 
 	class CreateBranchTask extends ProgressTask {
@@ -251,7 +308,7 @@ public class NewBranchFragment extends SherlockFragment {
 			if (!isNetworkAvailable()) {
 				return ERROR.CLIENT;
 			}
-			if(RPCUtils.startServer() == ERROR.SERVER){
+			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
 			if (store == null) {

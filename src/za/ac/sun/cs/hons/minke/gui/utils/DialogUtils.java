@@ -134,6 +134,8 @@ public class DialogUtils {
 			return context.getString(R.string.err_directions_msg);
 		case SCAN:
 			return context.getString(R.string.err_scan_msg);
+		case TIME_OUT:
+			return context.getString(R.string.err_time_out_msg);
 		case SUCCESS:
 			return context.getString(R.string.err_success_msg);
 		}
@@ -164,6 +166,8 @@ public class DialogUtils {
 			return context.getString(R.string.err_directions);
 		case SCAN:
 			return context.getString(R.string.err_scan);
+		case TIME_OUT:
+			return context.getString(R.string.err_time_out);
 		case SUCCESS:
 			return context.getString(R.string.err_success);
 		}

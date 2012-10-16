@@ -8,9 +8,13 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -18,7 +22,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
-public class GraphActivity extends SherlockActivity {
+public class ChartActivity extends SherlockActivity {
 
 	private TimelineChart chart;
 	private GraphicalView view;
@@ -31,11 +35,35 @@ public class GraphActivity extends SherlockActivity {
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
 		if (BrowseUtils.getBranchProducts().size() != 0) {
-			chart = new TimelineChart(this);
-			ChartTask task = new ChartTask(chart);
-			task.execute();
+			buildChart();
 		}
 
+	}
+
+	private void buildChart() {
+		chart = new TimelineChart(this);
+		final ChartTask task = new ChartTask(chart);
+		task.execute();
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
+					task.cancel(true);
+					Builder dlg = DialogUtils.getErrorDialog(
+							ChartActivity.this, ERROR.TIME_OUT);
+					dlg.setPositiveButton(getString(R.string.retry),
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									buildChart();
+									dialog.cancel();
+								}
+							});
+					dlg.show();
+				}
+			}
+		}, 5000);
 	}
 
 	public void showChart() {
