@@ -15,6 +15,7 @@ import org.achartengine.chart.PointStyle;
 import org.achartengine.model.SeriesSelection;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.renderer.SimpleSeriesRenderer;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
@@ -38,6 +39,8 @@ public class TimelineChart {
 	private XYMultipleSeriesRenderer renderer;
 	private String[] titles;
 	private HashMap<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
+	private HashMap<String, SimpleSeriesRenderer> rendererMap = new HashMap<String, SimpleSeriesRenderer>();
+
 	private HashSet<String> added, removed;
 
 	public TimelineChart(ChartActivity _activity) {
@@ -52,16 +55,7 @@ public class TimelineChart {
 	 * @return the built intent
 	 */
 	public void buildData(ArrayList<BranchProduct> bps) {
-		PointStyle[] values = PointStyle.values();
-		PointStyle[] styles = new PointStyle[bps.size()];
-		if (bps.size() > values.length) {
-			System.arraycopy(values, 0, styles, 0, values.length);
-			System.arraycopy(values, 0, styles, values.length, styles.length
-					- values.length);
-		} else {
-			System.arraycopy(values, 0, styles, 0, styles.length);
-		}
-
+		PointStyle[] styles = PointStyle.values();
 		titles = new String[bps.size()];
 		List<double[]> prices = new ArrayList<double[]>();
 		List<Date[]> dates = new ArrayList<Date[]>();
@@ -76,8 +70,8 @@ public class TimelineChart {
 				colour = Color.argb(255, rCol.nextInt(256), rCol.nextInt(256),
 						rCol.nextInt(256));
 			}
-			if(Debug.ON){
-				Log.v(TAGS.CHART, "colour "+colour);
+			if (Debug.ON) {
+				Log.v(TAGS.CHART, "colour " + colour);
 			}
 			colours[i] = colour;
 			titles[i++] = bp.getProduct().toString() + " ("
@@ -102,8 +96,8 @@ public class TimelineChart {
 					minDate = dp.getDate();
 				}
 				d[j++] = dp.getDate();
-				if(Debug.ON){
-					Log.v(TAGS.CHART, "date "+d[j-1]);
+				if (Debug.ON) {
+					Log.v(TAGS.CHART, "date " + d[j - 1]);
 				}
 			}
 			prices.add(p);
@@ -185,6 +179,8 @@ public class TimelineChart {
 			}
 			dataset.addSeries(series);
 			seriesMap.put(titles[i], series);
+			rendererMap.put(titles[i], renderer.getSeriesRendererAt(i));
+
 		}
 		added = new HashSet<String>();
 		removed = new HashSet<String>();
@@ -196,12 +192,14 @@ public class TimelineChart {
 		added.remove(title);
 		removed.add(title);
 		dataset.removeSeries(seriesMap.get(title));
+		renderer.removeSeriesRenderer(rendererMap.get(title));
 	}
 
 	public void addSeries(String title) {
 		added.add(title);
 		removed.remove(title);
 		dataset.addSeries(seriesMap.get(title));
+		renderer.addSeriesRenderer(rendererMap.get(title));
 	}
 
 	/**
@@ -224,10 +222,14 @@ public class TimelineChart {
 		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int length = colours.length;
+		int stylePos = 0;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setColor(colours[i]);
-			r.setPointStyle(styles[i]);
+			r.setPointStyle(styles[stylePos++]);
+			if (stylePos == styles.length) {
+				stylePos = 0;
+			}
 			renderer.addSeriesRenderer(r);
 		}
 		return renderer;
@@ -271,12 +273,16 @@ public class TimelineChart {
 		renderer.setApplyBackgroundColor(true);
 		renderer.setBackgroundColor(activity.getResources().getColor(
 				android.R.color.white));
-		renderer.setLabelsColor(activity.getResources().getColor(R.color.black));
-		renderer.setXLabelsColor(activity.getResources().getColor(R.color.black));
+		renderer.setLabelsColor(activity.getResources().getColor(
+				android.R.color.black));
+		renderer.setXLabelsColor(activity.getResources().getColor(
+				android.R.color.black));
 		renderer.setYLabelsColor(0,
-				activity.getResources().getColor(R.color.black));
-		renderer.setAxesColor(activity.getResources().getColor(R.color.black));
-		renderer.setGridColor(activity.getResources().getColor(R.color.black));
+				activity.getResources().getColor(android.R.color.black));
+		renderer.setAxesColor(activity.getResources().getColor(
+				android.R.color.black));
+		renderer.setGridColor(activity.getResources().getColor(
+				android.R.color.black));
 		renderer.setMarginsColor(activity.getResources().getColor(
 				android.R.color.white));
 
