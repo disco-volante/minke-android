@@ -207,7 +207,7 @@ public class NewBranchFragment extends SherlockFragment {
 					dlg.show();
 				}
 			}
-		}, 10000);
+		}, 15000);
 	}
 
 	private void createBranch(final double _lat, final double _lon,
@@ -237,7 +237,7 @@ public class NewBranchFragment extends SherlockFragment {
 					dlg.show();
 				}
 			}
-		}, 10000);
+		}, 15000);
 	}
 
 	class CreateBranchTask extends ProgressTask {

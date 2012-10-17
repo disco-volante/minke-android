@@ -9,6 +9,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.DirectionsListAdapter;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -23,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockMapActivity;
 import com.actionbarsherlock.view.Menu;
@@ -150,9 +152,15 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 
 	private void createGoogle() {
 		setContentView(R.layout.activity_maps);
-		mapView = (MapView) findViewById(R.id.mapview);
-		mapView.setBuiltInZoomControls(true);
+		RelativeLayout holder = (RelativeLayout) findViewById(R.id.map_holder);
+		if(Debug.ON){
+			mapView = new MapView(this, Constants.DEBUG_KEY);
+		}else{
+			mapView = new MapView(this, Constants.APPLICATION_KEY);
+		}
 		mapView.setClickable(true);
+		mapView.setBuiltInZoomControls(true);
+		holder.addView(mapView);
 		mapController = mapView.getController();
 		mapController.setZoom(15);
 		mapController.setCenter(src);

@@ -189,7 +189,7 @@ public class NewProductFragment extends SherlockFragment {
 					dlg.show();
 				}
 			}
-		}, 10000);
+		}, 15000);
 	}
 
 	private void clear() {

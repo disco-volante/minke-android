@@ -14,7 +14,7 @@ public class Constants {
 	public static final String DECIMALS_2 = "[0-9]+(\\.[1-9][0-9]?)";
 	public static final String INTS = "([1-9][0-9]*)";
 	public static final boolean GOOGLE_MAPS = true;
-	public static final String EMULATOR_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";
+	public static final String DEBUG_KEY = "0TkWntAlV0iBGVtYwpBCtoTg0fnuESyzoWnBjsg";
 	public static final String APPLICATION_KEY = "0TkWntAlV0iAoUcY6-k3tkcMPE48tjyGkM9qVWA";
 	public static final int NO_FREQUENCY_SET = -1;
 	public static final int STARTUP = 0;

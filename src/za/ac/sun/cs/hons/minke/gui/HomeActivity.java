@@ -360,7 +360,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 15000);
+		}, 30000);
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
