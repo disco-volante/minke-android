@@ -200,7 +200,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void scan(View view) {
-		if (MapUtils.getUserBranch() == null) {
+		if (view != null || MapUtils.getUserBranch() == null) {
 			confirmLocation();
 		} else {
 			if (Debug.EMULATOR) {
