@@ -150,12 +150,17 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		return false;
 	}
 
+	@Override
+	public void onSaveInstanceState(Bundle args) {
+		
+	}
+
 	private void createGoogle() {
 		setContentView(R.layout.activity_maps);
 		RelativeLayout holder = (RelativeLayout) findViewById(R.id.map_holder);
-		if(Debug.ON){
+		if (Debug.ON) {
 			mapView = new MapView(this, Constants.DEBUG_KEY);
-		}else{
+		} else {
 			mapView = new MapView(this, Constants.APPLICATION_KEY);
 		}
 		mapView.setClickable(true);
