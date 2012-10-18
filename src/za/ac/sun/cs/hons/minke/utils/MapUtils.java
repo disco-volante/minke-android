@@ -3,6 +3,7 @@ package za.ac.sun.cs.hons.minke.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -49,66 +50,23 @@ public class MapUtils {
 		return places[position];
 	}
 
-	public static void setDestination(int position) {
-		destination = ((Branch) branches.get(position)).getCityLocation()
+	public static void setDestination(ShopList shopList) {
+		destination = shopList.getBranch().getCityLocation()
 				.getGeoPoint();
 		if (Debug.ON) {
 			Log.v(TAGS.MAP,
 					"latitude = "
-							+ ((Branch) branches.get(position))
-									.getCityLocation().getLat()
+							+shopList.getBranch().getCityLocation().getLat()
 							+ " longitude = "
-							+ ((Branch) branches.get(position))
-									.getCityLocation().getLon());
+							+ shopList.getBranch().getCityLocation().getLon());
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static void setBranches(ArrayList<Branch> _branches) {
-		if (_branches.size() > 5) {
-			branches = new ArrayList<Branch>(5);
-			double curMax = 0;
-			int curMaxIndex = -1;
-			for (Branch cur : _branches) {
-				double curDist = dist(cur.getCityLocation().getLat(), cur
-						.getCityLocation().getLon(),
-						point.getLatitudeE6() / 1E6,
-						point.getLongitudeE6() / 1E6);
-				if (branches.size() < 5) {
-					branches.add(cur);
-					if (curDist > curMax) {
-						curMax = curDist;
-						curMaxIndex = branches.indexOf(cur);
-					}
-				} else {
-					if (curDist < curMax) {
-						branches.remove(curMaxIndex);
-						branches.add(cur);
-						curMaxIndex = branches.indexOf(cur);
-						curMax = curDist;
-						for (Branch b : branches) {
-							double dis = dist(b.getCityLocation().getLat(), b
-									.getCityLocation().getLon(),
-									point.getLatitudeE6() / 1E6,
-									point.getLongitudeE6() / 1E6);
-							if (dis > curDist) {
-								curMaxIndex = branches.indexOf(b);
-								curMax = dis;
-							}
-						}
-					}
-				}
-			}
-
-		} else {
-			MapUtils.branches = (ArrayList<Branch>) _branches.clone();
-		}
+		branches = _branches;
 	}
 
-	private static double dist(double latS, double lonS, double latD,
-			double lonD) {
-		return Math.sqrt(Math.pow(latS - latD, 2) + Math.pow(lonS - lonD, 2));
-	}
+
 
 	public static ArrayList<Branch> getBranches() {
 		return branches;

@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -14,7 +15,7 @@ public class ShopUtils {
 	private static ArrayList<BranchProduct> searched;
 	private static boolean productsActive;
 	private static ArrayList<ShopList> shoplists;
-	private static ArrayList<Branch> branches;
+	//private static ArrayList<Branch> branches;
 
 	public static ArrayList<Product> getAddedProducts(boolean reset) {
 		if (reset || addedProducts == null) {
@@ -62,9 +63,9 @@ public class ShopUtils {
 		return shoplists;
 	}
 
-	public static ArrayList<Branch> getBranches() {
+	/*public static ArrayList<Branch> getBranches() {
 		return branches;
-	}
+	}*/
 
 	public static void setShopLists(
 			HashMap<Branch, ArrayList<BranchProduct>> branchMap) {
@@ -73,11 +74,17 @@ public class ShopUtils {
 				.entrySet()) {
 			shoplists.add(new ShopList(entry.getValue(), entry.getKey()));
 		}
-		branches = new ArrayList<Branch>();
-		branches.addAll(branchMap.keySet());
+		Collections.sort(shoplists);
+		//branches = new ArrayList<Branch>();
+	//	branches.addAll(branchMap.keySet());
 	}
 
 	public static void removeProduct(Product product) {
 		addedProducts.remove(product);
+	}
+	
+	public static double dist(double latS, double lonS, double latD,
+			double lonD) {
+		return Math.sqrt(Math.pow(latS - latD, 2) + Math.pow(lonS - lonD, 2));
 	}
 }

@@ -8,6 +8,7 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
+import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
@@ -231,12 +232,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void showDirections(View view) {
-		String[] names = new String[ShopUtils.getBranches().size()];
-		MapUtils.setBranches(ShopUtils.getBranches());
-		MapUtils.setDestination(0);
+		String[] names = new String[ShopUtils.getShopLists().size()];
+		//MapUtils.setBranches(ShopUtils.getBranches());
+		MapUtils.setDestination(ShopUtils.getShopLists().get(0));
 		int i = 0;
-		for (Branch b : ShopUtils.getBranches()) {
-			names[i++] = b.toString();
+		for (ShopList sl : ShopUtils.getShopLists()) {
+			names[i++] = sl.toString();
 		}
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(getString(R.string.str_directions));
@@ -244,7 +245,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 			@Override
 			public void onClick(DialogInterface arg0, int position) {
-				MapUtils.setDestination(position);
+				MapUtils.setDestination(ShopUtils.getShopLists().get(position));
 			}
 		});
 		builder.setPositiveButton(getString(R.string.view_map),

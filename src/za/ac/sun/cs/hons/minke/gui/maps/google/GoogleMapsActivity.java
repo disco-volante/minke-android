@@ -3,12 +3,12 @@ package za.ac.sun.cs.hons.minke.gui.maps.google;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.DirectionsListAdapter;
+import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
@@ -152,7 +152,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
-		
+
 	}
 
 	private void createGoogle() {
@@ -172,10 +172,10 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		BasicOverlay shopsOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.shop),
 				GoogleMapsActivity.this);
-		for (Branch b : EntityUtils.getBranches()) {
-			shopsOverlay.addOverlay(new OverlayItem(b.getCityLocation()
-					.getGeoPoint(), b.toString(), b.getCityLocation()
-					.toString()));
+		for (ShopList sl : ShopUtils.getShopLists()) {
+			shopsOverlay.addOverlay(new OverlayItem(sl.getBranch()
+					.getCityLocation().getGeoPoint(), sl.toString(), sl
+					.getBranch().getCityLocation().toString()));
 		}
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.user),
