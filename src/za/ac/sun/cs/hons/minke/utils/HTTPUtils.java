@@ -1,9 +1,12 @@
 package za.ac.sun.cs.hons.minke.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -11,6 +14,7 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -35,13 +39,16 @@ public class HTTPUtils {
 	public static JSONObject doJSONPost(String mUrl, JSONObject obj)
 			throws ClientProtocolException, IOException, JSONException {
 		DefaultHttpClient httpClient = getClient();
+
 		HttpPost httpost = new HttpPost(mUrl);
-		StringEntity se;
-		se = new StringEntity(obj.toString());
-		se.setContentType("application/json;charset=UTF-8");
-		se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
-				"application/json;charset=UTF-8"));
-		httpost.setEntity(se);
+		if (obj != null) {
+			StringEntity se;
+			se = new StringEntity(obj.toString());
+			se.setContentType("application/json;charset=UTF-8");
+			se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,
+					"application/json;charset=UTF-8"));
+			httpost.setEntity(se);
+		}
 		HttpResponse httpresponse = httpClient.execute(httpost);
 		HttpEntity resultentity = httpresponse.getEntity();
 		InputStream inputstream = resultentity.getContent();
@@ -53,7 +60,7 @@ public class HTTPUtils {
 		return new JSONObject(resultstring);
 	}
 
-	public static JSONObject doJSONPost(String url, JSONObject... jsons)
+	public static JSONObject doJSONMultiPost(String url, JSONObject... jsons)
 			throws JSONException, ClientProtocolException, IOException {
 		JSONObject all = new JSONObject();
 		for (JSONObject obj : jsons) {
@@ -75,17 +82,31 @@ public class HTTPUtils {
 
 	public static boolean startServer(String mUrl)
 			throws ClientProtocolException, IOException {
-		Log.v(TAGS.HTTP, mUrl);
-		HttpGet getMethod = new HttpGet(mUrl + "start");
-		DefaultHttpClient httpClient = getClient();
-		HttpResponse httpresponse = httpClient.execute(getMethod);
-		HttpEntity resultentity = httpresponse.getEntity();
-		InputStream inputstream = resultentity.getContent();
-		String resultstring = convertStreamToString(inputstream);
 		if (Debug.ON) {
-			Log.v(TAGS.JSON, resultstring);
+			Log.v(TAGS.HTTP, mUrl);
 		}
-		return resultstring.equals("STARTED");
+		URL url = new URL(mUrl);
+		HttpURLConnection urlConnection = (HttpURLConnection) url
+				.openConnection();
+		urlConnection.setRequestMethod("POST");
+		urlConnection.connect();
+
+		try {
+			InputStream in = new BufferedInputStream(
+					urlConnection.getInputStream());
+			if (!url.getHost().equals(urlConnection.getURL().getHost())) {
+				if (Debug.ON) {
+					Log.v(TAGS.HTTP, urlConnection.getURL().getHost());
+				}
+			}
+			String resultstring = convertStreamToString(in);
+			if (Debug.ON) {
+				Log.v(TAGS.HTTP, resultstring);
+			}
+			return resultstring.equals("STARTED");
+		} finally {
+			urlConnection.disconnect();
+		}
 	}
 
 	public static JSONObject doJSONGet(String mUrl) throws JSONException,
@@ -111,6 +132,7 @@ public class HTTPUtils {
 		HttpParams params = new BasicHttpParams();
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		HttpProtocolParams.setContentCharset(params, "utf-8");
+		HttpClientParams.setRedirecting(params, true);
 		params.setBooleanParameter("http.protocol.expect-continue", false);
 		SchemeRegistry registry = new SchemeRegistry();
 		registry.register(new Scheme("http", PlainSocketFactory

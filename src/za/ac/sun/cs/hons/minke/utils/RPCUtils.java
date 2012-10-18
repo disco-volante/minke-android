@@ -27,7 +27,7 @@ import android.util.Log;
 
 public class RPCUtils {
 	public static ERROR startServer() {
-		String url = Constants.URL_PREFIX;
+		String url = Constants.URL_PREFIX+"start";
 		try {
 			if (HTTPUtils.startServer(url)) {
 				return ERROR.SUCCESS;
@@ -50,7 +50,7 @@ public class RPCUtils {
 
 		try {
 			JSONObject obj;
-			obj = HTTPUtils.doJSONGet(url);
+			obj = HTTPUtils.doJSONPost(url,null);
 
 			if (obj == null || obj.isNull("branches")) {
 				return ERROR.SERVER;
@@ -108,7 +108,7 @@ public class RPCUtils {
 		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
-			JSONObject obj = HTTPUtils.doJSONPost(url, bp.toJSON(),
+			JSONObject obj = HTTPUtils.doJSONMultiPost(url, bp.toJSON(),
 					JSONBuilder.toJSON("price", price));
 			if (Debug.ON) {
 				Log.v(TAGS.JSON, obj.toString());
@@ -150,7 +150,7 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, null, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branchJSON,
 					city.toJSON(), store.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -191,7 +191,7 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					null, storeName, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branchJSON,
 					city.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -234,7 +234,7 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, null, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branchJSON,
 					store.toJSON(), province.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -277,7 +277,7 @@ public class RPCUtils {
 		try {
 			JSONObject branchJSON = JSONBuilder.BranchProtoToJSON(branchName,
 					cityName, storeName, lon, lat);
-			JSONObject response = HTTPUtils.doJSONPost(url, branchJSON,
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branchJSON,
 					province.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -323,7 +323,7 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, null, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
 					bpJSON, brand.toJSON(), category.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -368,7 +368,7 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					category, null, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
 					bpJSON, brand.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -416,7 +416,7 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, brand, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONPost(url, branch.toJSON(),
+			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
 					bpJSON, category.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
@@ -465,7 +465,7 @@ public class RPCUtils {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					category, brand, size, measure, price, barCode);
 			JSONObject response;
-			response = HTTPUtils.doJSONPost(url, branch.toJSON(), bpJSON);
+			response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(), bpJSON);
 			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
@@ -540,7 +540,7 @@ public class RPCUtils {
 		try {
 			JSONObject pId = JSONBuilder.toJSON("productId", productId);
 			JSONObject bId = JSONBuilder.toJSON("branchId", branchId);
-			JSONObject obj = HTTPUtils.doJSONPost(url, pId, bId);
+			JSONObject obj = HTTPUtils.doJSONMultiPost(url, pId, bId);
 			if (obj.length() == 0) {
 				return null;
 			}
