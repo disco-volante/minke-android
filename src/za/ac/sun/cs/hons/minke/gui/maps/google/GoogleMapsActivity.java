@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.DirectionsListAdapter;
-import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
@@ -36,7 +36,6 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 public class GoogleMapsActivity extends SherlockMapActivity {
-	private GeoPoint src;
 	private MapView mapView;
 	private MapController mapController;
 	private ArrayList<Segment> directions;
@@ -96,7 +95,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 				return ERROR.DIRECTIONS;
 			}
 			try {
-				Route route = directions(src, dest);
+				Route route = directions(MapUtils.getUserLocation(), dest);
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
 				addDirections();
 				return ERROR.SUCCESS;
@@ -117,7 +116,6 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		src = MapUtils.getLocation();
 		dest = MapUtils.getDestination();
 		createGoogle();
 	}
@@ -138,7 +136,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 			showDirections();
 			return true;
 		case R.id.menu_item_user:
-			mapController.animateTo(src);
+			mapController.animateTo(MapUtils.getUserLocation());
 			return true;
 		case R.id.menu_item_destination:
 			mapController.animateTo(dest);
@@ -168,7 +166,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		holder.addView(mapView);
 		mapController = mapView.getController();
 		mapController.setZoom(15);
-		mapController.setCenter(src);
+		mapController.setCenter(MapUtils.getUserLocation());
 		BasicOverlay shopsOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.shop),
 				GoogleMapsActivity.this);
@@ -180,8 +178,8 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
 				.getResources().getDrawable(R.drawable.user),
 				GoogleMapsActivity.this);
-		iconOverlay.addOverlay(new OverlayItem(src, getString(R.string.you),
-				getString(R.string.str_you)));
+		iconOverlay.addOverlay(new OverlayItem(MapUtils.getUserLocation(),
+				getString(R.string.you), getString(R.string.str_you)));
 		mapView.getOverlays().add(shopsOverlay);
 		mapView.getOverlays().add(iconOverlay);
 		getDirections();

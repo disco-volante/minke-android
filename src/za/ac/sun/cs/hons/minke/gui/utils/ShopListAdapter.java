@@ -6,6 +6,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.browse.BrowseFragment;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.view.LayoutInflater;

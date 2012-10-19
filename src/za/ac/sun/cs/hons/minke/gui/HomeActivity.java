@@ -8,7 +8,6 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
-import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
@@ -23,6 +22,7 @@ import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
+import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
@@ -166,14 +166,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 		startActivity(IntentUtils.getGraphIntent(this));
 	}
 
-	public void setBranch(View view) {
+/*	public void setBranch(View view) {
 		if (MapUtils.getUserBranch() != null) {
 			changeTab(VIEW.SCAN, NAMES.SCAN);
 			scan(null);
 		} else {
 			DialogUtils.getErrorDialog(this, ERROR.INPUT).show();
 		}
-	}
+	}*/
 
 	public void findStores(View view) {
 		final FindBranchesTask task = new FindBranchesTask();
@@ -233,7 +233,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	public void showDirections(View view) {
 		String[] names = new String[ShopUtils.getShopLists().size()];
-		//MapUtils.setBranches(ShopUtils.getBranches());
 		MapUtils.setDestination(ShopUtils.getShopLists().get(0));
 		int i = 0;
 		for (ShopList sl : ShopUtils.getShopLists()) {
@@ -394,16 +393,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void confirmLocation() {
-		if (MapUtils.getBranches() == null) {
+		selectedBranch = 0;
+		if (EntityUtils.getBranches() == null) {
 			return;
 		}
-		final int size = Math.min(MapUtils.getBranches().size(), 5);
+		final int size = EntityUtils.getBranches().size();
 		String[] names = new String[size + 1];
 		int i = 0;
-		for (Branch b : MapUtils.getBranches()) {
-			if (i == size) {
-				break;
-			}
+		for (Branch b : EntityUtils.getBranches()) {
 			names[i++] = b.toString();
 		}
 		names[size] = getString(R.string.other);
@@ -424,7 +421,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 							MapUtils.setUserBranch(null);
 							editLocation();
 						} else {
-							MapUtils.setUserBranch(MapUtils.getBranches().get(
+							MapUtils.setUserBranch(EntityUtils.getBranches().get(
 									selectedBranch));
 							scan(null);
 						}
@@ -442,7 +439,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	protected void editLocation() {
 		if (Debug.ON) {
-			Log.v("LOCATION", MapUtils.getLocation().toString());
+			Log.v("LOCATION", MapUtils.getUserLocation().toString());
 		}
 		changeTab(VIEW.SCAN, NAMES.BRANCH);
 	}

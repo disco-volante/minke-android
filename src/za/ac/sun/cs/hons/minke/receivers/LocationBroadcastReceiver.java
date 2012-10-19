@@ -19,7 +19,7 @@ public class LocationBroadcastReceiver extends BroadcastReceiver {
 		}
 		final LocationInfo locationInfo = (LocationInfo) intent
 				.getSerializableExtra(LocationLibraryConstants.LOCATION_BROADCAST_EXTRA_LOCATIONINFO);
-		MapUtils.setLocation(locationInfo.lastLat, locationInfo.lastLong);
+		MapUtils.setUserLocation(locationInfo.lastLat, locationInfo.lastLong);
 
 	}
 

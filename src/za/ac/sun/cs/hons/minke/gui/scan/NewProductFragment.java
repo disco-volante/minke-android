@@ -14,7 +14,6 @@ import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
@@ -42,6 +41,12 @@ public class NewProductFragment extends SherlockFragment {
 	private Spinner unitSpinner;
 	protected Brand brand;
 	protected Category category;
+	private String name;
+	private double size;
+	private int price;
+	private String measure;
+	private String categoryName;
+	private String brandName;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,7 +110,6 @@ public class NewProductFragment extends SherlockFragment {
 			}
 
 		});
-		clear();
 	}
 
 	private String[] getMeasures() {
@@ -118,55 +122,32 @@ public class NewProductFragment extends SherlockFragment {
 		if (nameText.getError() != null || brandBox.getError() != null
 				|| categoryBox.getError() != null
 				|| sizeText.getError() != null || priceText.getError() != null) {
-			AlertDialog.Builder errors = new AlertDialog.Builder(getActivity());
-			StringBuilder msg = new StringBuilder();
-			msg.append(getString(R.string.str_invalid_msg));
-			if (nameText.getError() != null) {
-				msg.append(getString(R.string.product));
-				msg.append(",");
-			}
-			if (brandBox.getError() != null) {
-				msg.append(getString(R.string.brand));
-				msg.append(",");
-			}
-			if (categoryBox.getError() != null) {
-				msg.append(getString(R.string.category));
-				msg.append(",");
-			}
-			if (sizeText.getError() != null) {
-				msg.append(getString(R.string.size));
-				msg.append(",");
-			}
-			if (priceText.getError() != null) {
-				msg.append(getString(R.string.price));
-				msg.append(",");
-			}
-			msg.replace(msg.length() - 2, msg.length(), ".");
-			errors.setTitle(getString(R.string.str_invalid_title));
-			errors.setMessage(msg.toString());
-			errors.setPositiveButton(getString(R.string.ok),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();
-						}
-					});
-			errors.show();
+			return;
 		} else {
-			String name = nameText.getText().toString();
-			double size = Double.parseDouble(sizeText.getText().toString());
-			int price = (int) (Double.parseDouble(priceText.getText()
+			name = nameText.getText().toString();
+			size = Double.parseDouble(sizeText.getText().toString());
+			price = (int) (Double.parseDouble(priceText.getText()
 					.toString()) * 100);
-			createProduct(name, brand, category, size, unitSpinner
-					.getSelectedItem().toString(), price);
+			measure =  unitSpinner
+					.getSelectedItem().toString();
+			categoryName = categoryBox.getText().toString();
+			brandName = brandBox.getText().toString();
+			clear();
+			createProduct();
 		}
 
 	}
+	
+	private void clear() {
+		nameText.setText("");	
+		sizeText.setText("");
+		priceText.setText("");
+		categoryBox.setText("");
+		brandBox.setText("");
+	}
 
-	public void createProduct(final String _name, final Brand _brand,
-			final Category _category, final double _size,
-			final String _measure, final int _price) {
-		final CreateProductTask task = new CreateProductTask(_name, _brand,
-				_category, _size, _measure, _price);
+	public void createProduct() {
+		final CreateProductTask task = new CreateProductTask();
 		task.execute();
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -181,8 +162,7 @@ public class NewProductFragment extends SherlockFragment {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									createProduct(_name, _brand, _category,
-											_size, _measure, _price);
+									createProduct();
 									dialog.cancel();
 								}
 							});
@@ -192,32 +172,11 @@ public class NewProductFragment extends SherlockFragment {
 		}, 15000);
 	}
 
-	private void clear() {
-		nameText.setText("");
-		brandBox.setText("");
-		categoryBox.setText("");
-		priceText.setText("");
-		sizeText.setText("");
-	}
-
 	class CreateProductTask extends ProgressTask {
-		private String name;
-		private Brand brand;
-		private Category category;
-		private double size;
-		private int price;
-		private String measure;
 
-		public CreateProductTask(String name, Brand brand, Category category,
-				double size, String measure, int price) {
+		public CreateProductTask() {
 			super(getActivity(), getString(R.string.adding) + "...",
 					getString(R.string.adding_product));
-			this.name = name;
-			this.brand = brand;
-			this.category = category;
-			this.size = size;
-			this.price = price;
-			this.measure = measure;
 		}
 
 		@Override
@@ -232,8 +191,7 @@ public class NewProductFragment extends SherlockFragment {
 			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							createProduct(name, brand, category, size, measure,
-									price);
+							createProduct();
 							dialog.cancel();
 						}
 					});
@@ -263,16 +221,15 @@ public class NewProductFragment extends SherlockFragment {
 						ScanUtils.getBarCode());
 			} else if (brand != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brand, categoryBox.getText().toString(), size,
+						name, brand, categoryName, size,
 						measure, price, ScanUtils.getBarCode());
 			} else if (category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brandBox.getText().toString(), category, size,
+						name, brandName, category, size,
 						measure, price, ScanUtils.getBarCode());
 			} else {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brandBox.getText().toString(), categoryBox
-								.getText().toString(), size, measure, price,
+						name, brandName, categoryName, size, measure, price,
 						ScanUtils.getBarCode());
 			}
 		}

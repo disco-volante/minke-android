@@ -1,9 +1,6 @@
 package za.ac.sun.cs.hons.minke.utils;
 
-import java.util.ArrayList;
-
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.gui.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.constants.Debug;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -22,7 +19,6 @@ public class MapUtils {
 	private static Route route;
 	private static Place[] places;
 	private static GeoPoint destination;
-	private static ArrayList<Branch> branches;
 	private static GeoPoint point;
 	private static Branch branch;
 
@@ -51,25 +47,13 @@ public class MapUtils {
 	}
 
 	public static void setDestination(ShopList shopList) {
-		destination = shopList.getBranch().getCityLocation()
-				.getGeoPoint();
+		destination = shopList.getBranch().getCityLocation().getGeoPoint();
 		if (Debug.ON) {
-			Log.v(TAGS.MAP,
-					"latitude = "
-							+shopList.getBranch().getCityLocation().getLat()
-							+ " longitude = "
-							+ shopList.getBranch().getCityLocation().getLon());
+			Log.v(TAGS.MAP, "latitude = "
+					+ shopList.getBranch().getCityLocation().getLat()
+					+ " longitude = "
+					+ shopList.getBranch().getCityLocation().getLon());
 		}
-	}
-
-	public static void setBranches(ArrayList<Branch> _branches) {
-		branches = _branches;
-	}
-
-
-
-	public static ArrayList<Branch> getBranches() {
-		return branches;
 	}
 
 	public static GeoPoint getDestination() {
@@ -82,7 +66,7 @@ public class MapUtils {
 			return ERROR.SUCCESS;
 		}
 		if (Debug.EMULATOR) {
-			point = new GeoPoint((int) (-33 * 1E6), (int) (18 * 1E6));
+			setUserLocation(-33,18);
 			return ERROR.SUCCESS;
 		}
 		Location location = locationManager
@@ -92,8 +76,8 @@ public class MapUtils {
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if (location != null) {
-			point = new GeoPoint((int) (location.getLatitude() * 1E6),
-					(int) (location.getLongitude() * 1E6));
+			setUserLocation(location.getLatitude(),
+					location.getLongitude());
 			if (Debug.ON) {
 				Log.d("MAPUTILS", location.toString());
 			}
@@ -102,8 +86,16 @@ public class MapUtils {
 		return ERROR.LOCATION;
 	}
 
-	public static GeoPoint getLocation() {
+	public static GeoPoint getUserLocation() {
 		return point;
+	}
+	
+	public static double getUserLat() {
+		return ((double) point.getLatitudeE6())/1E6;
+	}
+	
+	public static double getUserLon() {
+		return ((double) point.getLongitudeE6())/1E6;
 	}
 
 	public static Branch getUserBranch() {
@@ -114,9 +106,24 @@ public class MapUtils {
 		branch = _branch;
 	}
 
-	public static void setLocation(float lastLat, float lastLong) {
-		point = new GeoPoint((int) (lastLat * 1E6), (int) (lastLong * 1E6));
-		branch = null;
+	public static void setUserLocation(double lat, double lon) {
+		point = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
+		EntityUtils.sortBranches();
+	}
+
+	public static double rad(double x) {
+		return x * Math.PI / 180;
+	}
+
+	public static double dist(double sLat, double sLon, double lat, double lon) {
+		int r = 6371;
+		double dLat = rad(lat - sLat);
+		double dLon = rad(lon - sLon);
+		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(lat))
+				* Math.cos(rad(lat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return r * c;
+
 	}
 
 }

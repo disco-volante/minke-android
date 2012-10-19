@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.gui.scan;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
-import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
@@ -34,11 +33,13 @@ import android.widget.EditText;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class NewBranchFragment extends SherlockFragment {
-	private AutoCompleteTextView branchBox, storeBox, cityBox;
+	private AutoCompleteTextView storeBox, cityBox;
 	private EditText branchText;
 	private Province province;
 	private City city;
 	private Store store;
+	public double lat, lon;
+	public String cityName, branchName, storeName;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,23 +49,10 @@ public class NewBranchFragment extends SherlockFragment {
 		initGUI(v);
 		return v;
 	}
+	
+	
 
 	private void initGUI(View v) {
-		branchBox = (AutoCompleteTextView) v.findViewById(R.id.box_branch);
-		final ArrayAdapter<Branch> branchAdapter = new ArrayAdapter<Branch>(
-				getActivity(), R.layout.listitem_default,
-				EntityUtils.getBranches());
-		branchBox.setAdapter(branchAdapter);
-		branchBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				branchBox, false));
-		branchBox.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				MapUtils.setUserBranch(branchAdapter.getItem(position));
-			}
-
-		});
 		branchText = (EditText) v.findViewById(R.id.text_branch);
 		branchText.addTextChangedListener(new TextErrorWatcher(getActivity(),
 				branchText, false));
@@ -108,14 +96,6 @@ public class NewBranchFragment extends SherlockFragment {
 			}
 
 		});
-		clear();
-	}
-
-	private void clear() {
-		branchBox.setText("");
-		branchText.setText("");
-		storeBox.setText("");
-		cityBox.setText("");
 	}
 
 	public void createLocation() {
@@ -123,20 +103,33 @@ public class NewBranchFragment extends SherlockFragment {
 				|| cityBox.getError() != null) {
 			return;
 		}
+		branchName = branchText.getText().toString();
+		cityName = cityBox.getText().toString();
+		storeName = storeBox.getText().toString();
+		lat = MapUtils.getUserLat();
+		lon = MapUtils.getUserLat();
+		clear();
 		if (city != null) {
-			createBranch(MapUtils.getLocation().getLatitudeE6() / 1E6, MapUtils
-					.getLocation().getLongitudeE6() / 1E6, city, store,
-					branchText.getText().toString());
+			createBranch();
 
 		} else {
 			requestLocations();
 		}
 	}
 
+	private void clear() {
+		branchText.setText("");	
+		storeBox.setText("");
+		cityBox.setText("");
+	}
+
+
+
 	private void requestLocations() {
 		if (EntityUtils.getProvinces() == null) {
 			return;
 		}
+		province = EntityUtils.getProvinces().get(0);
 		final int size = Math.min(EntityUtils.getProvinces().size(), 10);
 		final String[] names = new String[size];
 		int i = 0;
@@ -162,11 +155,7 @@ public class NewBranchFragment extends SherlockFragment {
 						+ NewBranchFragment.this.getString(R.string.branch),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						createBranch(
-								MapUtils.getLocation().getLatitudeE6() / 1E6,
-								MapUtils.getLocation().getLongitudeE6() / 1E6,
-								province, store, cityBox.getText().toString(),
-								branchText.getText().toString());
+						createBranch();
 						dialog.cancel();
 					}
 				});
@@ -181,10 +170,8 @@ public class NewBranchFragment extends SherlockFragment {
 		location.show();
 	}
 
-	private void createBranch(final double _lat, final double _lon,
-			final City _city, final Store _store, final String _branch) {
-		final CreateBranchTask task = new CreateBranchTask(_lat, _lon, _city,
-				_store, _branch);
+	private void createBranch() {
+		final CreateBranchTask task = new CreateBranchTask();
 		task.execute();
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -199,38 +186,7 @@ public class NewBranchFragment extends SherlockFragment {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									createBranch(_lat, _lon, _city, _store,
-											_branch);
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, 15000);
-	}
-
-	private void createBranch(final double _lat, final double _lon,
-			final Province _province, final Store _store, final String _city,
-			final String _branch) {
-		final CreateBranchTask task = new CreateBranchTask(_lat, _lon,
-				_province, _store, _city, _branch);
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(
-							NewBranchFragment.this.getActivity(),
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									createBranch(_lat, _lon, _province, _store,
-											_city, _branch);
+									createBranch();
 									dialog.cancel();
 								}
 							});
@@ -241,36 +197,12 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	class CreateBranchTask extends ProgressTask {
-		private City city;
-		private double lat, lon;
-		private String branchName;
-		private Store store;
-		private Province province;
-		private String cityName;
 
-		private CreateBranchTask(double lat, double lon) {
+		private CreateBranchTask() {
 			super(NewBranchFragment.this.getActivity(), NewBranchFragment.this
 					.getString(R.string.adding) + "...", NewBranchFragment.this
 					.getString(R.string.adding_branch));
-			this.lat = lat;
-			this.lon = lon;
-		}
-
-		public CreateBranchTask(double lat, double lon, City city, Store store,
-				String branchName) {
-			this(lat, lon);
-			this.city = city;
-			this.branchName = branchName;
-			this.store = store;
-		}
-
-		public CreateBranchTask(double lat, double lon, Province province,
-				Store store, String cityName, String branchName) {
-			this(lat, lon);
-			this.province = province;
-			this.cityName = cityName;
-			this.store = store;
-			this.branchName = branchName;
+	
 		}
 
 		@Override
@@ -314,10 +246,9 @@ public class NewBranchFragment extends SherlockFragment {
 			if (store == null) {
 				if (city == null) {
 					return RPCUtils.createBranch(province, lat, lon, cityName,
-							storeBox.getText().toString(), branchName);
+							storeName, branchName);
 				} else {
-					return RPCUtils.createBranch(city, lat, lon, storeBox
-							.getText().toString(), branchName);
+					return RPCUtils.createBranch(city, lat, lon, storeName, branchName);
 				}
 			} else if (city == null) {
 				return RPCUtils.createBranch(province, store, lat, lon,

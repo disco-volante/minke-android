@@ -164,7 +164,6 @@ public class RPCUtils {
 			EntityUtils.addCityLocation(cl);
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
-			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (Debug.ON) {
@@ -207,7 +206,6 @@ public class RPCUtils {
 			EntityUtils.addCityLocation(cl);
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
-			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (Debug.ON) {
@@ -250,7 +248,6 @@ public class RPCUtils {
 			EntityUtils.addCityLocation(cl);
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
-			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (Debug.ON) {
@@ -295,7 +292,6 @@ public class RPCUtils {
 			EntityUtils.addCityLocation(cl);
 			b = EntityUtils.addBranch(b);
 			MapUtils.setUserBranch(b);
-			MapUtils.setBranches(EntityUtils.getBranches());
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (Debug.ON) {

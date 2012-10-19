@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -106,7 +107,7 @@ public class EntityUtils {
 
 	public static void setBranches(ArrayList<Branch> _branches) {
 		branches = _branches;
-
+		sortBranches();
 	}
 
 	public static ArrayList<Brand> getBrands() {
@@ -240,9 +241,6 @@ public class EntityUtils {
 		setProducts(productDAO.getAll());
 		setBranches(branchDAO.getAll());
 		setLocations();
-		if (MapUtils.getLocation() != null && branches != null) {
-			MapUtils.setBranches(branches);
-		}
 		loaded = true;
 		if (Debug.ON) {
 			Log.v(TAGS.ENTITY, products.toString());
@@ -464,6 +462,15 @@ public class EntityUtils {
 				.getAllByParameters(new String[] { DBConstants.PRODUCT_ID },
 						new String[] { String.valueOf(productId) });
 		return branchProducts;
+	}
+
+	public static void sortBranches() {
+		System.out.println(branches);
+		if (branches != null && MapUtils.getUserLocation() != null) {
+			Collections.sort(branches);
+			System.out.println(branches);
+			MapUtils.setUserBranch(branches.get(0));
+		}
 	}
 
 }

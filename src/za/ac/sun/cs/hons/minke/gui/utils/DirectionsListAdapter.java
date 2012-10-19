@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class DirectionsListAdapter extends ArrayAdapter<Segment> {
@@ -19,7 +18,6 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 
 	static class ViewHolder {
 		public TextView text;
-		public ImageButton btn;
 
 	}
 
@@ -50,14 +48,12 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 	protected ViewHolder initHolder(final Segment item, View rowView) {
 		final ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.text.setText(item.toString());
-		holder.btn.setOnClickListener(new OnClickListener() {
-
+		holder.text.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				activity.plotPosition(item.startPoint(),
 						activity.getString(R.string.directions),
 						item.toString());
-
 			}
 		});
 		return holder;
@@ -68,7 +64,6 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 		View rowView = inflater.inflate(rowType, null);
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_dir);
-		viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_dir);
 		rowView.setTag(viewHolder);
 		return rowView;
 	}

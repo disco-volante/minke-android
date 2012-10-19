@@ -3,7 +3,11 @@ package za.ac.sun.cs.hons.minke.entities.store;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
+import za.ac.sun.cs.hons.minke.utils.MapUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 
 /**
  * DB Entity used to store data about a specific store's branch, e.g. Spar - Die
@@ -13,7 +17,7 @@ import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
  * 
  */
 
-public class Branch {
+public class Branch implements Comparable<Branch> {
 	private long id, storeId, cityLocationId;
 	private String name;
 	private Store store;
@@ -142,5 +146,34 @@ public class Branch {
 		if (storeId != other.storeId)
 			return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(Branch branch) {
+		Log.v(TAGS.ENTITY, getName() + " " + branch);
+		if (branch == null || branch.getCityLocation() == null) {
+			return 1;
+		}
+		if (cityLocation == null) {
+			return -1;
+		}
+		if (MapUtils.getUserLocation() == null) {
+			return 0;
+		}
+		double dis0 = MapUtils.dist(MapUtils.getUserLat(),
+				MapUtils.getUserLon(), getCityLocation().getLat(),
+				getCityLocation().getLon());
+		double dis1 = MapUtils.dist(MapUtils.getUserLat(),
+				MapUtils.getUserLon(), branch.getCityLocation().getLat(),
+				branch.getCityLocation().getLon());
+		Log.v(TAGS.ENTITY,
+				getName() + " distance " + dis0 + "\n vs " + branch.getName()
+						+ " distance " + dis1);
+		if (dis0 > dis1) {
+			return 1;
+		} else if (dis0 < dis1) {
+			return -1;
+		}
+		return 0;
 	}
 }
