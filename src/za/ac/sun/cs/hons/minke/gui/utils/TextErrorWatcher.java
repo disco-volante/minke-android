@@ -16,6 +16,7 @@ public class TextErrorWatcher implements TextWatcher {
 		this.view = view;
 		this.numeric = numeric;
 		this.context = context;
+		afterTextChanged(view.getEditableText());
 	}
 
 	@Override

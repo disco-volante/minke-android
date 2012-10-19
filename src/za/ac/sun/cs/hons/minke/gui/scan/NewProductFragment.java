@@ -47,6 +47,9 @@ public class NewProductFragment extends SherlockFragment {
 	private String measure;
 	private String categoryName;
 	private String brandName;
+	private TextErrorWatcher nameWatcher, brandWatcher, categoryWatcher, priceWatcher, sizeWatcher;
+	private boolean watchers;
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,15 +62,11 @@ public class NewProductFragment extends SherlockFragment {
 
 	private void initGUI(View v) {
 		nameText = (EditText) v.findViewById(R.id.text_name);
-		nameText.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				nameText, false));
 		brandBox = (AutoCompleteTextView) v.findViewById(R.id.text_brand);
 		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(
 				getActivity(), R.layout.listitem_default,
 				EntityUtils.getBrands());
 		brandBox.setAdapter(brands);
-		brandBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				brandBox, false));
 		brandBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -81,8 +80,6 @@ public class NewProductFragment extends SherlockFragment {
 				getActivity(), R.layout.listitem_default,
 				EntityUtils.getCategories());
 		categoryBox.setAdapter(categories);
-		categoryBox.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				categoryBox, false));
 		categoryBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -92,11 +89,7 @@ public class NewProductFragment extends SherlockFragment {
 
 		});
 		priceText = (EditText) v.findViewById(R.id.text_price);
-		priceText.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				priceText, true));
 		sizeText = (EditText) v.findViewById(R.id.text_size);
-		sizeText.addTextChangedListener(new TextErrorWatcher(getActivity(),
-				sizeText, true));
 		unitSpinner = (Spinner) v.findViewById(R.id.spinner_unit);
 		SpinnerAdapter units = new ArrayAdapter<String>(getActivity(),
 				R.layout.listitem_default, getMeasures());
@@ -106,7 +99,7 @@ public class NewProductFragment extends SherlockFragment {
 		btnCreateProduct.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				checkProduct();
+				checkInput();
 			}
 
 		});
@@ -118,27 +111,37 @@ public class NewProductFragment extends SherlockFragment {
 				getString(R.string.l), getString(R.string.ea) };
 	}
 
-	private void checkProduct() {
+	private void checkInput() {
+		if (!watchers) {
+			watchers = true;
+			nameWatcher = new TextErrorWatcher(getActivity(), nameText, false);
+			brandWatcher = new TextErrorWatcher(getActivity(), brandBox, false);
+			categoryWatcher = new TextErrorWatcher(getActivity(), categoryBox, false);
+			priceWatcher = new TextErrorWatcher(getActivity(), priceText, true);
+			sizeWatcher = new TextErrorWatcher(getActivity(), sizeText, true);
+			nameText.addTextChangedListener(nameWatcher);
+			brandBox.addTextChangedListener(brandWatcher);
+			categoryBox.addTextChangedListener(categoryWatcher);
+			priceText.addTextChangedListener(priceWatcher);
+			sizeText.addTextChangedListener(sizeWatcher);
+		}
 		if (nameText.getError() != null || brandBox.getError() != null
 				|| categoryBox.getError() != null
 				|| sizeText.getError() != null || priceText.getError() != null) {
 			return;
 		} else {
-			name = nameText.getText().toString();
-			size = Double.parseDouble(sizeText.getText().toString());
-			price = (int) (Double.parseDouble(priceText.getText()
-					.toString()) * 100);
-			measure =  unitSpinner
-					.getSelectedItem().toString();
-			categoryName = categoryBox.getText().toString();
-			brandName = brandBox.getText().toString();
-			clear();
 			createProduct();
 		}
 
 	}
 	
 	private void clear() {
+		watchers = false;
+		nameText.removeTextChangedListener(nameWatcher);
+		brandBox.removeTextChangedListener(brandWatcher);
+		categoryBox.removeTextChangedListener(categoryWatcher);
+		priceText.removeTextChangedListener(priceWatcher);
+		sizeText.removeTextChangedListener(sizeWatcher);
 		nameText.setText("");	
 		sizeText.setText("");
 		priceText.setText("");
@@ -147,6 +150,15 @@ public class NewProductFragment extends SherlockFragment {
 	}
 
 	public void createProduct() {
+		name = nameText.getText().toString();
+		size = Double.parseDouble(sizeText.getText().toString());
+		price = (int) (Double.parseDouble(priceText.getText()
+				.toString()) * 100);
+		measure =  unitSpinner
+				.getSelectedItem().toString();
+		categoryName = categoryBox.getText().toString();
+		brandName = brandBox.getText().toString();
+		clear();
 		final CreateProductTask task = new CreateProductTask();
 		task.execute();
 		Handler handler = new Handler();
