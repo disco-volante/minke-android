@@ -428,10 +428,6 @@ public class EntityUtils {
 	}
 
 	public static Product retrieveProduct(long code) {
-		System.out.println("bc " + code);
-		for (Product p : products) {
-			System.out.println(p.toString() + " " + p.getId());
-		}
 		return productDAO.getByCloudID(code);
 	}
 
@@ -472,10 +468,8 @@ public class EntityUtils {
 	}
 
 	public static void sortBranches() {
-		System.out.println(branches);
 		if (branches != null && MapUtils.getUserLocation() != null) {
 			Collections.sort(branches);
-			System.out.println(branches);
 			MapUtils.setUserBranch(branches.get(0));
 		}
 	}

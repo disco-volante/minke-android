@@ -59,6 +59,22 @@ public class HTTPUtils {
 		}
 		return new JSONObject(resultstring);
 	}
+	
+	public static boolean startServerPost(String mUrl)
+			throws ClientProtocolException, IOException{
+		DefaultHttpClient httpClient = getClient();
+
+		HttpPost httpost = new HttpPost(mUrl);
+		HttpResponse httpresponse = httpClient.execute(httpost);
+		HttpEntity resultentity = httpresponse.getEntity();
+		InputStream inputstream = resultentity.getContent();
+		String resultstring = convertStreamToString(inputstream);
+		inputstream.close();
+		if (DEBUG.ON) {
+			Log.v(TAGS.HTTP, resultstring);
+		}
+		return resultstring.equals("STARTED");
+	}
 
 	public static JSONObject doJSONMultiPost(String url, JSONObject... jsons)
 			throws JSONException, ClientProtocolException, IOException {

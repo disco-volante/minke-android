@@ -29,15 +29,17 @@ public class RPCUtils {
 	public static ERROR startServer() {
 		String url = Constants.URL_PREFIX+"start";
 		try {
-			if (HTTPUtils.startServer(url)) {
+			if (HTTPUtils.startServerPost(url)) {
 				return ERROR.SUCCESS;
 			}
 		} catch (ClientProtocolException e) {
 			if (DEBUG.ON) {
-				Log.v(TAGS.ERROR, e.getMessage());
+				e.printStackTrace();
+				Log.v(TAGS.ERROR, e.getMessage()+e.getCause());
 			}
 		} catch (IOException e) {
 			if (DEBUG.ON) {
+				e.printStackTrace();
 				Log.v(TAGS.ERROR, e.getMessage());
 			}
 		}

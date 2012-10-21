@@ -101,7 +101,6 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 				addDirections();
 				return ERROR.SUCCESS;
 			} catch (Exception e) {
-				System.out.println(e);
 				if (e != null && e.getMessage() != null) {
 					if (DEBUG.ON) {
 						Log.v(TAGS.MAP, e.getMessage());
