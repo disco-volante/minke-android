@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils.constants;
 
 public class Constants {
-	public final static String URL_BASE = Debug.LOCAL ? "http://10.0.2.2:5000"
+	public final static String URL_BASE = DEBUG.LOCAL ? "http://10.0.2.2:5000"
 			: "http://kraken.shop-minke.appspot.com";
 	public final static String REQUEST_BASE = "/entityRequestServlet?type=";
 	public final static String URL_PREFIX = URL_BASE + REQUEST_BASE;

@@ -12,6 +12,7 @@ import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -19,6 +20,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +31,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -68,6 +72,15 @@ public class NewBranchFragment extends SherlockFragment {
 			}
 
 		});
+		storeBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				storeBox.dismissDropDown();
+				return false;
+			}
+
+		});
 		cityBox = (AutoCompleteTextView) v.findViewById(R.id.text_city);
 		final ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(
 				getActivity(), R.layout.listitem_default,
@@ -79,6 +92,15 @@ public class NewBranchFragment extends SherlockFragment {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				city = cityAdapter.getItem(position);
+			}
+
+		});
+		cityBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				cityBox.dismissDropDown();
+				return false;
 			}
 
 		});
@@ -202,7 +224,7 @@ public class NewBranchFragment extends SherlockFragment {
 					dlg.show();
 				}
 			}
-		}, 15000);
+		}, TIME.TIMEOUT_15);
 	}
 
 	class CreateBranchTask extends ProgressTask {

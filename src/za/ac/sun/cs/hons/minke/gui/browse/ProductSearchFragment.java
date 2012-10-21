@@ -4,21 +4,23 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
-import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -41,16 +43,6 @@ public class ProductSearchFragment extends SherlockFragment {
 		return v;
 	}
 	
-	@Override
-	public void onResume() {
-		super.onResume();
-		SearchUtils.getAddedCategories().clear();
-		SearchUtils.getAddedProducts().clear();
-		productAdapter.notifyDataSetChanged();
-		categoryAdapter.notifyDataSetChanged();
-		BrowseUtils.getBranchProducts().clear();
-	}
-
 	private void initBoxes(View v) {
 		searchBox = (AutoCompleteTextView) v.findViewById(R.id.text_search);
 		searchBox.setOnItemClickListener(new OnItemClickListener() {
@@ -62,6 +54,15 @@ public class ProductSearchFragment extends SherlockFragment {
 				} else {
 					addItem(categoryAdapter.getItem(position));
 				}
+			}
+
+		});
+		searchBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				searchBox.dismissDropDown();
+				return false;
 			}
 
 		});

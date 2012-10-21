@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 
 import android.util.Log;
 
@@ -96,7 +96,7 @@ public class GoogleParser extends XMLParser implements RouteParser {
 				route.addSegment(segment.copy());
 			}
 		} catch (JSONException e) {
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.e(e.getMessage(), "Google JSON Parser - " + feedUrl);
 			}
 		}
@@ -122,14 +122,14 @@ public class GoogleParser extends XMLParser implements RouteParser {
 				sBuf.append(line);
 			}
 		} catch (IOException e) {
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.e(e.getMessage(), "Google parser, stream2string");
 			}
 		} finally {
 			try {
 				input.close();
 			} catch (IOException e) {
-				if (Debug.ON) {
+				if (DEBUG.ON) {
 					Log.e(e.getMessage(), "Google parser, stream2string");
 				}
 			}

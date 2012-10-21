@@ -7,7 +7,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
@@ -77,7 +77,7 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d("DB", entries + " retrieved");
 		}
 		return entries;
@@ -95,7 +95,7 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d("DB", entries + " retrieved");
 		}
 		return entries;

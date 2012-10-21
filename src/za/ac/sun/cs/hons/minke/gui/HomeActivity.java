@@ -25,10 +25,11 @@ import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -62,7 +63,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.STATE, "started");
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 					.detectDiskReads().detectDiskWrites().detectNetwork()
@@ -87,9 +88,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 				mTabHost.newTabSpec(VIEW.SHOP).setIndicator(
 						getString(R.string.shop)), NAMES.SHOP);
 		if (savedInstanceState != null) {
-			mTabHost.setCurrentTabByTag(savedInstanceState.getString(VIEW.SCAN));
+			mTabHost.setCurrentTabByTag(savedInstanceState.getString("TAB"));
+			changeTab(savedInstanceState.getString("TAB"),
+					savedInstanceState.getString("CLASS"));
+		} else {
+			new WaitTask().execute();
 		}
-		new WaitTask().execute();
 	}
 
 	@Override
@@ -98,6 +102,15 @@ public class HomeActivity extends SherlockFragmentActivity {
 		MenuInflater inflater = getSupportMenuInflater();
 		inflater.inflate(R.menu.menu_home, menu);
 		return true;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putString("TAB", mTabManager.getCurrentTab()
+				.getTag());
+		savedInstanceState.putString("CLASS", mTabManager.getCurrentTab()
+				.getClassName());
 	}
 
 	@Override
@@ -134,6 +147,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	public void getProductSearch(View view) {
+		SearchUtils.getAddedProducts().clear();
+		SearchUtils.getAddedCategories().clear();
 		changeTab(VIEW.BROWSE, NAMES.PRODUCT);
 	}
 
@@ -159,21 +174,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	public void showHistories(View view) {
 		startActivity(IntentUtils.getGraphIntent(this));
 	}
-
-/*	public void setBranch(View view) {
-		if (MapUtils.getUserBranch() != null) {
-			changeTab(VIEW.SCAN, NAMES.SCAN);
-			scan(null);
-		} else {
-			DialogUtils.getErrorDialog(this, ERROR.INPUT).show();
-		}
-	}*/
 
 	public void findStores(View view) {
 		final FindBranchesTask task = new FindBranchesTask();
@@ -197,14 +203,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	public void scan(View view) {
 		if (view != null || MapUtils.getUserBranch() == null) {
 			confirmLocation();
 		} else {
-			if (Debug.EMULATOR) {
+			if (DEBUG.EMULATOR) {
 				Intent intent = IntentUtils.getEmulatorIntent();
 				onActivityResult(IntentIntegrator.REQUEST_CODE,
 						Activity.RESULT_OK, intent);
@@ -285,7 +291,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	private void findProduct() {
@@ -310,7 +316,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	private void updateProduct(final BranchProduct found, final int price) {
@@ -335,7 +341,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, 10000);
+		}, TIME.TIMEOUT_10);
 	}
 
 	private void update() {
@@ -360,7 +366,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					dlg.show();
 				}
 			}
-		}, Integer.MAX_VALUE);
+		}, TIME.TIMEOUT_30);
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -421,8 +427,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 							MapUtils.setUserBranch(null);
 							editLocation();
 						} else {
-							MapUtils.setUserBranch(EntityUtils.getBranches().get(
-									selectedBranch));
+							MapUtils.setUserBranch(EntityUtils.getBranches()
+									.get(selectedBranch));
 							scan(null);
 						}
 					}
@@ -438,7 +444,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	protected void editLocation() {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v("LOCATION", MapUtils.getUserLocation().toString());
 		}
 		changeTab(VIEW.SCAN, NAMES.BRANCH);
@@ -477,7 +483,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.KEY_PRESS, "BACK PRESSED");
 		}
 		if (mTabManager == null) {
@@ -561,7 +567,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected ERROR retrieve() {
 			return EntityUtils.retrieveBranches(ShopUtils
-					.getAddedProducts(false));
+					.getAddedProducts());
 		}
 	}
 
@@ -656,7 +662,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				} else {
 					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
 							code);
-					dlg.setPositiveButton(getString(R.string.create),
+					dlg.setPositiveButton(getString(R.string.create_product),
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {

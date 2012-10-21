@@ -9,6 +9,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -63,7 +64,7 @@ public class ChartActivity extends SherlockActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	public void showChart() {

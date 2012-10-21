@@ -6,14 +6,17 @@ import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -34,12 +37,7 @@ public class LocationSearchFragment  extends SherlockFragment {
 		initLists(v);
 		return v;
 	}
-	@Override
-	public void onResume() {
-		super.onResume();
-		SearchUtils.getAddedLocations().clear();
-		locationListAdapter.notifyDataSetChanged();
-	}
+		
 
 
 	private void initBoxes(View v) {
@@ -56,7 +54,15 @@ public class LocationSearchFragment  extends SherlockFragment {
 			}
 
 		});
+		locationBox.setOnEditorActionListener(new OnEditorActionListener() {
 
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				locationBox.dismissDropDown();
+				return false;
+			}
+
+		});
 	}
 
 	private void initLists(View v) {

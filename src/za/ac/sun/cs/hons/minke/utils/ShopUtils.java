@@ -15,10 +15,8 @@ public class ShopUtils {
 	private static boolean productsActive;
 	private static ArrayList<ShopList> shoplists;
 
-	// private static ArrayList<Branch> branches;
-
-	public static ArrayList<Product> getAddedProducts(boolean reset) {
-		if (reset || addedProducts == null) {
+	public static ArrayList<Product> getAddedProducts() {
+		if (addedProducts == null) {
 			addedProducts = new ArrayList<Product>();
 		}
 		return addedProducts;
@@ -66,11 +64,13 @@ public class ShopUtils {
 	public static void setShopLists(
 			HashMap<Branch, ArrayList<BranchProduct>> branchMap) {
 		shoplists = new ArrayList<ShopList>();
-		for (Entry<Branch, ArrayList<BranchProduct>> entry : branchMap
-				.entrySet()) {
-			shoplists.add(new ShopList(entry.getValue(), entry.getKey()));
+		if (branchMap != null) {
+			for (Entry<Branch, ArrayList<BranchProduct>> entry : branchMap
+					.entrySet()) {
+				shoplists.add(new ShopList(entry.getValue(), entry.getKey()));
+			}
+			Collections.sort(shoplists);
 		}
-		Collections.sort(shoplists);
 	}
 
 	public static void removeProduct(Product product) {

@@ -32,7 +32,7 @@ import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.Context;
@@ -242,7 +242,7 @@ public class EntityUtils {
 		setBranches(branchDAO.getAll());
 		setLocations();
 		loaded = true;
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.ENTITY, products.toString());
 		}
 		return ERROR.SUCCESS;
@@ -288,6 +288,9 @@ public class EntityUtils {
 			}
 		}
 		ShopUtils.setShopLists(branchMap);
+		if(branchMap == null || branchMap.size() == 0){
+			return ERROR.NOT_FOUND;
+		}
 		return ERROR.SUCCESS;
 	}
 
@@ -313,6 +316,7 @@ public class EntityUtils {
 	}
 
 	public static ERROR retrieveBranchProducts(boolean productsActive) {
+		SearchUtils.setSearched(null);
 		HashSet<Product> _p = new HashSet<Product>();
 		if (!productsActive) {
 			if (SearchUtils.getAddedCategories().size() > 0) {
@@ -343,6 +347,9 @@ public class EntityUtils {
 					}
 				}
 			}
+		}
+		if(SearchUtils.getSearched() == null || SearchUtils.getSearched().size() == 0){
+			return ERROR.NOT_FOUND;
 		}
 		return ERROR.SUCCESS;
 	}
@@ -429,7 +436,7 @@ public class EntityUtils {
 	}
 
 	public static Product retrieveProductServer(long code) {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.SCAN, String.valueOf(code));
 		}
 		Product product = RPCUtils.retrieveProduct(code);

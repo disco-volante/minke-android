@@ -10,9 +10,10 @@ import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
@@ -102,7 +103,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 			} catch (Exception e) {
 				System.out.println(e);
 				if (e != null && e.getMessage() != null) {
-					if (Debug.ON) {
+					if (DEBUG.ON) {
 						Log.v(TAGS.MAP, e.getMessage());
 						e.printStackTrace();
 					}
@@ -150,13 +151,16 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
+	}
 
+	@Override
+	public void onRestoreInstanceState(Bundle args) {
 	}
 
 	private void createGoogle() {
 		setContentView(R.layout.activity_maps);
 		RelativeLayout holder = (RelativeLayout) findViewById(R.id.map_holder);
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			mapView = new MapView(this, Constants.DEBUG_KEY);
 		} else {
 			mapView = new MapView(this, Constants.APPLICATION_KEY);
@@ -208,7 +212,7 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 					dlg.show();
 				}
 			}
-		}, 5000);
+		}, TIME.TIMEOUT_5);
 	}
 
 	private Route directions(GeoPoint start, GeoPoint dest) {

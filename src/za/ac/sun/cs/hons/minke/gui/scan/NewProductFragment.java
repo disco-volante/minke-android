@@ -13,24 +13,28 @@ import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -75,6 +79,15 @@ public class NewProductFragment extends SherlockFragment {
 			}
 
 		});
+		brandBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				brandBox.dismissDropDown();
+				return false;
+			}
+
+		});
 		categoryBox = (AutoCompleteTextView) v.findViewById(R.id.text_category);
 		final ArrayAdapter<Category> categories = new ArrayAdapter<Category>(
 				getActivity(), R.layout.listitem_default,
@@ -85,6 +98,15 @@ public class NewProductFragment extends SherlockFragment {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				category = categories.getItem(position);
+			}
+
+		});
+		categoryBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				categoryBox.dismissDropDown();
+				return false;
 			}
 
 		});
@@ -130,6 +152,15 @@ public class NewProductFragment extends SherlockFragment {
 				|| sizeText.getError() != null || priceText.getError() != null) {
 			return;
 		} else {
+			name = nameText.getText().toString();
+			size = Double.parseDouble(sizeText.getText().toString());
+			price = (int) (Double.parseDouble(priceText.getText()
+					.toString()) * 100);
+			measure =  unitSpinner
+					.getSelectedItem().toString();
+			categoryName = categoryBox.getText().toString();
+			brandName = brandBox.getText().toString();
+			clear();
 			createProduct();
 		}
 
@@ -150,15 +181,6 @@ public class NewProductFragment extends SherlockFragment {
 	}
 
 	public void createProduct() {
-		name = nameText.getText().toString();
-		size = Double.parseDouble(sizeText.getText().toString());
-		price = (int) (Double.parseDouble(priceText.getText()
-				.toString()) * 100);
-		measure =  unitSpinner
-				.getSelectedItem().toString();
-		categoryName = categoryBox.getText().toString();
-		brandName = brandBox.getText().toString();
-		clear();
 		final CreateProductTask task = new CreateProductTask();
 		task.execute();
 		Handler handler = new Handler();
@@ -181,7 +203,7 @@ public class NewProductFragment extends SherlockFragment {
 					dlg.show();
 				}
 			}
-		}, 15000);
+		}, TIME.TIMEOUT_15);
 	}
 
 	class CreateProductTask extends ProgressTask {

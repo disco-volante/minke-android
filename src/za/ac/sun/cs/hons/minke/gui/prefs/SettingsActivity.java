@@ -4,7 +4,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.services.IUpdateService;
 import za.ac.sun.cs.hons.minke.services.UpdateService;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +28,7 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences prefs,
 				String key) {
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.d("PREF_CHANGE", key + " = " + prefs.getAll().get(key));
 			}
 			if (key.equals("updating") && updater != null) {

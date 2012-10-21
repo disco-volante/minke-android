@@ -30,7 +30,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.util.Log;
 
@@ -54,7 +54,7 @@ public class HTTPUtils {
 		InputStream inputstream = resultentity.getContent();
 		String resultstring = convertStreamToString(inputstream);
 		inputstream.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.JSON, resultstring);
 		}
 		return new JSONObject(resultstring);
@@ -82,7 +82,7 @@ public class HTTPUtils {
 
 	public static boolean startServer(String mUrl)
 			throws ClientProtocolException, IOException {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.HTTP, mUrl);
 		}
 		URL url = new URL(mUrl);
@@ -95,12 +95,12 @@ public class HTTPUtils {
 			InputStream in = new BufferedInputStream(
 					urlConnection.getInputStream());
 			if (!url.getHost().equals(urlConnection.getURL().getHost())) {
-				if (Debug.ON) {
+				if (DEBUG.ON) {
 					Log.v(TAGS.HTTP, urlConnection.getURL().getHost());
 				}
 			}
 			String resultstring = convertStreamToString(in);
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.v(TAGS.HTTP, resultstring);
 			}
 			return resultstring.equals("STARTED");
@@ -111,7 +111,7 @@ public class HTTPUtils {
 
 	public static JSONObject doJSONGet(String mUrl) throws JSONException,
 			ClientProtocolException, IOException {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.HTTP, mUrl);
 		}
 		HttpGet getMethod = new HttpGet(mUrl);
@@ -121,7 +121,7 @@ public class HTTPUtils {
 		InputStream inputstream = resultentity.getContent();
 		String resultstring = convertStreamToString(inputstream);
 		inputstream.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.JSON, resultstring);
 		}
 		return new JSONObject(resultstring);

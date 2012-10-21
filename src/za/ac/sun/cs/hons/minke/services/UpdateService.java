@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.services;
 
 import za.ac.sun.cs.hons.minke.tasks.UpdateDataBGTask;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.IBinder;
@@ -17,7 +17,7 @@ public class UpdateService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.i("UpdateService", "Service running");
 		}
 		start();

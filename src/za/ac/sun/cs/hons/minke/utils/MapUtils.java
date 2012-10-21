@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.location.Location;
@@ -48,7 +48,7 @@ public class MapUtils {
 
 	public static void setDestination(ShopList shopList) {
 		destination = shopList.getBranch().getCityLocation().getGeoPoint();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.MAP, "latitude = "
 					+ shopList.getBranch().getCityLocation().getLat()
 					+ " longitude = "
@@ -65,7 +65,7 @@ public class MapUtils {
 		if (point != null) {
 			return ERROR.SUCCESS;
 		}
-		if (Debug.EMULATOR) {
+		if (DEBUG.EMULATOR) {
 			setUserLocation(-33,18);
 			return ERROR.SUCCESS;
 		}
@@ -78,7 +78,7 @@ public class MapUtils {
 		if (location != null) {
 			setUserLocation(location.getLatitude(),
 					location.getLongitude());
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.d("MAPUTILS", location.toString());
 			}
 			return ERROR.SUCCESS;

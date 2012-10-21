@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
@@ -175,7 +175,7 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 
 	private void setAnimation(String tabId, String className,
 			FragmentTransaction ft) {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.TABS,
 					"animation level" + PreferencesUtils.getAnimationLevel());
 		}

@@ -7,14 +7,17 @@ import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -32,16 +35,6 @@ public class ShopFragment extends SherlockFragment {
 		return v;
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		ShopUtils.getAddedProducts(false).clear();
-		shoplistAdapter.notifyDataSetChanged();
-		if (ShopUtils.getShopLists() != null) {
-			ShopUtils.getShopLists().clear();
-		}
-	}
-
 	private void initGUI(View v) {
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
 				R.layout.listitem_default, EntityUtils.getProducts());
@@ -56,14 +49,23 @@ public class ShopFragment extends SherlockFragment {
 			}
 
 		});
+		shopping.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView view, int id, KeyEvent event) {
+				shopping.dismissDropDown();
+				return false;
+			}
+
+		});
 		shoplistAdapter = new ProductListAdapter(getActivity(),
-				ShopUtils.getAddedProducts(true));
+				ShopUtils.getAddedProducts());
 		ListView shoplist = (ListView) v.findViewById(R.id.list_shopping);
 		shoplist.setAdapter(shoplistAdapter);
 	}
 
 	private void addItem(Product item) {
-		if (item != null && !ShopUtils.getAddedProducts(false).contains(item)) {
+		if (item != null && !ShopUtils.getAddedProducts().contains(item)) {
 			ShopUtils.addProduct(item);
 			shoplistAdapter.notifyDataSetChanged();
 		} else {

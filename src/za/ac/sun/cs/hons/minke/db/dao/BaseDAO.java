@@ -6,7 +6,7 @@ import java.util.List;
 
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -29,7 +29,7 @@ public abstract class BaseDAO<T> {
 		if (obj == null || getByCloudID(getID(obj)) != null) {
 			return -1;
 		}
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d(TAGS.DB,
 					"adding " + obj + " to " + table + " with "
 							+ Arrays.asList(columns));
@@ -39,7 +39,7 @@ public abstract class BaseDAO<T> {
 	}
 
 	public void addAll(List<T> objects) {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d(TAGS.DB, "adding " + objects);
 		}
 		if (objects == null) {
@@ -95,7 +95,7 @@ public abstract class BaseDAO<T> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d("DB", entries + " retrieved");
 		}
 		return entries;
@@ -140,7 +140,7 @@ public abstract class BaseDAO<T> {
 			cursor.moveToNext();
 		}
 		cursor.close();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d(TAGS.DB, entries + " retrieved");
 		}
 		return entries;

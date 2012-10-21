@@ -5,7 +5,7 @@ import za.ac.sun.cs.hons.minke.tasks.LoadTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.Activity;
@@ -55,7 +55,7 @@ public class MinkeApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		new InitTask(this).execute();
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d(TAGS.STATE, "Application onCreate()");
 			LocationLibrary.showDebugOutput(true);
 		}

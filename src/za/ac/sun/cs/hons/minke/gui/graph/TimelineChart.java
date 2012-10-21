@@ -23,7 +23,7 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.graphics.Color;
 import android.util.Log;
@@ -70,7 +70,7 @@ public class TimelineChart {
 				colour = Color.argb(255, rCol.nextInt(256), rCol.nextInt(256),
 						rCol.nextInt(256));
 			}
-			if (Debug.ON) {
+			if (DEBUG.ON) {
 				Log.v(TAGS.CHART, "colour " + colour);
 			}
 			colours[i] = colour;
@@ -96,7 +96,7 @@ public class TimelineChart {
 					minDate = dp.getDate();
 				}
 				d[j++] = dp.getDate();
-				if (Debug.ON) {
+				if (DEBUG.ON) {
 					Log.v(TAGS.CHART, "date " + d[j - 1]);
 				}
 			}

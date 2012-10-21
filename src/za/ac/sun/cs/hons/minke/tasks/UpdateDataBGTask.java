@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 
@@ -20,7 +20,7 @@ public class UpdateDataBGTask extends LoadTask {
 
 	@Override
 	protected void failure(ERROR error_code) {
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.v(TAGS.HTTP, "ERROR");
 		}
 	}

@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
-import za.ac.sun.cs.hons.minke.utils.constants.Debug;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -86,7 +86,7 @@ public class PreferencesUtils {
 		loadLastUpdate(prefs.getLong("last_update", 0));
 		setLoaded(true);
 		setFirstTime(prefs.getBoolean("first_time", true));
-		if (Debug.ON) {
+		if (DEBUG.ON) {
 			Log.d("PREFERENCES", " Preferences loaded:\n frequency-> "
 					+ updateFrequency + ";\n interval-> " + updateInterval
 					+ ";\n last_update-> " + lastUpdate + ";\n firstTime-> "
