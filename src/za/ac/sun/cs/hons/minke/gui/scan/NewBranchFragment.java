@@ -11,15 +11,13 @@ import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
+import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
-import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,36 +37,65 @@ import com.actionbarsherlock.app.SherlockFragment;
 public class NewBranchFragment extends SherlockFragment {
 	private AutoCompleteTextView storeBox, cityBox;
 	private EditText branchText;
-	private Province province;
-	private City city;
-	private Store store;
-	public double lat, lon;
-	public String cityName, branchName, storeName;
 	private TextErrorWatcher cityWatcher, storeWatcher, branchWatcher;
 	private boolean watchers;
+	private ArrayAdapter<Store> storeAdapter;
+	private ArrayAdapter<City> cityAdapter;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setRetainInstance(true);
 		View v = inflater.inflate(R.layout.fragment_new_branch, container,
 				false);
 		initGUI(v);
 		return v;
 	}
 
+	@Override
+	public void onPause() {
+		super.onPause();
+		addWatchers();
+		if (branchText.getError() == null) {
+			ScanUtils.branchName = branchText.getText().toString();
+		}
+		if (storeBox.getError() == null) {
+			ScanUtils.storeName = storeBox.getText().toString();
+		}
+		if (cityBox.getError() == null) {
+			ScanUtils.cityName = cityBox.getText().toString();
+		}
+	}
+
+	private void addWatchers() {
+		if (!watchers) {
+			watchers = true;
+			cityWatcher = new TextErrorWatcher(getActivity(), cityBox, false);
+			storeWatcher = new TextErrorWatcher(getActivity(), storeBox, false);
+			branchWatcher = new TextErrorWatcher(getActivity(), branchText,
+					false);
+			cityBox.addTextChangedListener(cityWatcher);
+			storeBox.addTextChangedListener(storeWatcher);
+			branchText.addTextChangedListener(branchWatcher);
+		} else {
+			cityWatcher.afterTextChanged(cityBox.getEditableText());
+			storeWatcher.afterTextChanged(storeBox.getEditableText());
+			branchWatcher.afterTextChanged(branchText.getEditableText());
+		}
+	}
+
 	private void initGUI(View v) {
 		branchText = (EditText) v.findViewById(R.id.text_branch);
 		storeBox = (AutoCompleteTextView) v.findViewById(R.id.text_store);
-		final ArrayAdapter<Store> storeAdapter = new ArrayAdapter<Store>(
-				getActivity(), R.layout.listitem_default,
-				EntityUtils.getStores());
+		storeAdapter = new ArrayAdapter<Store>(getActivity(),
+				R.layout.listitem_default, EntityUtils.getStores());
 		storeBox.setAdapter(storeAdapter);
 		storeBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				store = storeAdapter.getItem(position);
+				ScanUtils.store = storeAdapter.getItem(position);
 			}
 
 		});
@@ -82,16 +109,15 @@ public class NewBranchFragment extends SherlockFragment {
 
 		});
 		cityBox = (AutoCompleteTextView) v.findViewById(R.id.text_city);
-		final ArrayAdapter<City> cityAdapter = new ArrayAdapter<City>(
-				getActivity(), R.layout.listitem_default,
-				EntityUtils.getCities());
+		cityAdapter = new ArrayAdapter<City>(getActivity(),
+				R.layout.listitem_default, EntityUtils.getCities());
 		cityBox.setAdapter(cityAdapter);
 		cityBox.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				city = cityAdapter.getItem(position);
+				ScanUtils.city = cityAdapter.getItem(position);
 			}
 
 		});
@@ -112,18 +138,23 @@ public class NewBranchFragment extends SherlockFragment {
 			}
 
 		});
+		addInput();
+	}
+
+	private void addInput() {
+		if (ScanUtils.cityName != null && !ScanUtils.cityName.equals("")) {
+			cityBox.setText(ScanUtils.cityName);
+		}
+		if (ScanUtils.storeName != null && !ScanUtils.storeName.equals("")) {
+			storeBox.setText(ScanUtils.storeName);
+		}
+		if (ScanUtils.branchName != null && !ScanUtils.branchName.equals("")) {
+			branchText.setText(ScanUtils.branchName);
+		}
 	}
 
 	private void checkInput() {
-		if (!watchers) {
-			watchers = true;
-			cityWatcher = new TextErrorWatcher(getActivity(), cityBox, false);
-			storeWatcher = new TextErrorWatcher(getActivity(), storeBox, false);
-			branchWatcher = new TextErrorWatcher(getActivity(), branchText, false);
-			cityBox.addTextChangedListener(cityWatcher);
-			storeBox.addTextChangedListener(storeWatcher);
-			branchText.addTextChangedListener(branchWatcher);
-		}
+		addWatchers();
 		if (branchText.getError() != null || storeBox.getError() != null
 				|| cityBox.getError() != null) {
 			return;
@@ -132,17 +163,21 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	public void createLocation() {
-		branchName = branchText.getText().toString();
-		cityName = cityBox.getText().toString();
-		storeName = storeBox.getText().toString();
-		lat = MapUtils.getUserLat();
-		lon = MapUtils.getUserLat();
+		ScanUtils.branchName = branchText.getText().toString();
+		ScanUtils.cityName = cityBox.getText().toString();
+		ScanUtils.storeName = storeBox.getText().toString();
+		if (!ScanUtils.city.toString().equals(ScanUtils.cityName)) {
+			ScanUtils.city = null;
+		}
+		if (!ScanUtils.store.toString().equals(ScanUtils.storeName)) {
+			ScanUtils.store = null;
+		}
 		clear();
-		if (city != null) {
+		if (ScanUtils.city != null) {
 			createBranch();
 
 		} else {
-			requestLocations();
+			requestProvince();
 		}
 	}
 
@@ -156,11 +191,11 @@ public class NewBranchFragment extends SherlockFragment {
 		cityBox.setText("");
 	}
 
-	private void requestLocations() {
+	private void requestProvince() {
 		if (EntityUtils.getProvinces() == null) {
 			return;
 		}
-		province = EntityUtils.getProvinces().get(0);
+		ScanUtils.province = EntityUtils.getProvinces().get(0);
 		final int size = Math.min(EntityUtils.getProvinces().size(), 10);
 		final String[] names = new String[size];
 		int i = 0;
@@ -178,7 +213,8 @@ public class NewBranchFragment extends SherlockFragment {
 
 					@Override
 					public void onClick(DialogInterface arg0, int position) {
-						province = EntityUtils.getProvinces().get(position);
+						ScanUtils.province = EntityUtils.getProvinces().get(
+								position);
 					}
 				});
 		location.setPositiveButton(
@@ -202,29 +238,8 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	private void createBranch() {
-		final CreateBranchTask task = new CreateBranchTask();
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(
-							NewBranchFragment.this.getActivity(),
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									createBranch();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_15);
+		((HomeActivity) getActivity()).curTask = new CreateBranchTask();
+		((HomeActivity) getActivity()).curTask.execute();
 	}
 
 	class CreateBranchTask extends ProgressTask {
@@ -238,6 +253,7 @@ public class NewBranchFragment extends SherlockFragment {
 
 		@Override
 		protected void success() {
+			ScanUtils.clearFields();
 			((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 					ScanFragment.class.getName());
 			((HomeActivity) getActivity()).scan(null);
@@ -274,19 +290,26 @@ public class NewBranchFragment extends SherlockFragment {
 			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
-			if (store == null) {
-				if (city == null) {
-					return RPCUtils.createBranch(province, lat, lon, cityName,
-							storeName, branchName);
+			if (ScanUtils.store == null) {
+				if (ScanUtils.city == null) {
+					return RPCUtils.createBranch(ScanUtils.province,
+							MapUtils.getUserLat(), MapUtils.getUserLon(),
+							ScanUtils.cityName, ScanUtils.storeName,
+							ScanUtils.branchName);
 				} else {
-					return RPCUtils.createBranch(city, lat, lon, storeName,
-							branchName);
+					return RPCUtils.createBranch(ScanUtils.city,
+							MapUtils.getUserLat(), MapUtils.getUserLon(),
+							ScanUtils.storeName, ScanUtils.branchName);
 				}
-			} else if (city == null) {
-				return RPCUtils.createBranch(province, store, lat, lon,
-						cityName, branchName);
+			} else if (ScanUtils.city == null) {
+				return RPCUtils.createBranch(ScanUtils.province,
+						ScanUtils.store, MapUtils.getUserLat(),
+						MapUtils.getUserLon(), ScanUtils.cityName,
+						ScanUtils.branchName);
 			} else {
-				return RPCUtils.createBranch(city, store, lat, lon, branchName);
+				return RPCUtils.createBranch(ScanUtils.city, ScanUtils.store,
+						MapUtils.getUserLat(), MapUtils.getUserLon(),
+						ScanUtils.branchName);
 			}
 		}
 	}

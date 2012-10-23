@@ -30,6 +30,7 @@ public class DialogUtils {
 		return errorDlg;
 	}
 
+	
 	public static Builder getInfoDialog(final Context context) {
 		AlertDialog.Builder infoDlg = new AlertDialog.Builder(context);
 		infoDlg.setTitle(context.getString(R.string.app_name));

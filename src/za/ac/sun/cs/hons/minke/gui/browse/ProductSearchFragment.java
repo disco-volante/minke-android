@@ -3,10 +3,20 @@ package za.ac.sun.cs.hons.minke.gui.browse;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
+import za.ac.sun.cs.hons.minke.gui.HomeActivity;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
+import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
+import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.SearchUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
+import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -15,12 +25,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -32,16 +43,20 @@ public class ProductSearchFragment extends SherlockFragment {
 	private ItemListAdapter<Product> productListAdapter;
 	private ItemListAdapter<Category> categoryListAdapter;
 	private ListView searchList;
+	private SearchTask curTask;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setRetainInstance(true);
 		View v = inflater.inflate(R.layout.fragment_product_search, container, false);
 		initBoxes(v);
 		initLists(v);
 		setItems(true);
 		return v;
 	}
+	
+	
 	
 	private void initBoxes(View v) {
 		searchBox = (AutoCompleteTextView) v.findViewById(R.id.text_search);
@@ -86,7 +101,22 @@ public class ProductSearchFragment extends SherlockFragment {
 				setItems(false);
 			}
 		});
+		ImageButton searchButton = (ImageButton) v.findViewById(R.id.btn_product_search);
+		searchButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				getProducts();
+			}
+
+		});
 	}
+	
+	public void getProducts() {
+		curTask = new SearchTask(this);
+		curTask.execute();
+	}
+
 
 	private void initLists(View v) {
 		productListAdapter = new ItemListAdapter<Product>(getActivity(),
@@ -140,6 +170,45 @@ public class ProductSearchFragment extends SherlockFragment {
 		} else {
 			searchList.setAdapter(categoryListAdapter);
 			searchBox.setAdapter(categoryAdapter);
+		}
+	}
+	static class SearchTask extends ProgressTask {
+
+		private Fragment fragment;
+
+		public SearchTask(Fragment fragment) {
+			super(fragment.getActivity(), fragment.getActivity().getString(R.string.searching) + "...",
+					fragment.getActivity().getString(R.string.searching_product_msg));
+			this.fragment = fragment;
+		}
+
+		@Override
+		protected void success() {
+			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
+			BrowseUtils.setStoreBrowse(false);
+			((HomeActivity) activity).changeTab(VIEW.BROWSE, NAMES.BROWSE);
+
+		}
+
+		@Override
+		protected void failure(ERROR error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(activity,
+					error_code);
+			dlg.setPositiveButton(activity.getString(R.string.retry),
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							((ProductSearchFragment) fragment).getProducts();
+							dialog.cancel();
+						}
+					});
+			dlg.show();
+
+		}
+
+		@Override
+		protected ERROR retrieve() {
+			return EntityUtils.retrieveBranchProducts(SearchUtils
+					.isProductsActive());
 		}
 	}
 

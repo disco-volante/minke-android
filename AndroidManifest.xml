@@ -98,14 +98,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".gui.create.NewProductActivity" />
-        <activity android:name=".gui.create.NewBranchActivity" />
-        <activity android:name=".gui.shop.ShopFragment" />
-        <activity android:name=".gui.shop.StoreFragment" />
-        <activity android:name=".gui.shop.ShopListActivity" />
-        <activity android:name=".gui.browse.BrowseFragment" />
-        <activity android:name=".gui.browse.ProductSearchFragment" />
-        <activity android:name=".gui.browse.LocationSearchFragment" />
+
+        <fragment android:name=".gui.scan.NewProductFragment" />
+        <fragment android:name=".gui.scan.NewBranchFragment" />
+        <fragment
+            android:name=".gui.scan.ScanFragment" />
+        <fragment android:name=".gui.shop.ShopFragment" />
+        <fragment android:name=".gui.shop.StoreFragment" />
+        <fragment android:name=".gui.browse.BrowseFragment" />
+        <fragment android:name=".gui.browse.ProductSearchFragment" />
+        <fragment android:name=".gui.browse.LocationSearchFragment" />
+
         <activity
             android:name=".gui.graph.ChartActivity"
             android:screenOrientation="landscape" />

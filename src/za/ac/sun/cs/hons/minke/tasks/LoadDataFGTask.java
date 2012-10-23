@@ -4,13 +4,13 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import android.app.Activity;
 import android.app.AlertDialog.Builder;
-import android.content.Context;
 
 public class LoadDataFGTask extends ProgressTask {
 
-	public LoadDataFGTask(Context context) {
-		super(context, context.getString(R.string.loading), context.getString(R.string.loading_msg));
+	public LoadDataFGTask(Activity activity) {
+		super(activity, activity.getString(R.string.loading), activity.getString(R.string.loading_msg));
 	}
 
 	@Override
@@ -19,14 +19,14 @@ public class LoadDataFGTask extends ProgressTask {
 
 	@Override
 	protected void failure(ERROR error_code) {
-		Builder dlg = DialogUtils.getErrorDialog(context, error_code);
+		Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
 		dlg.show();
 
 	}
 
 	@Override
 	protected ERROR retrieve() {
-		return EntityUtils.loadAll(context);
+		return EntityUtils.loadAll(activity);
 	}
 
 }

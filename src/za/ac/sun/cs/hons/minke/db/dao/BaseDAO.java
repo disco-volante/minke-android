@@ -1,7 +1,6 @@
 package za.ac.sun.cs.hons.minke.db.dao;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
@@ -31,17 +30,13 @@ public abstract class BaseDAO<T> {
 		}
 		if (DEBUG.ON) {
 			Log.d(TAGS.DB,
-					"adding " + obj + " to " + table + " with "
-							+ Arrays.asList(columns));
+					"adding " + obj + " to " + table);
 		}
 		return database.insert(table, null, getContentValues(obj));
 
 	}
 
 	public void addAll(List<T> objects) {
-		if (DEBUG.ON) {
-			Log.d(TAGS.DB, "adding " + objects);
-		}
 		if (objects == null) {
 			return;
 		}
@@ -155,6 +150,10 @@ public abstract class BaseDAO<T> {
 		if (_new == null) {
 			return false;
 		}
+		if (DEBUG.ON) {
+			Log.d(TAGS.DB,
+					"updating " + _new + " in " + table );
+		}
 		return database.update(table, getContentValues(_new),
 				DBConstants.ID_FILTER, new String[] { String.valueOf(id) }) > 0;
 	}
@@ -163,12 +162,20 @@ public abstract class BaseDAO<T> {
 		if (_new == null) {
 			return false;
 		}
+		if (DEBUG.ON) {
+			Log.d(TAGS.DB,
+					"updating " + _new + " in " + table );
+		}
 		return database.update(table, getContentValues(_new),
 				DBConstants.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }) > 0;
 	}
 
 	public boolean delete(long id) {
+		if (DEBUG.ON) {
+			Log.d(TAGS.DB,
+					"deleting" + id + " in " + table );
+		}
 		return database.delete(table, DBConstants.ID_FILTER,
 				new String[] { String.valueOf(id) }) > 0;
 	}

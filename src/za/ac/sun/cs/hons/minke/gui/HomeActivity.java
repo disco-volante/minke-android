@@ -14,22 +14,17 @@ import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.tasks.LoadDataFGTask;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.tasks.UpdateDataFGTask;
-import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
-import za.ac.sun.cs.hons.minke.utils.SearchUtils;
-import za.ac.sun.cs.hons.minke.utils.ShopList;
-import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
-import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,9 +32,7 @@ import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,6 +52,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	TabInfo browse, shop, scan;
 	protected boolean downloading;
 	protected int selectedBranch;
+	public ProgressTask curTask;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +85,18 @@ public class HomeActivity extends SherlockFragmentActivity {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("TAB"));
 			changeTab(savedInstanceState.getString("TAB"),
 					savedInstanceState.getString("CLASS"));
-		} else {
-			new WaitTask().execute();
+		} 
+		if(getLastCustomNonConfigurationInstance() != null){
+			curTask = (ProgressTask) getLastCustomNonConfigurationInstance();
+			if(curTask.getStatus().equals(ProgressTask.Status.FINISHED)){
+				curTask.cancel(true);
+			}
+			else{
+				curTask.attach(this);
+			}
+		}else if(!EntityUtils.isLoaded()){
+			curTask = new WaitTask(this);
+			curTask.execute();
 		}
 	}
 
@@ -141,70 +145,27 @@ public class HomeActivity extends SherlockFragmentActivity {
 			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
 		}
 	}
+	
+	@Override
+	public Object onRetainCustomNonConfigurationInstance(){
+		if(curTask == null || curTask.getStatus().equals(ProgressTask.Status.FINISHED)){
+			return null;
+		}
+		curTask.detach();
+		return curTask;
+		
+	}
 
 	public void changeTab(String tag, String className) {
 		mTabManager.changeTab(tag, className);
 	}
 
-	public void getProductSearch(View view) {
-		SearchUtils.getAddedProducts().clear();
-		SearchUtils.getAddedCategories().clear();
-		changeTab(VIEW.BROWSE, NAMES.PRODUCT);
-	}
-
-	public void getProducts(View view) {
-		final SearchTask task = new SearchTask();
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									getProducts(null);
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_5);
-	}
-
+	
 	public void showHistories(View view) {
 		startActivity(IntentUtils.getGraphIntent(this));
 	}
 
-	public void findStores(View view) {
-		final FindBranchesTask task = new FindBranchesTask();
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									findStores(null);
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_5);
-	}
+	
 
 	public void scan(View view) {
 		if (view != null || MapUtils.getUserBranch() == null) {
@@ -237,136 +198,26 @@ public class HomeActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	public void showDirections(View view) {
-		String[] names = new String[ShopUtils.getShopLists().size()];
-		MapUtils.setDestination(ShopUtils.getShopLists().get(0));
-		int i = 0;
-		for (ShopList sl : ShopUtils.getShopLists()) {
-			names[i++] = sl.toString();
-		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.str_directions));
-		builder.setSingleChoiceItems(names, 0, new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface arg0, int position) {
-				MapUtils.setDestination(ShopUtils.getShopLists().get(position));
-			}
-		});
-		builder.setPositiveButton(getString(R.string.view_map),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						startActivity(IntentUtils
-								.getMapIntent(HomeActivity.this));
-					}
-				});
-		builder.setNegativeButton(getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		builder.create().show();
-	}
+	
 
 	private void loadData() {
-		final LoadDataFGTask local = new LoadDataFGTask(this);
-		local.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (local.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					local.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									loadData();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_5);
+		curTask = new LoadDataFGTask(this);
+		curTask.execute();
 	}
 
 	private void findProduct() {
-		final FindProductTask task = new FindProductTask();
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									findProduct();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_5);
+		curTask = new FindProductTask(this);
+		curTask.execute();
 	}
 
 	private void updateProduct(final BranchProduct found, final int price) {
-		final UpdateProductTask task = new UpdateProductTask(found, price);
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									updateProduct(found, price);
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_10);
+		curTask = new UpdateProductTask(this,found, price);
+		curTask.execute();
 	}
 
 	private void update() {
-		final Updater updater = new Updater();
-		updater.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (updater.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					updater.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									update();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_30);
+		curTask = new Updater(this);
+		curTask.execute();
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -499,101 +350,29 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
-	class SearchTask extends ProgressTask {
-
-		public SearchTask() {
-			super(HomeActivity.this, getString(R.string.searching) + "...",
-					getString(R.string.searching_product_msg));
-		}
-
-		@Override
-		protected void success() {
-			BrowseUtils.setBranchProducts(SearchUtils.getSearched());
-			BrowseUtils.setStoreBrowse(false);
-			changeTab(VIEW.BROWSE, NAMES.BROWSE);
-
-		}
-
-		@Override
-		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setPositiveButton(getString(R.string.retry),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							getProducts(null);
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-
-		}
-
-		@Override
-		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranchProducts(SearchUtils
-					.isProductsActive());
-		}
-	}
-
-	class FindBranchesTask extends ProgressTask {
-
-		public FindBranchesTask() {
-			super(HomeActivity.this, getString(R.string.searching) + "...",
-					getString(R.string.searching_branch_msg));
-		}
-
-		@Override
-		protected void success() {
-			changeTab(VIEW.SHOP, NAMES.STORE);
-
-		}
-
-		@Override
-		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
-					error_code);
-			dlg.setPositiveButton(getString(R.string.retry),
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
-							findStores(null);
-							dialog.cancel();
-						}
-					});
-			dlg.show();
-
-		}
-
-		@Override
-		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranches(ShopUtils
-					.getAddedProducts());
-		}
-	}
-
-	class Updater extends UpdateDataFGTask {
-		public Updater() {
-			super(HomeActivity.this);
+	static class Updater extends UpdateDataFGTask {
+		public Updater(Activity activity) {
+			super(activity);
 		}
 
 		@Override
 		protected void success() {
 			super.success();
 			if (PreferencesUtils.isFirstTime()) {
-				PreferencesUtils.changeFirstTime(context, false);
+				PreferencesUtils.changeFirstTime(activity, false);
 			}
-			loadData();
+			((HomeActivity) activity).loadData();
 		}
 
 		@Override
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+			Builder dlg = DialogUtils.getErrorDialog(activity,
 					error_code);
-			dlg.setPositiveButton(getString(R.string.retry),
+			dlg.setPositiveButton(activity.getString(R.string.retry),
 					new OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dlg, int arg1) {
-							update();
+							((HomeActivity) activity).update();
 							dlg.cancel();
 						}
 
@@ -603,15 +382,15 @@ public class HomeActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	class WaitTask extends ProgressTask {
-		public WaitTask() {
-			super(HomeActivity.this, getString(R.string.initialising) + "...",
-					getString(R.string.initialising_msg));
+	static class WaitTask extends ProgressTask {
+		public WaitTask(Activity activity) {
+			super(activity, activity.getString(R.string.initialising) + "...",
+					activity.getString(R.string.initialising_msg));
 		}
 
 		@Override
 		protected ERROR retrieve() {
-			while (!((MinkeApplication) getApplication()).loaded()) {
+			while (!MinkeApplication.loaded()) {
 				try {
 					Thread.sleep(100, 10);
 				} catch (InterruptedException e) {
@@ -625,29 +404,29 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void success() {
 			if (PreferencesUtils.isFirstTime()
 					|| PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
-				update();
+				((HomeActivity) activity).update();
 			} else {
-				loadData();
+				((HomeActivity) activity).loadData();
 			}
 		}
 
 		@Override
 		protected void failure(ERROR error_code) {
-			DialogUtils.getErrorDialog(HomeActivity.this, error_code).show();
+			DialogUtils.getErrorDialog(activity, error_code).show();
 		}
 
 	}
 
-	class FindProductTask extends ProgressTask {
+	static class FindProductTask extends ProgressTask {
 
-		public FindProductTask() {
-			super(HomeActivity.this, getString(R.string.searching) + "...",
-					getString(R.string.searching_product_msg));
+		public FindProductTask(Activity activity) {
+			super(activity, activity.getString(R.string.searching) + "...",
+					activity.getString(R.string.searching_product_msg));
 		}
 
 		@Override
 		protected void success() {
-			updatePrice(ScanUtils.getBranchProduct(), ScanUtils.getProduct());
+			((HomeActivity) activity).updatePrice(ScanUtils.getBranchProduct(), ScanUtils.getProduct());
 		}
 
 		@Override
@@ -657,16 +436,16 @@ public class HomeActivity extends SherlockFragmentActivity {
 					ScanUtils.setBranchProduct(new BranchProduct(0L, ScanUtils
 							.getProduct().getId(), MapUtils.getUserBranch()
 							.getId(), 0L));
-					updatePrice(ScanUtils.getBranchProduct(),
+					((HomeActivity) activity).updatePrice(ScanUtils.getBranchProduct(),
 							ScanUtils.getProduct());
 				} else {
-					Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+					Builder dlg = DialogUtils.getErrorDialog(activity,
 							code);
-					dlg.setPositiveButton(getString(R.string.create_product),
+					dlg.setPositiveButton(activity.getString(R.string.create_product),
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
+									((HomeActivity) activity).changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
 									dialog.cancel();
 								}
 							});
@@ -674,9 +453,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 				}
 
 			} else {
-				Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+				Builder dlg = DialogUtils.getErrorDialog(activity,
 						code);
-				dlg.setPositiveButton(getString(R.string.ok),
+				dlg.setPositiveButton(activity.getString(R.string.ok),
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
@@ -726,13 +505,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
-	class UpdateProductTask extends ProgressTask {
+	static class UpdateProductTask extends ProgressTask {
 		BranchProduct bp;
 		private int price;
 
-		public UpdateProductTask(BranchProduct bp, int price) {
-			super(HomeActivity.this, getString(R.string.updating) + "...",
-					getString(R.string.updating_product_msg));
+		public UpdateProductTask(Activity activity, BranchProduct bp, int price) {
+			super(activity, activity.getString(R.string.updating) + "...",
+					activity.getString(R.string.updating_product_msg));
 			this.bp = bp;
 			this.price = price;
 		}
@@ -750,17 +529,17 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		protected void success() {
-			changeTab(VIEW.SCAN, NAMES.BROWSE);
+			((HomeActivity) activity).changeTab(VIEW.SCAN, NAMES.BROWSE);
 		}
 
 		@Override
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(HomeActivity.this,
+			Builder dlg = DialogUtils.getErrorDialog(activity,
 					error_code);
-			dlg.setPositiveButton(getString(R.string.retry),
+			dlg.setPositiveButton(activity.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int id) {
-							updatePrice(bp, ScanUtils.getProduct());
+							((HomeActivity) activity).updatePrice(bp, ScanUtils.getProduct());
 							dialog.cancel();
 						}
 					});

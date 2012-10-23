@@ -49,12 +49,10 @@ public class RPCUtils {
 	public static ERROR retrieveAll(Context context) {
 		String suffix = "get_all";
 		String url = Constants.URL_PREFIX + suffix;
-
 		try {
 			JSONObject obj;
 			obj = HTTPUtils.doJSONPost(url,null);
-
-			if (obj == null || obj.isNull("branches")) {
+			if (JSONParser.notAll(obj)) {
 				return ERROR.SERVER;
 			}
 			if (DEBUG.ON) {

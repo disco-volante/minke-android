@@ -18,6 +18,7 @@ public class BrowseFragment  extends SherlockFragment{
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setRetainInstance(true);
 		View v = inflater.inflate(R.layout.fragment_browse, container, false);
 		initGUI(v);
 		return v;

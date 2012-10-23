@@ -8,12 +8,20 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class ScanFragment extends SherlockFragment  {
+public class ScanFragment extends SherlockFragment {
+	protected int selectedBranch;
+	protected boolean downloading;
 
-	 @Override
-     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-             Bundle savedInstanceState) {
-         View v = inflater.inflate(R.layout.fragment_scan, container, false);
-         return v;
-     }
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		setRetainInstance(true);
+		View v = inflater.inflate(R.layout.fragment_scan, container, false);
+		return v;
+	}
+	
+		
+
+	
+	
 }

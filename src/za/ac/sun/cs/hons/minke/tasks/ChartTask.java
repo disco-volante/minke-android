@@ -23,7 +23,7 @@ public class ChartTask extends ProgressTask {
 
 	@Override
 	protected void failure(ERROR error_code) {
-		Builder dlg = DialogUtils.getErrorDialog(context, error_code);
+		Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
 		dlg.show();
 
 	}

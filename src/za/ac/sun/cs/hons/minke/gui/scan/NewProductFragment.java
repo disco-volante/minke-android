@@ -13,13 +13,10 @@ import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
-import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +24,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -35,6 +31,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -43,25 +40,41 @@ public class NewProductFragment extends SherlockFragment {
 	private EditText nameText, priceText, sizeText;
 	private AutoCompleteTextView brandBox, categoryBox;
 	private Spinner unitSpinner;
-	protected Brand brand;
-	protected Category category;
-	private String name;
-	private double size;
-	private int price;
-	private String measure;
-	private String categoryName;
-	private String brandName;
-	private TextErrorWatcher nameWatcher, brandWatcher, categoryWatcher, priceWatcher, sizeWatcher;
+	private TextErrorWatcher nameWatcher, brandWatcher, categoryWatcher,
+			priceWatcher, sizeWatcher;
 	private boolean watchers;
-
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		setRetainInstance(true);
 		View v = inflater.inflate(R.layout.fragment_new_product, container,
 				false);
 		initGUI(v);
 		return v;
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		addWatchers();
+		ScanUtils.measurePos = unitSpinner.getSelectedItemPosition();
+		if (nameText.getError() == null) {
+			ScanUtils.productName = nameText.getText().toString();
+		}
+		if (sizeText.getError() == null) {
+			ScanUtils.size = Double.parseDouble(sizeText.getText().toString());
+		}
+		if (priceText.getError() == null) {
+			ScanUtils.price = (int) (Double.parseDouble(priceText.getText()
+					.toString()) * 100);
+		}
+		if (categoryBox.getError() == null) {
+			ScanUtils.categoryName = categoryBox.getText().toString();
+		}
+		if (brandBox.getError() == null) {
+			ScanUtils.brandName = brandBox.getText().toString();
+		}
 	}
 
 	private void initGUI(View v) {
@@ -75,7 +88,7 @@ public class NewProductFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				brand = brands.getItem(position);
+				ScanUtils.brand = brands.getItem(position);
 			}
 
 		});
@@ -97,7 +110,7 @@ public class NewProductFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				category = categories.getItem(position);
+				ScanUtils.category = categories.getItem(position);
 			}
 
 		});
@@ -125,20 +138,63 @@ public class NewProductFragment extends SherlockFragment {
 			}
 
 		});
+		addInput();
+	}
+
+	private void addInput() {
+		if (ScanUtils.productName != null) {
+			nameText.setText(ScanUtils.productName);
+		}
+		if (ScanUtils.categoryName != null) {
+			categoryBox.setText(ScanUtils.categoryName);
+		}
+		if (ScanUtils.brandName != null) {
+			brandBox.setText(ScanUtils.brandName);
+		}
+		if (ScanUtils.measurePos >= 0) {
+			unitSpinner.setSelection(ScanUtils.measurePos);
+		}
+		if (ScanUtils.price > 0) {
+			priceText.setText(String.valueOf(ScanUtils.price));
+		}
+		if (ScanUtils.size > 0) {
+			sizeText.setText(String.valueOf(ScanUtils.size));
+		}
 	}
 
 	private String[] getMeasures() {
-		return new String[] { getString(R.string.mg), getString(R.string.g),
-				getString(R.string.kg), getString(R.string.ml),
-				getString(R.string.l), getString(R.string.ea) };
+		return new String[] { getString(R.string.g), getString(R.string.l),
+				getString(R.string.ea), getString(R.string.ml),
+				getString(R.string.kg), getString(R.string.mg) };
 	}
 
 	private void checkInput() {
+		addWatchers();
+		if (nameText.getError() != null || brandBox.getError() != null
+				|| categoryBox.getError() != null
+				|| sizeText.getError() != null || priceText.getError() != null) {
+			return;
+		} else {
+			ScanUtils.productName = nameText.getText().toString();
+			ScanUtils.size = Double.parseDouble(sizeText.getText().toString());
+			ScanUtils.price = (int) (Double.parseDouble(priceText.getText()
+					.toString()) * 100);
+			ScanUtils.measurePos = unitSpinner.getSelectedItemPosition();
+			ScanUtils.categoryName = categoryBox.getText().toString();
+			ScanUtils.brandName = brandBox.getText().toString();
+			clear();
+			createProduct();
+		}
+
+	}
+
+	private void addWatchers() {
 		if (!watchers) {
 			watchers = true;
 			nameWatcher = new TextErrorWatcher(getActivity(), nameText, false);
 			brandWatcher = new TextErrorWatcher(getActivity(), brandBox, false);
-			categoryWatcher = new TextErrorWatcher(getActivity(), categoryBox, false);
+			categoryWatcher = new TextErrorWatcher(getActivity(), categoryBox,
+					false);
 			priceWatcher = new TextErrorWatcher(getActivity(), priceText, true);
 			sizeWatcher = new TextErrorWatcher(getActivity(), sizeText, true);
 			nameText.addTextChangedListener(nameWatcher);
@@ -146,26 +202,15 @@ public class NewProductFragment extends SherlockFragment {
 			categoryBox.addTextChangedListener(categoryWatcher);
 			priceText.addTextChangedListener(priceWatcher);
 			sizeText.addTextChangedListener(sizeWatcher);
-		}
-		if (nameText.getError() != null || brandBox.getError() != null
-				|| categoryBox.getError() != null
-				|| sizeText.getError() != null || priceText.getError() != null) {
-			return;
 		} else {
-			name = nameText.getText().toString();
-			size = Double.parseDouble(sizeText.getText().toString());
-			price = (int) (Double.parseDouble(priceText.getText()
-					.toString()) * 100);
-			measure =  unitSpinner
-					.getSelectedItem().toString();
-			categoryName = categoryBox.getText().toString();
-			brandName = brandBox.getText().toString();
-			clear();
-			createProduct();
+			nameWatcher.afterTextChanged(nameText.getEditableText());
+			brandWatcher.afterTextChanged(brandBox.getEditableText());
+			categoryWatcher.afterTextChanged(categoryBox.getEditableText());
+			priceWatcher.afterTextChanged(priceText.getEditableText());
+			sizeWatcher.afterTextChanged(sizeText.getEditableText());
 		}
-
 	}
-	
+
 	private void clear() {
 		watchers = false;
 		nameText.removeTextChangedListener(nameWatcher);
@@ -173,7 +218,7 @@ public class NewProductFragment extends SherlockFragment {
 		categoryBox.removeTextChangedListener(categoryWatcher);
 		priceText.removeTextChangedListener(priceWatcher);
 		sizeText.removeTextChangedListener(sizeWatcher);
-		nameText.setText("");	
+		nameText.setText("");
 		sizeText.setText("");
 		priceText.setText("");
 		categoryBox.setText("");
@@ -181,29 +226,8 @@ public class NewProductFragment extends SherlockFragment {
 	}
 
 	public void createProduct() {
-		final CreateProductTask task = new CreateProductTask();
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(
-							NewProductFragment.this.getActivity(),
-							ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									createProduct();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_15);
+		((HomeActivity) getActivity()).curTask = new CreateProductTask();
+		((HomeActivity) getActivity()).curTask.execute();
 	}
 
 	class CreateProductTask extends ProgressTask {
@@ -215,6 +239,7 @@ public class NewProductFragment extends SherlockFragment {
 
 		@Override
 		protected void success() {
+			ScanUtils.clearFields();
 			((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 					BrowseFragment.class.getName());
 		}
@@ -249,22 +274,34 @@ public class NewProductFragment extends SherlockFragment {
 			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
-			if (brand != null && category != null) {
+			if (ScanUtils.brand != null && ScanUtils.category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brand, category, size, measure, price,
-						ScanUtils.getBarCode());
-			} else if (brand != null) {
+						ScanUtils.productName, ScanUtils.brand,
+						ScanUtils.category, ScanUtils.size, unitSpinner
+								.getItemAtPosition(ScanUtils.measurePos)
+								.toString(), ScanUtils.price, ScanUtils
+								.getBarCode());
+			} else if (ScanUtils.brand != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brand, categoryName, size,
-						measure, price, ScanUtils.getBarCode());
-			} else if (category != null) {
+						ScanUtils.productName, ScanUtils.brand,
+						ScanUtils.categoryName, ScanUtils.size, unitSpinner
+								.getItemAtPosition(ScanUtils.measurePos)
+								.toString(), ScanUtils.price, ScanUtils
+								.getBarCode());
+			} else if (ScanUtils.category != null) {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brandName, category, size,
-						measure, price, ScanUtils.getBarCode());
+						ScanUtils.productName, ScanUtils.brandName,
+						ScanUtils.category, ScanUtils.size, unitSpinner
+								.getItemAtPosition(ScanUtils.measurePos)
+								.toString(), ScanUtils.price, ScanUtils
+								.getBarCode());
 			} else {
 				return RPCUtils.createBranchProduct(MapUtils.getUserBranch(),
-						name, brandName, categoryName, size, measure, price,
-						ScanUtils.getBarCode());
+						ScanUtils.productName, ScanUtils.brandName,
+						ScanUtils.categoryName, ScanUtils.size, unitSpinner
+								.getItemAtPosition(ScanUtils.measurePos)
+								.toString(), ScanUtils.price, ScanUtils
+								.getBarCode());
 			}
 		}
 	}

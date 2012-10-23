@@ -8,14 +8,9 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
-import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
-import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -28,43 +23,33 @@ public class ChartActivity extends SherlockActivity {
 	private TimelineChart chart;
 	private GraphicalView view;
 	private RelativeLayout holder;
+	private ChartTask curTask;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
-		if (BrowseUtils.getBranchProducts().size() != 0) {
+		if(getLastNonConfigurationInstance() != null){
+			curTask = (ChartTask) getLastNonConfigurationInstance();
+			curTask.attach(this);
+		}else	if (BrowseUtils.getBranchProducts().size() != 0) {
 			buildChart();
 		}
 
 	}
-
+	@Override
+	public Object onRetainNonConfigurationInstance(){
+		curTask.detach();
+		return curTask;
+		
+	}
 	private void buildChart() {
 		chart = new TimelineChart(this);
-		final ChartTask task = new ChartTask(chart);
-		task.execute();
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				if (task.getStatus().equals(AsyncTask.Status.RUNNING)) {
-					task.cancel(true);
-					Builder dlg = DialogUtils.getErrorDialog(
-							ChartActivity.this, ERROR.TIME_OUT);
-					dlg.setPositiveButton(getString(R.string.retry),
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int id) {
-									buildChart();
-									dialog.cancel();
-								}
-							});
-					dlg.show();
-				}
-			}
-		}, TIME.TIMEOUT_5);
+		curTask = new ChartTask(chart);
+		curTask.execute();
 	}
 
 	public void showChart() {

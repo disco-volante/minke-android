@@ -41,9 +41,9 @@ public class JSONParser {
 		product.setSize(obj.getDouble("size"));
 		return product;
 	}
-	
-	public static ArrayList<ProductCategory> parseProductCategories(JSONObject obj)
-			throws JSONException {
+
+	public static ArrayList<ProductCategory> parseProductCategories(
+			JSONObject obj) throws JSONException {
 		JSONArray array = obj.getJSONArray("productCategories");
 		ArrayList<ProductCategory> productCategories = new ArrayList<ProductCategory>();
 		for (int i = 0; i < array.length(); i++) {
@@ -52,7 +52,8 @@ public class JSONParser {
 		return productCategories;
 	}
 
-	public static ProductCategory parseProductCategory(JSONObject obj) throws JSONException {
+	public static ProductCategory parseProductCategory(JSONObject obj)
+			throws JSONException {
 		ProductCategory productCategory = new ProductCategory();
 		productCategory.setProductID(obj.getLong("productId"));
 		productCategory.setId(obj.getLong("id"));
@@ -227,7 +228,7 @@ public class JSONParser {
 		cityLocation.setLon(obj.getDouble("lon"));
 		return cityLocation;
 	}
-	
+
 	public static ArrayList<Brand> parseBrands(JSONObject obj)
 			throws JSONException {
 		JSONArray array = obj.getJSONArray("brands");
@@ -238,19 +239,16 @@ public class JSONParser {
 		return brands;
 	}
 
-	public static Brand parseBrand(JSONObject obj)
-			throws JSONException {
+	public static Brand parseBrand(JSONObject obj) throws JSONException {
 		Brand brand = new Brand();
 		brand.setId(obj.getLong("id"));
 		brand.setName(obj.getString("name"));
 		return brand;
 	}
 
-
 	public static boolean parseSuccess(JSONObject obj) throws JSONException {
 		return obj.getBoolean("success");
 	}
-
 
 	public static boolean parseScanResult(JSONObject obj) throws JSONException {
 		if (!obj.isNull("branchProduct") && !obj.isNull("product")) {
@@ -260,6 +258,15 @@ public class JSONParser {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean notAll(JSONObject obj) {
+		return obj == null || obj.isNull("branches") || obj.isNull("brands")
+				|| obj.isNull("cityLocations") || obj.isNull("stores")
+				|| obj.isNull("datePrices") || obj.isNull("branchProducts")
+				|| obj.isNull("products") || obj.isNull("productCategories")
+				|| obj.isNull("categories") || obj.isNull("cities")
+				|| obj.isNull("provinces") || obj.isNull("countries");
 	}
 
 }

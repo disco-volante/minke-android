@@ -252,8 +252,7 @@ public class EntityUtils {
 		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
 		HashSet<Branch> notfound = new HashSet<Branch>();
 		if (addedProducts.size() == 0) {
-			ShopUtils.setShopLists(getAllBranchProducts());
-			return ERROR.SUCCESS;
+			return ERROR.NOT_FOUND;
 		} else {
 			boolean firstIter = true;
 			for (Product p : addedProducts) {
@@ -261,19 +260,22 @@ public class EntityUtils {
 						.getAllByParameters(
 								new String[] { DBConstants.PRODUCT_ID },
 								new String[] { String.valueOf(p.getId()) });
-				for (BranchProduct bp : bps) {
-					if (bp.getBranch() != null) {
-						if (!branchMap.containsKey(bp.getBranch())
-								&& !firstIter) {
-							continue;
-						} else if (!branchMap.containsKey(bp.getBranch())) {
-							branchMap.put(bp.getBranch(),
-									new ArrayList<BranchProduct>());
-						}
-						bp.setQuantity(p.getQuantity());
-						branchMap.get(bp.getBranch()).add(bp);
-						if (notfound.contains(bp.getBranch())) {
-							notfound.remove(bp.getBranch());
+				if (bps != null) {
+					for (BranchProduct bp : bps) {
+						if (bp.getBranch() != null
+								&& bp.getBranch().getCityLocation() != null) {
+							if (!branchMap.containsKey(bp.getBranch())
+									&& !firstIter) {
+								continue;
+							} else if (!branchMap.containsKey(bp.getBranch())) {
+								branchMap.put(bp.getBranch(),
+										new ArrayList<BranchProduct>());
+							}
+							bp.setQuantity(p.getQuantity());
+							branchMap.get(bp.getBranch()).add(bp);
+							if (notfound.contains(bp.getBranch())) {
+								notfound.remove(bp.getBranch());
+							}
 						}
 					}
 				}
@@ -288,7 +290,7 @@ public class EntityUtils {
 			}
 		}
 		ShopUtils.setShopLists(branchMap);
-		if(branchMap == null || branchMap.size() == 0){
+		if (branchMap == null || branchMap.size() == 0) {
 			return ERROR.NOT_FOUND;
 		}
 		return ERROR.SUCCESS;
@@ -323,7 +325,9 @@ public class EntityUtils {
 				for (Category c : SearchUtils.getAddedCategories()) {
 					ArrayList<Product> matches = productCategoryDAO
 							.getProducts(c.getId());
-					_p.addAll(matches);
+					if (matches != null) {
+						_p.addAll(matches);
+					}
 				}
 			} else {
 				_p.addAll(products);
@@ -339,16 +343,22 @@ public class EntityUtils {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
 					new String[] { DBConstants.PRODUCT_ID },
 					new String[] { String.valueOf(p.getId()) });
-			for (BranchProduct bp : bps) {
-				City c = bp.getBranch().getCityLocation().getCity();
-				if (inLocations(c)) {
-					if (found.add(bp)) {
-						SearchUtils.getSearched().add(bp);
+			if (bps != null) {
+				for (BranchProduct bp : bps) {
+					if (bp.getBranch() != null
+							&& bp.getBranch().getCityLocation() != null) {
+						City c = bp.getBranch().getCityLocation().getCity();
+						if (c != null && inLocations(c)) {
+							if (found.add(bp)) {
+								SearchUtils.getSearched().add(bp);
+							}
+						}
 					}
 				}
 			}
 		}
-		if(SearchUtils.getSearched() == null || SearchUtils.getSearched().size() == 0){
+		if (SearchUtils.getSearched() == null
+				|| SearchUtils.getSearched().size() == 0) {
 			return ERROR.NOT_FOUND;
 		}
 		return ERROR.SUCCESS;

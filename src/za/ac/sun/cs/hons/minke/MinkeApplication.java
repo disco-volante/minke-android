@@ -1,7 +1,6 @@
 package za.ac.sun.cs.hons.minke;
 
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
-import za.ac.sun.cs.hons.minke.tasks.LoadTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
@@ -11,41 +10,59 @@ import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.Application;
-import android.content.Context;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.littlefluffytoys.littlefluffylocationlibrary.LocationLibrary;
 
 public class MinkeApplication extends Application {
-	private boolean loaded = true;
+	private static boolean loaded = true;
 
-	class InitTask extends LoadTask {
+	static class InitTask extends AsyncTask<Void, Integer, Void> {
 
-		public InitTask(Context context) {
-			super(context);
+		private Application app;
+		private ERROR error;
+
+		public InitTask(Application app) {
+			this.app = app;
+		}
+		@Override
+		protected Void doInBackground(Void... params) {
+			synchronized (this) {
+				error = retrieve();
+			}
+			return null;
 		}
 
 		@Override
+		protected void onPostExecute(Void result) {
+			if (error == ERROR.SUCCESS) {
+				success();
+			} else {
+				failure(error);
+			}
+		}
+		
 		protected void success() {
 			loaded = true;
 		}
 
-		@Override
+		
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(context, error_code);
+			Builder dlg = DialogUtils.getErrorDialog(app, error_code);
 			dlg.show();
 
 		}
 
-		@Override
+		
 		protected ERROR retrieve() {
-			PreferencesUtils.loadPreferences(context);
-			LocationLibrary.initialiseLibrary(getBaseContext(), 60 * 30000,
+			PreferencesUtils.loadPreferences(app);
+			LocationLibrary.initialiseLibrary(app.getBaseContext(), 60 * 30000,
 					2 * 60 * 30000, "za.ac.sun.cs.hons.minke");
-			MapUtils.refreshLocation((LocationManager) context
+			MapUtils.refreshLocation((LocationManager) app
 					.getSystemService(Activity.LOCATION_SERVICE));
-			return EntityUtils.init(context);
+			return EntityUtils.init(app);
 		}
 
 	}
@@ -61,7 +78,7 @@ public class MinkeApplication extends Application {
 		}
 	}
 
-	public boolean loaded() {
+	public static boolean loaded() {
 		return loaded;
 	}
 
