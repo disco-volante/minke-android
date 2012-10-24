@@ -4,28 +4,28 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
-import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.DB;
 
 public class StoreDAO extends BaseDAO<Store> {
 
 	public StoreDAO(BaseDBHelper dbHelper) {
-		super( dbHelper, DBConstants.STORE_TABLE, DBConstants.STORE_COLUMNS);
+		super( dbHelper, DB.STORE_TABLE, DB.STORE_COLUMNS);
 
 	}
 
 	@Override
 	protected Store parse(Cursor cursor) {
 		Store store = new Store();
-		store.setId(cursor.getLong(cursor.getColumnIndex(DBConstants.CLOUD_ID)));
-		store.setName(cursor.getString(cursor.getColumnIndex(DBConstants.NAME)));
+		store.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
+		store.setName(cursor.getString(cursor.getColumnIndex(DB.NAME)));
 		return store;
 	}
 
 	@Override
 	protected ContentValues getContentValues(Store item) {
 		ContentValues cv = new ContentValues();
-		cv.put(DBConstants.CLOUD_ID, item.getId());
-		cv.put(DBConstants.NAME, item.getName());
+		cv.put(DB.CLOUD_ID, item.getId());
+		cv.put(DB.NAME, item.getName());
 		return cv;
 	}
 

@@ -23,8 +23,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+   <!--  <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />--> 
     <uses-permission android:name="android.permission.READ_OWNER_DATA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -46,7 +46,6 @@
         android:theme="@style/Theme.Sherlock.Light" >
         <uses-library android:name="com.google.android.maps" />
         <uses-library android:name="android.test.runner" />
-
         <service
             android:name=".services.UpdateService"
             android:label="@string/update"
@@ -101,8 +100,7 @@
 
         <fragment android:name=".gui.scan.NewProductFragment" />
         <fragment android:name=".gui.scan.NewBranchFragment" />
-        <fragment
-            android:name=".gui.scan.ScanFragment" />
+        <fragment android:name=".gui.scan.ScanFragment" />
         <fragment android:name=".gui.shop.ShopFragment" />
         <fragment android:name=".gui.shop.StoreFragment" />
         <fragment android:name=".gui.browse.BrowseFragment" />

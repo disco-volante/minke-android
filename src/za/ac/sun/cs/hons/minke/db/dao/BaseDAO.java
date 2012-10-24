@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
-import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.DB;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.ContentValues;
@@ -56,9 +56,9 @@ public abstract class BaseDAO<T> {
 			count++;
 			sb.append(s);
 			if (count < params.length) {
-				sb.append(DBConstants.AND_FILTER);
+				sb.append(DB.AND_FILTER);
 			} else {
-				sb.append(DBConstants.FILTER);
+				sb.append(DB.FILTER);
 			}
 		}
 		return sb.toString();
@@ -97,7 +97,7 @@ public abstract class BaseDAO<T> {
 	}
 
 	public T getByID(long id) {
-		Cursor cursor = database.query(table, columns, DBConstants.ID_FILTER,
+		Cursor cursor = database.query(table, columns, DB.ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
 		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
 			cursor.close();
@@ -110,7 +110,7 @@ public abstract class BaseDAO<T> {
 
 	public T getByCloudID(long id) {
 		Cursor cursor = database.query(table, columns,
-				DBConstants.CLOUD_ID_FILTER,
+				DB.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
 		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
 			cursor.close();
@@ -155,7 +155,7 @@ public abstract class BaseDAO<T> {
 					"updating " + _new + " in " + table );
 		}
 		return database.update(table, getContentValues(_new),
-				DBConstants.ID_FILTER, new String[] { String.valueOf(id) }) > 0;
+				DB.ID_FILTER, new String[] { String.valueOf(id) }) > 0;
 	}
 
 	public boolean updateByCloudID(T _new, long id) {
@@ -167,7 +167,7 @@ public abstract class BaseDAO<T> {
 					"updating " + _new + " in " + table );
 		}
 		return database.update(table, getContentValues(_new),
-				DBConstants.CLOUD_ID_FILTER,
+				DB.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }) > 0;
 	}
 
@@ -176,7 +176,7 @@ public abstract class BaseDAO<T> {
 			Log.d(TAGS.DB,
 					"deleting" + id + " in " + table );
 		}
-		return database.delete(table, DBConstants.ID_FILTER,
+		return database.delete(table, DB.ID_FILTER,
 				new String[] { String.valueOf(id) }) > 0;
 	}
 

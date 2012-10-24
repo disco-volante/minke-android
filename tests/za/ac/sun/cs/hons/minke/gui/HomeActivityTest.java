@@ -1,59 +1,43 @@
 package za.ac.sun.cs.hons.minke.gui;
 
-import za.ac.sun.cs.hons.minke.gui.HomeActivity;
-import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
+import org.junit.Assert;
+
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.KeyEvent;
-import android.widget.TabHost;
+
+import com.jayway.android.robotium.solo.Solo;
 
 public class HomeActivityTest extends
 		ActivityInstrumentationTestCase2<HomeActivity> {
-	protected static final int INITIAL_POSITION = 0;
-	private static final int TEST_POSITION = 2;
-	private HomeActivity mActivity;
-	private TabsAdapter mTabManager;
-	private TabHost mTabHost;
-	private int mPos;
-	public HomeActivityTest(String name) {
+	private Solo solo;
+
+	public HomeActivityTest() {
 		super(HomeActivity.class);
-		setName(name);
+	}
+
+	public void setUp() throws Exception {
+		solo = new Solo(getInstrumentation(), getActivity());
+	}
+
+	public void testPreferenceIsSaved() throws Exception {
+		//solo.se
+		//solo.sendKey(Solo.MENU);
+		solo.clickOnText("More");
+		solo.clickOnText("Preferences");
+		solo.clickOnText("Edit File Extensions");
+		Assert.assertTrue(solo.searchText("rtf"));
+
+		solo.clickOnText("txt");
+		solo.clearEditText(2);
+		solo.enterText(2, "robotium");
+		solo.clickOnButton("Save");
+		solo.goBack();
+		solo.clickOnText("Edit File Extensions");
+		Assert.assertTrue(solo.searchText("application/robotium"));
+
 	}
 
 	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
-		setActivityInitialTouchMode(false);
-
-		mActivity = getActivity();
-		mTabHost = (TabHost) mActivity.findViewById(android.R.id.tabhost);
-
-		mTabManager = mActivity.mTabManager;
-
+	public void tearDown() throws Exception {
+		solo.finishOpenedActivities();
 	}
-	public void testPreConditions() {
-	    assertTrue(mTabHost.getChildCount() > 0);
-	    assertTrue(mTabManager.getCurrentTab() != null);
-	  }
-	public void testTabsUI() {
-
-	    mActivity.runOnUiThread(
-	      new Runnable() {
-	        public void run() {
-	        	mTabHost.requestFocus();
-	        	mTabHost.setCurrentTab(INITIAL_POSITION);
-	        } // end of run() method definition
-	      } // end of anonymous Runnable object instantiation
-	    ); // end of invocation of runOnUiThread
-	    sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
-	    for (int i = 1; i <= TEST_POSITION; i++) {
-	      sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT);
-	    } // end of for loop
-
-	    sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
-	    mPos = mTabHost.getCurrentTab();
-	    
-	    assertEquals(mPos,TEST_POSITION);
-
-	  } // end of testSpinnerUI() method definition
 }

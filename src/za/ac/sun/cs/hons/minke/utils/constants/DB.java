@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.utils.constants;
 
-public class DBConstants {
+public class DB {
 	public static final String DATABASE_NAME = "minke.db";
 	public static final int DATABASE_VERSION = 1;
 

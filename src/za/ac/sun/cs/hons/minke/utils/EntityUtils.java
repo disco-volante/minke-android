@@ -31,7 +31,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
-import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.DB;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -62,10 +62,8 @@ public class EntityUtils {
 	private static BranchDAO branchDAO;
 	private static BranchProductDAO branchProductDAO;
 	private static ProductCategoryDAO productCategoryDAO;
-	private static Object lock = new Object();
 
 	public static ERROR init(Context context) {
-		synchronized (lock) {
 			dbHelper = new BaseDBHelper(context);
 			countryDAO = new CountryDAO(dbHelper);
 			storeDAO = new StoreDAO(dbHelper);
@@ -81,7 +79,6 @@ public class EntityUtils {
 					productDAO, branchDAO);
 			productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
 					categoryDAO);
-		}
 		return ERROR.SUCCESS;
 	}
 
@@ -258,7 +255,7 @@ public class EntityUtils {
 			for (Product p : addedProducts) {
 				ArrayList<BranchProduct> bps = branchProductDAO
 						.getAllByParameters(
-								new String[] { DBConstants.PRODUCT_ID },
+								new String[] { DB.PRODUCT_ID },
 								new String[] { String.valueOf(p.getId()) });
 				if (bps != null) {
 					for (BranchProduct bp : bps) {
@@ -296,24 +293,9 @@ public class EntityUtils {
 		return ERROR.SUCCESS;
 	}
 
-	private static HashMap<Branch, ArrayList<BranchProduct>> getAllBranchProducts() {
-		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
-		ArrayList<BranchProduct> bps = branchProductDAO.getAll();
-		for (BranchProduct bp : bps) {
-			if (bp.getBranch() != null) {
-				if (!branchMap.containsKey(bp.getBranch())) {
-					branchMap.put(bp.getBranch(),
-							new ArrayList<BranchProduct>());
-				}
-				branchMap.get(bp.getBranch()).add(bp);
-			}
-		}
-		return branchMap;
-	}
-
 	public static ArrayList<DatePrice> getDatePrices(long id) {
 		return datePriceDAO.getAllByParameters(
-				new String[] { DBConstants.BRANCH_PRODUCT_ID },
+				new String[] { DB.BRANCH_PRODUCT_ID },
 				new String[] { String.valueOf(id) });
 	}
 
@@ -341,7 +323,7 @@ public class EntityUtils {
 		}
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
-					new String[] { DBConstants.PRODUCT_ID },
+					new String[] { DB.PRODUCT_ID },
 					new String[] { String.valueOf(p.getId()) });
 			if (bps != null) {
 				for (BranchProduct bp : bps) {
@@ -455,7 +437,7 @@ public class EntityUtils {
 	public static BranchProduct retrieveBranchProduct(long productId,
 			long branchId) {
 		return branchProductDAO.getByParameters(new String[] {
-				DBConstants.PRODUCT_ID, DBConstants.BRANCH_ID }, new String[] {
+				DB.PRODUCT_ID, DB.BRANCH_ID }, new String[] {
 				String.valueOf(productId), String.valueOf(branchId) });
 	}
 
@@ -472,7 +454,7 @@ public class EntityUtils {
 	public static ArrayList<BranchProduct> retrieveBranchProducts(
 			long productId, BranchProduct main) {
 		ArrayList<BranchProduct> branchProducts = branchProductDAO
-				.getAllByParameters(new String[] { DBConstants.PRODUCT_ID },
+				.getAllByParameters(new String[] { DB.PRODUCT_ID },
 						new String[] { String.valueOf(productId) });
 		return branchProducts;
 	}

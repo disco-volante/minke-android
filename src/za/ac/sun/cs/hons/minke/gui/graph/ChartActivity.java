@@ -7,9 +7,13 @@ import org.achartengine.GraphicalView;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
+import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
+import za.ac.sun.cs.hons.minke.utils.EntityUtils;
+import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.widget.RelativeLayout;
 
@@ -23,7 +27,7 @@ public class ChartActivity extends SherlockActivity {
 	private TimelineChart chart;
 	private GraphicalView view;
 	private RelativeLayout holder;
-	private ChartTask curTask;
+	private ProgressTask curTask;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -32,20 +36,30 @@ public class ChartActivity extends SherlockActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
-		if(getLastNonConfigurationInstance() != null){
+		if (!EntityUtils.isLoaded()) {
+			startActivity(IntentUtils.getHomeIntent(this));
+			finish();
+		} else if (getLastNonConfigurationInstance() != null) {
 			curTask = (ChartTask) getLastNonConfigurationInstance();
-			curTask.attach(this);
-		}else	if (BrowseUtils.getBranchProducts().size() != 0) {
+			if (!curTask.getStatus().equals(Status.FINISHED)) {
+				curTask.attach(this);
+			}
+		} else if (BrowseUtils.getBranchProducts().size() != 0) {
 			buildChart();
 		}
 
 	}
+
 	@Override
-	public Object onRetainNonConfigurationInstance(){
+	public Object onRetainNonConfigurationInstance() {
+		if (curTask.getStatus().equals(Status.FINISHED)) {
+			return null;
+		}
 		curTask.detach();
 		return curTask;
-		
+
 	}
+
 	private void buildChart() {
 		chart = new TimelineChart(this);
 		curTask = new ChartTask(chart);

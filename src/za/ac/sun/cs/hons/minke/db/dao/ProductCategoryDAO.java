@@ -6,7 +6,7 @@ import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
-import za.ac.sun.cs.hons.minke.utils.constants.DBConstants;
+import za.ac.sun.cs.hons.minke.utils.constants.DB;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -19,7 +19,7 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 
 	public ProductCategoryDAO(BaseDBHelper dbHelper, ProductDAO productDAO,
 			CategoryDAO categoryDAO) {
-		super(dbHelper, DBConstants.PC_TABLE, DBConstants.PC_COLUMNS);
+		super(dbHelper, DB.PC_TABLE, DB.PC_COLUMNS);
 		this.productDAO = productDAO;
 		this.categoryDAO = categoryDAO;
 	}
@@ -27,22 +27,22 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	@Override
 	protected ContentValues getContentValues(ProductCategory pc) {
 		ContentValues cv = new ContentValues();
-		cv.put(DBConstants.PRODUCT_ID, pc.getProductID());
-		cv.put(DBConstants.CATEGORY_ID, pc.getCategoryID());
-		cv.put(DBConstants.CLOUD_ID, pc.getId());
+		cv.put(DB.PRODUCT_ID, pc.getProductID());
+		cv.put(DB.CATEGORY_ID, pc.getCategoryID());
+		cv.put(DB.CLOUD_ID, pc.getId());
 		return cv;
 	}
 
 	public ArrayList<ProductCategory> getAllByPID(long pid) {
 		return super.getAllByParameters(
-				new String[] { DBConstants.PRODUCT_ID },
+				new String[] { DB.PRODUCT_ID },
 				new String[] { String.valueOf(pid) });
 
 	}
 
 	public ArrayList<ProductCategory> getAllByCID(long cid) {
 		return super.getAllByParameters(
-				new String[] { DBConstants.CATEGORY_ID },
+				new String[] { DB.CATEGORY_ID },
 				new String[] { String.valueOf(cid) });
 
 	}
@@ -55,11 +55,11 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	@Override
 	protected ProductCategory parse(Cursor cursor) {
 		ProductCategory pc = new ProductCategory();
-		pc.setId(cursor.getLong(cursor.getColumnIndex(DBConstants.CLOUD_ID)));
+		pc.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
 		pc.setProductID(cursor.getLong(cursor
-				.getColumnIndex(DBConstants.PRODUCT_ID)));
+				.getColumnIndex(DB.PRODUCT_ID)));
 		pc.setCategoryID(cursor.getLong(cursor
-				.getColumnIndex(DBConstants.CATEGORY_ID)));
+				.getColumnIndex(DB.CATEGORY_ID)));
 		pc.setCategory(categoryDAO.getByCloudID(pc.getCategoryID()));
 		pc.setProduct(productDAO.getByCloudID(pc.getProductID()));
 		return pc;
@@ -68,7 +68,7 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	public ArrayList<Product> getProducts(long id) {
 		ArrayList<Product> entries = new ArrayList<Product>();
 		Cursor cursor = database.query(table, columns,
-				getSelection(new String[] { DBConstants.CATEGORY_ID }),
+				getSelection(new String[] { DB.CATEGORY_ID }),
 				new String[] { String.valueOf(id) }, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -86,7 +86,7 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	public ArrayList<Category> getCategories(long id) {
 		ArrayList<Category> entries = new ArrayList<Category>();
 		Cursor cursor = database.query(table, columns,
-				getSelection(new String[] { DBConstants.PRODUCT_ID }),
+				getSelection(new String[] { DB.PRODUCT_ID }),
 				new String[] { String.valueOf(id) }, null, null, null);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
