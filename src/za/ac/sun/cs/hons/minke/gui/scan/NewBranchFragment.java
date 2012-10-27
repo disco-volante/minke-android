@@ -1,5 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.scan;
 
+import java.util.ArrayList;
+
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.Province;
@@ -192,14 +194,15 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	private void requestProvince() {
-		if (EntityUtils.getProvinces() == null) {
+		final ArrayList<Province> provinces = EntityUtils.getProvinces();
+		if (provinces == null) {
 			return;
 		}
-		ScanUtils.province = EntityUtils.getProvinces().get(0);
-		final int size = Math.min(EntityUtils.getProvinces().size(), 10);
+		ScanUtils.province = provinces.get(0);
+		final int size = Math.min(provinces.size(), 10);
 		final String[] names = new String[size];
 		int i = 0;
-		for (Province p : EntityUtils.getProvinces()) {
+		for (Province p : provinces) {
 			if (i == size) {
 				break;
 			}
@@ -213,7 +216,7 @@ public class NewBranchFragment extends SherlockFragment {
 
 					@Override
 					public void onClick(DialogInterface arg0, int position) {
-						ScanUtils.province = EntityUtils.getProvinces().get(
+						ScanUtils.province = provinces.get(
 								position);
 					}
 				});

@@ -84,9 +84,6 @@ public class ChartActivity extends SherlockActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
-		case R.id.menu_item_refresh:
-			reset();
-			return true;
 		case R.id.menu_item_add:
 			showEditDlg(true, chart.getRemoved(), getString(R.string.add));
 			return true;
@@ -128,15 +125,6 @@ public class ChartActivity extends SherlockActivity {
 			}
 		});
 		dlg.show();
-	}
-
-	private void reset() {
-		HashSet<String> itr = new HashSet<String>();
-		itr.addAll(chart.getRemoved());
-		for (String s : itr) {
-			chart.addSeries(s);
-		}
-		view.repaint();
 	}
 
 	protected void editItems(HashSet<String> changed, boolean add) {

@@ -83,12 +83,12 @@ public class MapUtils {
 	}
 
 	public static void setUserBranch(Branch _branch) {
+		System.out.println(branch);
 		branch = _branch;
 	}
 
 	public static void setUserLocation(double lat, double lon) {
 		user = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
-		EntityUtils.sortBranches();
 		locsChanged = true;
 	}
 

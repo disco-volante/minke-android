@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
-import za.ac.sun.cs.hons.minke.utils.EntityUtils;
+import za.ac.sun.cs.hons.minke.R;
+import za.ac.sun.cs.hons.minke.utils.ErrorUtils;
 import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -9,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 
@@ -31,6 +33,11 @@ public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 	protected void onPostExecute(Void result) {
 		if (error != ERROR.SUCCESS) {
 			Log.v(TAGS.HTTP, "ERROR");
+			Toast.makeText(context, ErrorUtils.getErrorMessage(error, context), Toast.LENGTH_LONG).show();
+		} else {
+			Toast.makeText(context,
+					context.getString(R.string.update_success_msg),
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -52,9 +59,6 @@ public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 		ERROR error = RPCUtils.retrieveAll(context);
 		if (!error.equals(ERROR.SUCCESS)) {
 			error = RPCUtils.retrieveAll(context);
-		}
-		if (error == ERROR.SUCCESS) {
-			return EntityUtils.loadAll(context);
 		}
 		return error;
 	}

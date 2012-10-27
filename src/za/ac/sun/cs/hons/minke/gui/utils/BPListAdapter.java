@@ -51,7 +51,7 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.name.setText(item.getProduct().toString());
-		holder.price.setText("R " + item.getDatePrice().getActualPrice());
+		holder.price.setText("R " + String.format("%.2f",item.getDatePrice().getActualPrice()));
 		return rowView;
 	}
 
@@ -78,7 +78,7 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		intent.putExtra(Intent.EXTRA_SUBJECT, R.string.found_deal);
 		intent.putExtra(Intent.EXTRA_TEXT, item.getProduct().toString() + "\n "
 				+ item.getBranch().toString() + "\n R "
-				+ item.getDatePrice().getActualPrice());
+				+ String.format("%.2f",item.getDatePrice().getActualPrice()));
 		context.startActivity(Intent.createChooser(intent, context.getString(R.string.how_share)));
 
 	}

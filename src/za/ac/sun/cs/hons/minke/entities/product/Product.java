@@ -73,9 +73,13 @@ public class Product {
 	@Override
 	public String toString() {
 		if (brand == null) {
-			return name;
+			return size + measure + " " + name;
 		}
-		return brand.toString() + " " + name;
+		int intified = (int) size;
+		if (size / intified != 1) {
+			return size + " " + measure + " " + brand.toString() + " " + name;
+		}
+		return intified + " " + measure + " " + brand.toString() + " " + name;
 	}
 
 	public JSONObject toJSON() throws JSONException {

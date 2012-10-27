@@ -2,6 +2,7 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
+import za.ac.sun.cs.hons.minke.utils.ErrorUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.app.Activity;
@@ -18,7 +19,7 @@ import android.widget.TextView;
 public class DialogUtils {
 	public static Builder getErrorDialog(Context context, ERROR notLoaded) {
 		AlertDialog.Builder errorDlg = new AlertDialog.Builder(context);
-		errorDlg.setTitle(getErrorTitle(notLoaded, context));
+		errorDlg.setTitle(ErrorUtils.getErrorTitle(notLoaded, context));
 		errorDlg.setIcon(R.drawable.error);
 		errorDlg.setNegativeButton(context.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
@@ -26,11 +27,10 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		errorDlg.setMessage(getErrorMessage(notLoaded, context));
+		errorDlg.setMessage(ErrorUtils.getErrorMessage(notLoaded, context));
 		return errorDlg;
 	}
 
-	
 	public static Builder getInfoDialog(final Context context) {
 		AlertDialog.Builder infoDlg = new AlertDialog.Builder(context);
 		infoDlg.setTitle(context.getString(R.string.app_name));
@@ -96,7 +96,7 @@ public class DialogUtils {
 		store.setText(item.getBranch().toString());
 		size.setText(item.getProduct().getSize()
 				+ item.getProduct().getMeasure());
-		price.setText("R " + item.getDatePrice().getActualPrice());
+		price.setText("R " + String.format("%.2f",item.getDatePrice().getActualPrice()));
 		date.setText(item.getDatePrice().getFormattedDate());
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
 		dlg.setTitle(item.getProduct().toString());
@@ -109,70 +109,6 @@ public class DialogUtils {
 					}
 				});
 		return dlg;
-	}
-
-	private static CharSequence getErrorMessage(ERROR error, Context context) {
-		switch (error) {
-		case CLIENT:
-			return context.getString(R.string.err_client_msg);
-		case SERVER:
-			return context.getString(R.string.err_server_msg);
-		case PARSE:
-			return context.getString(R.string.err_parse_msg);
-		case INPUT:
-			return context.getString(R.string.err_input_msg);
-		case LOCATION:
-			return context.getString(R.string.err_location_msg);
-		case MAP:
-			return context.getString(R.string.err_map_msg);
-		case DB:
-			return context.getString(R.string.err_db_msg);
-		case NOT_LOADED:
-			return context.getString(R.string.err_not_loaded_msg);
-		case NOT_FOUND:
-			return context.getString(R.string.err_not_found_msg);
-		case DIRECTIONS:
-			return context.getString(R.string.err_directions_msg);
-		case SCAN:
-			return context.getString(R.string.err_scan_msg);
-		case TIME_OUT:
-			return context.getString(R.string.err_time_out_msg);
-		case SUCCESS:
-			return context.getString(R.string.err_success_msg);
-		}
-		return null;
-	}
-
-	private static CharSequence getErrorTitle(ERROR error, Context context) {
-		switch (error) {
-		case CLIENT:
-			return context.getString(R.string.err_client);
-		case SERVER:
-			return context.getString(R.string.err_server);
-		case PARSE:
-			return context.getString(R.string.err_parse);
-		case INPUT:
-			return context.getString(R.string.err_input);
-		case LOCATION:
-			return context.getString(R.string.err_location);
-		case MAP:
-			return context.getString(R.string.err_map);
-		case DB:
-			return context.getString(R.string.err_db);
-		case NOT_LOADED:
-			return context.getString(R.string.err_not_loaded);
-		case NOT_FOUND:
-			return context.getString(R.string.err_not_found);
-		case DIRECTIONS:
-			return context.getString(R.string.err_directions);
-		case SCAN:
-			return context.getString(R.string.err_scan);
-		case TIME_OUT:
-			return context.getString(R.string.err_time_out);
-		case SUCCESS:
-			return context.getString(R.string.err_success);
-		}
-		return null;
 	}
 
 }

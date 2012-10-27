@@ -1,7 +1,6 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,16 +38,6 @@ import android.content.Context;
 import android.util.Log;
 
 public class EntityUtils {
-	private static ArrayList<Category> categories;
-	private static ArrayList<Product> products;
-	private static ArrayList<Brand> brands;
-	private static ArrayList<Store> stores;
-	private static ArrayList<City> cities;
-	private static ArrayList<Country> countries;
-	private static ArrayList<Province> provinces;
-	private static ArrayList<Branch> branches;
-	private static boolean loaded = false;
-	private static ArrayList<Object> locs;
 	private static BaseDBHelper dbHelper;
 	private static CountryDAO countryDAO;
 	private static StoreDAO storeDAO;
@@ -62,113 +51,55 @@ public class EntityUtils {
 	private static BranchDAO branchDAO;
 	private static BranchProductDAO branchProductDAO;
 	private static ProductCategoryDAO productCategoryDAO;
+	private static boolean loaded;
 
 	public static ERROR init(Context context) {
-			dbHelper = new BaseDBHelper(context);
-			countryDAO = new CountryDAO(dbHelper);
-			storeDAO = new StoreDAO(dbHelper);
-			categoryDAO = new CategoryDAO(dbHelper);
-			brandDAO = new BrandDAO(dbHelper);
-			datePriceDAO = new DatePriceDAO(dbHelper);
-			provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
-			cityDAO = new CityDAO(dbHelper, provinceDAO);
-			cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
-			productDAO = new ProductDAO(dbHelper, brandDAO);
-			branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
-			branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
-					productDAO, branchDAO);
-			productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
-					categoryDAO);
+		loaded = false;
+		dbHelper = new BaseDBHelper(context);
+		countryDAO = new CountryDAO(dbHelper);
+		storeDAO = new StoreDAO(dbHelper);
+		categoryDAO = new CategoryDAO(dbHelper);
+		brandDAO = new BrandDAO(dbHelper);
+		datePriceDAO = new DatePriceDAO(dbHelper);
+		provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
+		cityDAO = new CityDAO(dbHelper, provinceDAO);
+		cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
+		productDAO = new ProductDAO(dbHelper, brandDAO);
+		branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
+		branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
+				productDAO, branchDAO);
+		productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
+				categoryDAO);
+		loaded = true;
 		return ERROR.SUCCESS;
 	}
 
 	public static List<Category> getCategories() {
-		return categories;
-	}
-
-	public static void setCategories(ArrayList<Category> categories) {
-		EntityUtils.categories = categories;
+		return categoryDAO.getAll();
 	}
 
 	public static ArrayList<Product> getProducts() {
-		return products;
-	}
-
-	public static void setProducts(ArrayList<Product> products) {
-		EntityUtils.products = products;
+		return productDAO.getAll();
 	}
 
 	public static ArrayList<Branch> getBranches() {
-		return branches;
-	}
-
-	public static void setBranches(ArrayList<Branch> _branches) {
-		branches = _branches;
-		sortBranches();
+		return branchDAO.getAll();
 	}
 
 	public static ArrayList<Brand> getBrands() {
-		return brands;
-	}
-
-	public static void setBrands(ArrayList<Brand> _brands) {
-		brands = _brands;
-	}
-
-	public static boolean isLoaded() {
-		return loaded;
-	}
-
-	public static void setLoaded(boolean _loaded) {
-		loaded = _loaded;
+		return brandDAO.getAll();
 	}
 
 	public static ArrayList<Store> getStores() {
-		return stores;
-	}
-
-	public static ArrayList<City> getCities() {
-		return cities;
-
-	}
-
-	public static ArrayList<Province> getProvinces() {
-		return provinces;
-	}
-
-	public static ArrayList<Country> getCountries() {
-		return countries;
-	}
-
-	public static void setBranchBPs(Branch branch, ArrayList<BranchProduct> bps2) {
-
-	}
-
-	public static void setStores(ArrayList<Store> _stores) {
-		stores = _stores;
-	}
-
-	public static void setCities(ArrayList<City> _cities) {
-		cities = _cities;
-	}
-
-	public static void setProvinces(ArrayList<Province> _provinces) {
-		provinces = _provinces;
-	}
-
-	public static void setCountries(ArrayList<Country> _countries) {
-		countries = _countries;
+		return storeDAO.getAll();
 	}
 
 	public static ArrayList<Object> getLocations() {
+		ArrayList<Object> locs = new ArrayList<Object>();
+		locs.addAll(countryDAO.getAll());
+		locs.addAll(provinceDAO.getAll());
+		locs.addAll(cityDAO.getAll());
 		return locs;
-	}
-
-	public static void setLocations() {
-		locs = new ArrayList<Object>();
-		locs.addAll(cities);
-		locs.addAll(countries);
-		locs.addAll(provinces);
 	}
 
 	public static void persistBranchProducts(Context context,
@@ -228,23 +159,6 @@ public class EntityUtils {
 		categoryDAO.addAll(_categories);
 	}
 
-	public static ERROR loadAll(Context context) {
-		setCountries(countryDAO.getAll());
-		setStores(storeDAO.getAll());
-		setCategories(categoryDAO.getAll());
-		setBrands(brandDAO.getAll());
-		setProvinces(provinceDAO.getAll());
-		setCities(cityDAO.getAll());
-		setProducts(productDAO.getAll());
-		setBranches(branchDAO.getAll());
-		setLocations();
-		loaded = true;
-		if (DEBUG.ON) {
-			Log.v(TAGS.ENTITY, products.toString());
-		}
-		return ERROR.SUCCESS;
-	}
-
 	public static ERROR retrieveBranches(ArrayList<Product> addedProducts) {
 		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
 		HashSet<Branch> notfound = new HashSet<Branch>();
@@ -254,8 +168,7 @@ public class EntityUtils {
 			boolean firstIter = true;
 			for (Product p : addedProducts) {
 				ArrayList<BranchProduct> bps = branchProductDAO
-						.getAllByParameters(
-								new String[] { DB.PRODUCT_ID },
+						.getAllByParameters(new String[] { DB.PRODUCT_ID },
 								new String[] { String.valueOf(p.getId()) });
 				if (bps != null) {
 					for (BranchProduct bp : bps) {
@@ -312,14 +225,14 @@ public class EntityUtils {
 					}
 				}
 			} else {
-				_p.addAll(products);
+				_p.addAll(productDAO.getAll());
 			}
 		} else {
 			_p.addAll(SearchUtils.getAddedProducts());
 		}
 		HashSet<BranchProduct> found = new HashSet<BranchProduct>();
 		if (_p.size() == 0) {
-			_p.addAll(products);
+			_p.addAll(productDAO.getAll());
 		}
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
@@ -369,28 +282,24 @@ public class EntityUtils {
 	public static Product addProduct(Product p) {
 		long id = productDAO.add(p);
 		p = productDAO.getByID(id);
-		products.add(p);
 		return p;
 	}
 
 	public static Brand addBrand(Brand b) {
 		long id = brandDAO.add(b);
 		b = brandDAO.getByID(id);
-		brands.add(b);
 		return b;
 	}
 
 	public static Branch addBranch(Branch branch) {
 		long id = branchDAO.add(branch);
 		branch = branchDAO.getByID(id);
-		branches.add(0, branch);
 		return branch;
 	}
 
 	public static Category addCategory(Category c) {
 		long id = categoryDAO.add(c);
 		c = categoryDAO.getByID(id);
-		categories.add(c);
 		return c;
 	}
 
@@ -402,7 +311,6 @@ public class EntityUtils {
 	public static City addCity(City c) {
 		long id = cityDAO.add(c);
 		c = cityDAO.getByID(id);
-		cities.add(c);
 		return c;
 
 	}
@@ -410,7 +318,6 @@ public class EntityUtils {
 	public static Store addStore(Store s) {
 		long id = storeDAO.add(s);
 		s = storeDAO.getByID(id);
-		stores.add(s);
 		return s;
 	}
 
@@ -436,9 +343,9 @@ public class EntityUtils {
 
 	public static BranchProduct retrieveBranchProduct(long productId,
 			long branchId) {
-		return branchProductDAO.getByParameters(new String[] {
-				DB.PRODUCT_ID, DB.BRANCH_ID }, new String[] {
-				String.valueOf(productId), String.valueOf(branchId) });
+		return branchProductDAO.getByParameters(new String[] { DB.PRODUCT_ID,
+				DB.BRANCH_ID }, new String[] { String.valueOf(productId),
+				String.valueOf(branchId) });
 	}
 
 	public static BranchProduct retrieveBranchProductServer(long productId,
@@ -459,11 +366,27 @@ public class EntityUtils {
 		return branchProducts;
 	}
 
-	public static void sortBranches() {
-		if (branches != null && MapUtils.getUserLocation() != null) {
-			Collections.sort(branches);
-			MapUtils.setUserBranch(branches.get(0));
-		}
+	public static ArrayList<Province> getProvinces() {
+		return provinceDAO.getAll();
+	}
+
+	public static ArrayList<City> getCities() {
+		return cityDAO.getAll();
+	}
+
+	public static boolean isLoaded() {
+		return loaded;
+	}
+
+	public static Branch getBranch(long branchId) {
+		return branchDAO.getByCloudID(branchId);
+	}
+
+	public static BranchProduct getBranchProduct(long branchProductId) {
+		return branchProductDAO.getByCloudID(branchProductId);
+	}
+	public static Product getProduct(long productId) {
+		return productDAO.getByCloudID(productId);
 	}
 
 }

@@ -10,9 +10,11 @@ import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +65,8 @@ public class StoreFragment extends SherlockFragment {
 	}
 
 	public void showDirections() {
+		MapUtils.refreshLocation((LocationManager) getActivity()
+				.getSystemService(Activity.LOCATION_SERVICE));
 		String[] names = new String[ShopUtils.getShopLists().size()];
 		MapUtils.setDestination(ShopUtils.getShopLists().get(0));
 		int i = 0;

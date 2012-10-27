@@ -23,8 +23,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-   <!--  <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />--> 
+    <!--
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    -->
     <uses-permission android:name="android.permission.READ_OWNER_DATA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -46,12 +48,12 @@
         android:theme="@style/Theme.Sherlock.Light" >
         <uses-library android:name="com.google.android.maps" />
         <uses-library android:name="android.test.runner" />
+
         <service
             android:name=".services.UpdateService"
             android:label="@string/update"
             android:process=":update_process" >
         </service>
-        <service android:name="com.littlefluffytoys.littlefluffylocationlibrary.LocationBroadcastService" />
 
         <receiver android:name=".receivers.ScheduleReceiver" >
             <intent-filter>
@@ -59,35 +61,6 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.UpdateServiceReceiver" >
-        </receiver>
-        <receiver android:name=".receivers.LoadLocalReceiver" >
-        </receiver>
-        <receiver
-            android:name="com.littlefluffytoys.littlefluffylocationlibrary.StartupBroadcastReceiver"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.littlefluffytoys.littlefluffylocationlibrary.PassiveLocationChangedReceiver"
-            android:exported="true"
-            android:permission="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" />
-        <receiver
-            android:name="com.littlefluffytoys.littlefluffylocationlibrary.StartupBroadcastReceiver"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".receivers.LocationBroadcastReceiver"
-            android:permission="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" >
-            <intent-filter>
-                <action
-                    android:name="mobi.littlefluffytoys.littlefluffytestclient.littlefluffylocationlibrary.LOCATION_CHANGED"
-                    android:exported="false" />
-            </intent-filter>
         </receiver>
 
         <activity android:name=".gui.HomeActivity" >
