@@ -14,7 +14,8 @@ public class CityLocation {
 	public CityLocation() {
 	}
 
-	public CityLocation(long id, long cityId, String name, double lat, double lon) {
+	public CityLocation(long id, long cityId, String name, double lat,
+			double lon) {
 		this.id = id;
 		this.setCityId(cityId);
 		this.name = name;
@@ -72,7 +73,7 @@ public class CityLocation {
 
 	@Override
 	public String toString() {
-		if(city == null){
+		if (city == null) {
 			return name;
 		}
 		return name + ", " + city.toString();
@@ -90,7 +91,7 @@ public class CityLocation {
 	}
 
 	public GeoPoint getGeoPoint() {
-		return new GeoPoint((int)(lat*1E6), (int)(lon*1E6));
+		return new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
 	}
 
 	@Override

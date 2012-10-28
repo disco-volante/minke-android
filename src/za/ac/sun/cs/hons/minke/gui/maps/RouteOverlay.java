@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps.google;
+package za.ac.sun.cs.hons.minke.gui.maps;
 
 import java.util.Iterator;
 import java.util.List;

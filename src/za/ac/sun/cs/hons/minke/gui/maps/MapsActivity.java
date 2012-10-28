@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps.google;
+package za.ac.sun.cs.hons.minke.gui.maps;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
@@ -35,7 +35,7 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
-public class GoogleMapsActivity extends SherlockMapActivity {
+public class MapsActivity extends SherlockMapActivity {
 	private MapView mapView;
 	private MapController mapController;
 	private AlertDialog dirDlg;
@@ -119,17 +119,15 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		mapController = mapView.getController();
 		mapController.setZoom(15);
 		mapController.setCenter(MapUtils.getUserLocation());
-		BasicOverlay shopsOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.shop),
-				GoogleMapsActivity.this);
+		BasicOverlay shopsOverlay = new BasicOverlay(MapsActivity.this
+				.getResources().getDrawable(R.drawable.shop), MapsActivity.this);
 		for (ShopList sl : ShopUtils.getShopLists()) {
 			shopsOverlay.addOverlay(new OverlayItem(sl.getBranch()
 					.getCityLocation().getGeoPoint(), sl.toString(), sl
 					.getBranch().getCityLocation().toString()));
 		}
-		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.user),
-				GoogleMapsActivity.this);
+		BasicOverlay iconOverlay = new BasicOverlay(MapsActivity.this
+				.getResources().getDrawable(R.drawable.user), MapsActivity.this);
 		iconOverlay.addOverlay(new OverlayItem(MapUtils.getUserLocation(),
 				getString(R.string.you), getString(R.string.str_you)));
 		mapView.getOverlays().add(shopsOverlay);
@@ -176,9 +174,8 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 		if (mapView.getOverlays().size() > 3) {
 			mapView.getOverlays().remove(mapView.getOverlays().size() - 1);
 		}
-		BasicOverlay iconOverlay = new BasicOverlay(GoogleMapsActivity.this
-				.getResources().getDrawable(R.drawable.pin),
-				GoogleMapsActivity.this);
+		BasicOverlay iconOverlay = new BasicOverlay(MapsActivity.this
+				.getResources().getDrawable(R.drawable.pin), MapsActivity.this);
 		iconOverlay.addOverlay(new OverlayItem(point, title, message));
 		mapView.getOverlays().add(iconOverlay);
 		mapController.animateTo(point);
@@ -191,22 +188,24 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 	static class BuildRouteTask extends ProgressTask {
 		private RouteOverlay routeOverlay;
 
-		public BuildRouteTask(GoogleMapsActivity activity) {
+		public BuildRouteTask(MapsActivity activity) {
 			super(activity, activity.getString(R.string.retrieving) + "...",
 					activity.getString(R.string.retrieving_msg));
 		}
 
 		@Override
 		protected void success() {
-			((GoogleMapsActivity) activity).addOverlay(routeOverlay);
+			((MapsActivity) activity).addOverlay(routeOverlay);
 
 		}
 
+		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
 			if (error_code.equals(ERROR.DIRECTIONS)) {
 				dlg.setPositiveButton(activity.getString(R.string.ok),
 						new DialogInterface.OnClickListener() {
+							@Override
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
 							}
@@ -214,13 +213,15 @@ public class GoogleMapsActivity extends SherlockMapActivity {
 			} else {
 				dlg.setPositiveButton(activity.getString(R.string.retry),
 						new DialogInterface.OnClickListener() {
+							@Override
 							public void onClick(DialogInterface dialog, int id) {
-								((GoogleMapsActivity) activity).getDirections();
+								((MapsActivity) activity).getDirections();
 								dialog.cancel();
 							}
 						});
 				dlg.setNegativeButton(activity.getString(R.string.cancel),
 						new DialogInterface.OnClickListener() {
+							@Override
 							public void onClick(DialogInterface dialog, int id) {
 								dialog.cancel();
 							}

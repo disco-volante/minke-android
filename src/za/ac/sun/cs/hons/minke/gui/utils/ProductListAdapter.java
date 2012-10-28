@@ -31,11 +31,11 @@ public class ProductListAdapter extends ItemListAdapter<Product> {
 		holder.other_btn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				changeQuantity(holder,product);
+				changeQuantity(holder, product);
 
 			}
 		});
-		//animateItem(product, rowView);
+		// animateItem(product, rowView);
 		return rowView;
 	}
 
@@ -51,6 +51,7 @@ public class ProductListAdapter extends ItemListAdapter<Product> {
 		dlg.setIcon(R.drawable.settings);
 		dlg.setPositiveButton(getActivity().getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
@@ -58,9 +59,11 @@ public class ProductListAdapter extends ItemListAdapter<Product> {
 		dlg.setView(quantityView);
 		dlg.setPositiveButton(getActivity().getString(R.string.change),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						product.setQuantity(quantityPicker.getCurrent());
-						holder.other_btn.setText(String.valueOf(quantityPicker.getCurrent()));
+						holder.other_btn.setText(String.valueOf(quantityPicker
+								.getCurrent()));
 						dialog.cancel();
 					}
 				});

@@ -12,7 +12,7 @@ public class ProductDAO extends BaseDAO<Product> {
 
 	public ProductDAO(BaseDBHelper dbHelper, BrandDAO brandDAO) {
 		super(dbHelper, DB.PRODUCT_TABLE, DB.PRODUCT_COLUMNS);
-		this.brandDAO =brandDAO;
+		this.brandDAO = brandDAO;
 
 	}
 
@@ -20,14 +20,10 @@ public class ProductDAO extends BaseDAO<Product> {
 	protected Product parse(Cursor cursor) {
 		Product product = new Product();
 		product.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
-		product.setBrandId(cursor.getLong(cursor
-				.getColumnIndex(DB.BRAND_ID)));
-		product.setName(cursor.getString(cursor
-				.getColumnIndex(DB.NAME)));
-		product.setSize(cursor.getDouble(cursor
-				.getColumnIndex(DB.SIZE)));
-		product.setMeasure(cursor.getString(cursor
-				.getColumnIndex(DB.MEASURE)));
+		product.setBrandId(cursor.getLong(cursor.getColumnIndex(DB.BRAND_ID)));
+		product.setName(cursor.getString(cursor.getColumnIndex(DB.NAME)));
+		product.setSize(cursor.getDouble(cursor.getColumnIndex(DB.SIZE)));
+		product.setMeasure(cursor.getString(cursor.getColumnIndex(DB.MEASURE)));
 		product.setBrand(brandDAO.getByCloudID(product.getBrandId()));
 		return product;
 	}
@@ -47,6 +43,5 @@ public class ProductDAO extends BaseDAO<Product> {
 	protected long getID(Product obj) {
 		return obj.getId();
 	}
-
 
 }

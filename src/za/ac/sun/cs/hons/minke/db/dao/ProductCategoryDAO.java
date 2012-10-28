@@ -34,15 +34,13 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	}
 
 	public ArrayList<ProductCategory> getAllByPID(long pid) {
-		return super.getAllByParameters(
-				new String[] { DB.PRODUCT_ID },
+		return super.getAllByParameters(new String[] { DB.PRODUCT_ID },
 				new String[] { String.valueOf(pid) });
 
 	}
 
 	public ArrayList<ProductCategory> getAllByCID(long cid) {
-		return super.getAllByParameters(
-				new String[] { DB.CATEGORY_ID },
+		return super.getAllByParameters(new String[] { DB.CATEGORY_ID },
 				new String[] { String.valueOf(cid) });
 
 	}
@@ -56,10 +54,8 @@ public class ProductCategoryDAO extends BaseDAO<ProductCategory> {
 	protected ProductCategory parse(Cursor cursor) {
 		ProductCategory pc = new ProductCategory();
 		pc.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
-		pc.setProductID(cursor.getLong(cursor
-				.getColumnIndex(DB.PRODUCT_ID)));
-		pc.setCategoryID(cursor.getLong(cursor
-				.getColumnIndex(DB.CATEGORY_ID)));
+		pc.setProductID(cursor.getLong(cursor.getColumnIndex(DB.PRODUCT_ID)));
+		pc.setCategoryID(cursor.getLong(cursor.getColumnIndex(DB.CATEGORY_ID)));
 		pc.setCategory(categoryDAO.getByCloudID(pc.getCategoryID()));
 		pc.setProduct(productDAO.getByCloudID(pc.getProductID()));
 		return pc;

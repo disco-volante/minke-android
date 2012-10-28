@@ -10,6 +10,7 @@ import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
 import android.app.Application;
+import android.content.Context;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -27,6 +28,7 @@ public class MinkeApplication extends Application {
 		public InitTask(Application app) {
 			this.app = app;
 		}
+
 		@Override
 		protected Void doInBackground(Void... params) {
 			synchronized (this) {
@@ -43,31 +45,28 @@ public class MinkeApplication extends Application {
 				failure(error);
 			}
 		}
-		
+
 		protected void success() {
 			loaded = true;
 		}
 
-		
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(app, error_code);
 			dlg.show();
 
 		}
 
-		
 		protected ERROR retrieve() {
 			PreferencesUtils.loadPreferences(app);
 			LocationLibrary.initialiseLibrary(app.getBaseContext(), 60 * 30000,
 					2 * 60 * 30000, "za.ac.sun.cs.hons.minke");
 			MapUtils.refreshLocation((LocationManager) app
-					.getSystemService(Activity.LOCATION_SERVICE));
+					.getSystemService(Context.LOCATION_SERVICE));
 			return EntityUtils.init(app);
 		}
 
 	}
 
-	
 	@Override
 	public void onCreate() {
 		super.onCreate();

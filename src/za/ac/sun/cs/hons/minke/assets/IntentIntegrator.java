@@ -159,6 +159,7 @@ public final class IntentIntegrator {
 		downloadDialog.setMessage(stringMessage);
 		downloadDialog.setPositiveButton(stringButtonYes,
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
 						Uri uri = Uri
 								.parse("market://search?q=pname:com.google.zxing.client.android");
@@ -168,6 +169,7 @@ public final class IntentIntegrator {
 				});
 		downloadDialog.setNegativeButton(stringButtonNo,
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
 					}
 				});

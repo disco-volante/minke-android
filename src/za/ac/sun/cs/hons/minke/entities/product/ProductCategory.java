@@ -7,14 +7,15 @@ public class ProductCategory {
 	private Category category;
 	private Product product;
 
-	public ProductCategory(long id ,long productID, long categoryID) {
+	public ProductCategory(long id, long productID, long categoryID) {
 		super();
 		this.setId(id);
 		this.productID = productID;
 		this.categoryID = categoryID;
 	}
 
-	public ProductCategory() {}
+	public ProductCategory() {
+	}
 
 	public long getId() {
 		return id;
@@ -49,12 +50,12 @@ public class ProductCategory {
 	}
 
 	public void setCategory(Category category) {
-		this.category = 		category;
+		this.category = category;
 	}
 
 	public void setProduct(Product product) {
-		this.product = 		product;
-		
+		this.product = product;
+
 	}
 
 	@Override

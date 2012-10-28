@@ -1,8 +1,8 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
-import za.ac.sun.cs.hons.minke.gui.graph.ChartActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
+import za.ac.sun.cs.hons.minke.gui.chart.ChartActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.MapsActivity;
 import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.content.Context;
@@ -25,7 +25,7 @@ public class IntentUtils {
 	public static Intent getMapIntent(Context context) {
 		Intent map;
 		if (Constants.GOOGLE_MAPS) {
-			map = new Intent(context, GoogleMapsActivity.class);
+			map = new Intent(context, MapsActivity.class);
 		}
 		map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return map;
@@ -36,7 +36,7 @@ public class IntentUtils {
 		scanIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		return scanIntent;
 	}
-	
+
 	public static Intent getSettingsIntent(Context context) {
 		Intent settings = new Intent(context, SettingsActivity.class);
 		settings.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -50,8 +50,5 @@ public class IntentUtils {
 				String.valueOf((long) (100000 * Math.random())));
 		return intent;
 	}
-
-
-
 
 }

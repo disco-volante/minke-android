@@ -3,8 +3,8 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleMapsActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
+import za.ac.sun.cs.hons.minke.gui.maps.MapsActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.Segment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class DirectionsListAdapter extends ArrayAdapter<Segment> {
-	private GoogleMapsActivity activity;
+	private MapsActivity activity;
 	private int rowType;
 
 	static class ViewHolder {
@@ -21,8 +21,7 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 
 	}
 
-	public DirectionsListAdapter(GoogleMapsActivity activity,
-			ArrayList<Segment> added) {
+	public DirectionsListAdapter(MapsActivity activity, ArrayList<Segment> added) {
 		super(activity, R.layout.row_directions, added);
 		rowType = R.layout.row_directions;
 		this.activity = activity;

@@ -35,7 +35,8 @@ public class Country {
 	public String toString() {
 		return name;
 	}
-	public JSONObject toJSON() throws JSONException{
+
+	public JSONObject toJSON() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "country");
 		obj.put("id", id);

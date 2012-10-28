@@ -385,6 +385,7 @@ public class EntityUtils {
 	public static BranchProduct getBranchProduct(long branchProductId) {
 		return branchProductDAO.getByCloudID(branchProductId);
 	}
+
 	public static Product getProduct(long productId) {
 		return productDAO.getByCloudID(productId);
 	}

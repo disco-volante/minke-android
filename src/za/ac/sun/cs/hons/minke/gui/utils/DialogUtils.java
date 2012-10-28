@@ -23,6 +23,7 @@ public class DialogUtils {
 		errorDlg.setIcon(R.drawable.error);
 		errorDlg.setNegativeButton(context.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
@@ -37,12 +38,14 @@ public class DialogUtils {
 		infoDlg.setIcon(R.drawable.info);
 		infoDlg.setPositiveButton(context.getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
 				});
 		infoDlg.setNegativeButton(context.getString(R.string.website),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						Intent browserIntent = new Intent(Intent.ACTION_VIEW,
 								Uri.parse(Constants.WEBSITE));
@@ -60,6 +63,7 @@ public class DialogUtils {
 		dlg.setIcon(R.drawable.chart);
 		dlg.setNegativeButton(context.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.cancel();
 					}
@@ -73,6 +77,7 @@ public class DialogUtils {
 		dlg.setIcon(R.drawable.directions);
 		dlg.setPositiveButton(context.getString(R.string.ok),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
@@ -96,7 +101,8 @@ public class DialogUtils {
 		store.setText(item.getBranch().toString());
 		size.setText(item.getProduct().getSize()
 				+ item.getProduct().getMeasure());
-		price.setText("R " + String.format("%.2f",item.getDatePrice().getActualPrice()));
+		price.setText("R "
+				+ String.format("%.2f", item.getDatePrice().getActualPrice()));
 		date.setText(item.getDatePrice().getFormattedDate());
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
 		dlg.setTitle(item.getProduct().toString());
@@ -104,6 +110,7 @@ public class DialogUtils {
 		dlg.setIcon(R.drawable.info);
 		dlg.setPositiveButton(context.getString(R.string.close),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.cancel();
 					}

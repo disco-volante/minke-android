@@ -27,7 +27,7 @@ import android.util.Log;
 
 public class RPCUtils {
 	public static ERROR startServer() {
-		String url = Constants.URL_PREFIX+"start";
+		String url = Constants.URL_PREFIX + "start";
 		try {
 			if (HTTPUtils.startServerPost(url)) {
 				return ERROR.SUCCESS;
@@ -35,7 +35,7 @@ public class RPCUtils {
 		} catch (ClientProtocolException e) {
 			if (DEBUG.ON) {
 				e.printStackTrace();
-				Log.v(TAGS.ERROR, e.getMessage()+e.getCause());
+				Log.v(TAGS.ERROR, e.getMessage() + e.getCause());
 			}
 		} catch (IOException e) {
 			if (DEBUG.ON) {
@@ -51,7 +51,7 @@ public class RPCUtils {
 		String url = Constants.URL_PREFIX + suffix;
 		try {
 			JSONObject obj;
-			obj = HTTPUtils.doJSONPost(url,null);
+			obj = HTTPUtils.doJSONPost(url, null);
 			if (JSONParser.notAll(obj)) {
 				return ERROR.SERVER;
 			}
@@ -319,8 +319,8 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, null, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
-					bpJSON, brand.toJSON(), category.toJSON());
+			JSONObject response = HTTPUtils.doJSONMultiPost(url,
+					branch.toJSON(), bpJSON, brand.toJSON(), category.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
@@ -364,8 +364,8 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					category, null, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
-					bpJSON, brand.toJSON());
+			JSONObject response = HTTPUtils.doJSONMultiPost(url,
+					branch.toJSON(), bpJSON, brand.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}
@@ -412,8 +412,8 @@ public class RPCUtils {
 		try {
 			JSONObject bpJSON = JSONBuilder.BranchProductProtoToJSON(name,
 					null, brand, size, measure, price, barCode);
-			JSONObject response = HTTPUtils.doJSONMultiPost(url, branch.toJSON(),
-					bpJSON, category.toJSON());
+			JSONObject response = HTTPUtils.doJSONMultiPost(url,
+					branch.toJSON(), bpJSON, category.toJSON());
 			if (response.length() == 0) {
 				return ERROR.SERVER;
 			}

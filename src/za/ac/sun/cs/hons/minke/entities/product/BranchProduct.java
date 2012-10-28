@@ -149,7 +149,7 @@ public class BranchProduct {
 	}
 
 	public void setQuantity(int _quantity) {
-		this.quantity  = _quantity;
+		this.quantity = _quantity;
 	}
 
 	public int getQuantity() {

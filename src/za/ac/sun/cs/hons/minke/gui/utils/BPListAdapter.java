@@ -31,7 +31,7 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		View rowView = convertView;
-		final BranchProduct item = (BranchProduct) getItem(position);
+		final BranchProduct item = getItem(position);
 		if (rowView == null) {
 			LayoutInflater inflater = context.getLayoutInflater();
 			rowView = inflater.inflate(R.layout.row_branchproduct, null);
@@ -51,7 +51,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 		holder.name.setText(item.getProduct().toString());
-		holder.price.setText("R " + String.format("%.2f",item.getDatePrice().getActualPrice()));
+		holder.price.setText("R "
+				+ String.format("%.2f", item.getDatePrice().getActualPrice()));
 		return rowView;
 	}
 
@@ -76,10 +77,16 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		intent.setType("text/plain");
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 		intent.putExtra(Intent.EXTRA_SUBJECT, R.string.found_deal);
-		intent.putExtra(Intent.EXTRA_TEXT, item.getProduct().toString() + "\n "
-				+ item.getBranch().toString() + "\n R "
-				+ String.format("%.2f",item.getDatePrice().getActualPrice()));
-		context.startActivity(Intent.createChooser(intent, context.getString(R.string.how_share)));
+		intent.putExtra(
+				Intent.EXTRA_TEXT,
+				item.getProduct().toString()
+						+ "\n "
+						+ item.getBranch().toString()
+						+ "\n R "
+						+ String.format("%.2f", item.getDatePrice()
+								.getActualPrice()));
+		context.startActivity(Intent.createChooser(intent,
+				context.getString(R.string.how_share)));
 
 	}
 

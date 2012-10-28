@@ -59,9 +59,9 @@ public class HTTPUtils {
 		}
 		return new JSONObject(resultstring);
 	}
-	
+
 	public static boolean startServerPost(String mUrl)
-			throws ClientProtocolException, IOException{
+			throws ClientProtocolException, IOException {
 		DefaultHttpClient httpClient = getClient();
 
 		HttpPost httpost = new HttpPost(mUrl);

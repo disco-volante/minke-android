@@ -9,19 +9,18 @@ public class BrowseUtils {
 	private static ArrayList<BranchProduct> branchProducts = new ArrayList<BranchProduct>();
 	private static boolean storeBrowse;
 
-	public static void setBranchProducts(
-			ArrayList<BranchProduct> bps) {
+	public static void setBranchProducts(ArrayList<BranchProduct> bps) {
 		if (bps != null) {
 			branchProducts = bps;
-		}else{
+		} else {
 			branchProducts = new ArrayList<BranchProduct>();
 		}
-		
+
 	}
 
 	public static ArrayList<BranchProduct> getBranchProducts() {
-		if(branchProducts == null){
-			branchProducts = new  ArrayList<BranchProduct>();
+		if (branchProducts == null) {
+			branchProducts = new ArrayList<BranchProduct>();
 		}
 		return branchProducts;
 	}

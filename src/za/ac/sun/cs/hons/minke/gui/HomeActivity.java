@@ -14,8 +14,9 @@ import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
 import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
+import za.ac.sun.cs.hons.minke.services.IUpdateService;
+import za.ac.sun.cs.hons.minke.services.UpdateService;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
-import za.ac.sun.cs.hons.minke.tasks.UpdateDataBGTask;
 import za.ac.sun.cs.hons.minke.tasks.UpdateDataFGTask;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -32,11 +33,16 @@ import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,7 +55,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.Window;
 
 public class HomeActivity extends SherlockFragmentActivity {
 	TabHost mTabHost;
@@ -57,18 +62,34 @@ public class HomeActivity extends SherlockFragmentActivity {
 	TabInfo browse, shop, scan;
 	protected int selectedBranch, str;
 	public ProgressTask curTask;
-	public UpdateDataBGTask update;
 	private boolean choosing, updating, errorShowing, downloading;
 	private DialogErrorCommand cmd;
 	private ERROR errorCode;
 	private Object[] params;
-	private MenuItem refreshItem;
+	private ServiceConnection uConnection = new ServiceConnection() {
+		private IUpdateService updateService;
+
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			try {
+				updateService = IUpdateService.Stub.asInterface(service);
+				updateService.iStart();
+				Log.v(TAGS.STATE, "Update service initialised");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			updateService = null;
+		}
+	};
+	private boolean bound;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (DEBUG.ON) {
-			Log.v(TAGS.STATE, "started");
+			Log.v(TAGS.STATE, "HomeActivity started");
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 					.detectDiskReads().detectDiskWrites().detectNetwork()
 					.penaltyLog().build());
@@ -91,17 +112,18 @@ public class HomeActivity extends SherlockFragmentActivity {
 			getSavedState(savedInstanceState);
 			if (getLastCustomNonConfigurationInstance() != null) {
 				curTask = (ProgressTask) getLastCustomNonConfigurationInstance();
-				if (curTask.getStatus().equals(ProgressTask.Status.FINISHED)) {
+
+				if (curTask.getStatus().equals(Status.FINISHED)) {
 					curTask.cancel(true);
 				} else {
 					curTask.attach(this);
 				}
+
 			}
 		}
 	}
 
 	private void initGUI() {
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_home);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
@@ -118,15 +140,28 @@ public class HomeActivity extends SherlockFragmentActivity {
 		mTabManager.addTab(
 				mTabHost.newTabSpec(VIEW.SHOP).setIndicator(
 						getString(R.string.shop)), NAMES.SHOP);
-		setRefreshing(update != null && !update.getStatus().equals(Status.FINISHED));
 	}
 
-	private void setRefreshing(boolean refreshing) {
-		setProgressBarIndeterminateVisibility(refreshing);
-	    if(refreshItem != null){
-	    	refreshItem.setVisible(!refreshing);
-	    }
-			}
+	private void initService() {
+		Intent i = new Intent(this, UpdateService.class);
+		startService(i);
+		bindService(i, uConnection, Context.BIND_AUTO_CREATE);
+		bound = true;
+	}
+
+	private void releaseService() {
+		if (uConnection != null && bound) {
+			unbindService(uConnection);
+			uConnection = null;
+			bound = false;
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		releaseService();
+	}
 
 	private void getSavedState(Bundle savedInstanceState) {
 		if (savedInstanceState == null) {
@@ -214,26 +249,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		case R.id.menu_item_refresh:
-			refreshItem = item;
-			backgroundUpdate();
+			initService();
 			return true;
 		case android.R.id.home:
 			mTabManager.showParentFragment();
 			return true;
 		}
 		return false;
-	}
-
-	private void backgroundUpdate() {
-		setRefreshing(Boolean.TRUE);
-		update = new UpdateDataBGTask(this){
-			@Override
-			protected void onPostExecute(Void result) {
-				super.onPostExecute(result);
-				setRefreshing(Boolean.FALSE);
-			}
-		};
-		update.execute();
 	}
 
 	@Override
@@ -246,8 +268,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	@Override
 	public Object onRetainCustomNonConfigurationInstance() {
-		if (curTask == null
-				|| curTask.getStatus().equals(ProgressTask.Status.FINISHED)) {
+		if (curTask == null || curTask.getStatus().equals(Status.FINISHED)) {
 			return null;
 		}
 		curTask.detach();
@@ -306,10 +327,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	private void update() {
+
 		curTask = new Updater(this);
 		curTask.execute();
 	}
 
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == IntentIntegrator.REQUEST_CODE
 				&& resultCode != Activity.RESULT_CANCELED) {
@@ -330,6 +353,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 					ERROR.SCAN);
 			failed.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							scan(null);
 							dialog.cancel();
@@ -366,6 +390,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		});
 		location.setPositiveButton(getString(R.string.get_product),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						choosing = false;
 						dialog.cancel();
@@ -380,6 +405,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				});
 		location.setNegativeButton(getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						choosing = false;
 						dialog.cancel();
@@ -412,6 +438,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		success.setView(updateView);
 		success.setPositiveButton(getString(R.string.update),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
 							updating = false;
@@ -456,6 +483,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		if (str != -1) {
 			dlg.setPositiveButton(getString(str),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							if (cmd != null) {
 								cmd.execute(HomeActivity.this, params);
@@ -666,8 +694,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		public void execute(HomeActivity activity, Object... data) {
-			((HomeActivity) activity).updatePrice((BranchProduct) data[0],
-					(Product) data[1]);
+			activity.updatePrice((BranchProduct) data[0], (Product) data[1]);
 		}
 
 		@Override
@@ -681,7 +708,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 		@Override
 		public void execute(HomeActivity activity, Object... data) {
-			((HomeActivity) activity).update();
+			activity.update();
 		}
 
 		@Override

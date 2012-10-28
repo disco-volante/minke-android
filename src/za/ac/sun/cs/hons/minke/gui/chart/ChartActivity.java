@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.graph;
+package za.ac.sun.cs.hons.minke.gui.chart;
 
 import java.util.HashSet;
 
@@ -7,7 +7,6 @@ import org.achartengine.GraphicalView;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
-import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
@@ -21,18 +20,20 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 
 public class ChartActivity extends SherlockActivity {
 
 	private TimelineChart chart;
 	private GraphicalView view;
 	private RelativeLayout holder;
-	private ProgressTask curTask;
+	private ChartTask curTask;
 
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
@@ -43,10 +44,19 @@ public class ChartActivity extends SherlockActivity {
 			curTask = (ChartTask) getLastNonConfigurationInstance();
 			if (!curTask.getStatus().equals(Status.FINISHED)) {
 				curTask.attach(this);
+				setBuilding(true);
 			}
 		} else if (BrowseUtils.getBranchProducts().size() != 0) {
 			buildChart();
 		}
+
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setBuilding(curTask != null
+				&& !curTask.getStatus().equals(Status.FINISHED));
 
 	}
 
@@ -60,7 +70,12 @@ public class ChartActivity extends SherlockActivity {
 
 	}
 
+	private void setBuilding(boolean building) {
+		setProgressBarIndeterminateVisibility(building);
+	}
+
 	private void buildChart() {
+		setBuilding(true);
 		chart = new TimelineChart(this);
 		curTask = new ChartTask(chart);
 		curTask.execute();
@@ -69,7 +84,7 @@ public class ChartActivity extends SherlockActivity {
 	public void showChart() {
 		view = chart.getChart();
 		holder.addView(view);
-
+		setBuilding(false);
 	}
 
 	@Override
@@ -119,6 +134,7 @@ public class ChartActivity extends SherlockActivity {
 					});
 		}
 		dlg.setPositiveButton(btn, new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int id) {
 				editItems(changed, add);
 				dialog.cancel();

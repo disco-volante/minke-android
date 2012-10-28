@@ -1,6 +1,5 @@
 package za.ac.sun.cs.hons.minke.db.dao;
 
-
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.utils.constants.DB;
@@ -39,5 +38,4 @@ public class DatePriceDAO extends BaseDAO<DatePrice> {
 		return obj.getId();
 	}
 
-	
 }

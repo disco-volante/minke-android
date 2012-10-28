@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps.google;
+package za.ac.sun.cs.hons.minke.gui.maps;
 
 import java.util.ArrayList;
 
@@ -17,6 +17,7 @@ public class BasicOverlay extends ItemizedOverlay<OverlayItem> {
 		super(boundCenterBottom(defaultMarker));
 		mContext = context;
 	}
+
 	public void addOverlay(OverlayItem overlay) {
 		mOverlays.add(overlay);
 		populate();

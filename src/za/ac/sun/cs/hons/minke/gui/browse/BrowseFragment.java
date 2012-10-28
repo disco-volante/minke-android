@@ -11,10 +11,9 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-
-public class BrowseFragment  extends SherlockFragment{
+public class BrowseFragment extends SherlockFragment {
 	BPListAdapter bplistAdapter;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -23,17 +22,20 @@ public class BrowseFragment  extends SherlockFragment{
 		initGUI(v);
 		return v;
 	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		bplistAdapter.notifyDataSetChanged();
 	}
+
 	private void initGUI(View v) {
-		bplistAdapter = new BPListAdapter(getActivity(), BrowseUtils.getBranchProducts());
+		bplistAdapter = new BPListAdapter(getActivity(),
+				BrowseUtils.getBranchProducts());
 		ListView bplist = (ListView) v.findViewById(R.id.bp_list);
 		bplist.setAdapter(bplistAdapter);
 		bplistAdapter.notifyDataSetChanged();
 
 	}
-	
+
 }

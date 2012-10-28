@@ -39,11 +39,11 @@ public class SearchUtils {
 	public static void removeLocation(int position) {
 		Object location = addedLocations.remove(position);
 		if (location instanceof City) {
-			addedCities.remove((City) location);
+			addedCities.remove(location);
 		} else if (location instanceof Province) {
-			addedProvinces.remove((Province) location);
+			addedProvinces.remove(location);
 		} else if (location instanceof Country) {
-			addedCountries.remove((Country) location);
+			addedCountries.remove(location);
 
 		}
 	}
@@ -91,11 +91,13 @@ public class SearchUtils {
 	public static void removeProduct(int position) {
 		addedProducts.remove(position);
 	}
+
 	public static void removeProduct(Product product) {
 		addedProducts.remove(product);
 	}
+
 	public static void addProduct(Product product) {
-		addedProducts.add(0,product);
+		addedProducts.add(0, product);
 	}
 
 	public static ArrayList<Category> getAddedCategories() {
@@ -108,13 +110,13 @@ public class SearchUtils {
 	public static void removeCategory(int position) {
 		addedCategories.remove(position);
 	}
-	
+
 	public static void removeCategory(Category category) {
 		addedCategories.remove(category);
 	}
 
 	public static void addCategory(Category category) {
-		addedCategories.add(0,category);
+		addedCategories.add(0, category);
 	}
 
 	public static boolean isProductsActive() {
@@ -139,11 +141,11 @@ public class SearchUtils {
 	public static void removeLocation(Object loc) {
 		if (addedLocations.remove(loc)) {
 			if (loc instanceof City) {
-				addedCities.remove((City) loc);
+				addedCities.remove(loc);
 			} else if (loc instanceof Province) {
-				addedProvinces.remove((Province) loc);
+				addedProvinces.remove(loc);
 			} else if (loc instanceof Country) {
-				addedCountries.remove((Country) loc);
+				addedCountries.remove(loc);
 
 			}
 		}

@@ -11,8 +11,7 @@ public class ProvinceDAO extends BaseDAO<Province> {
 	private CountryDAO countryDAO;
 
 	public ProvinceDAO(BaseDBHelper dbHelper, CountryDAO countryDAO) {
-		super(dbHelper, DB.PROVINCE_TABLE,
-				DB.PROVINCE_COLUMNS);
+		super(dbHelper, DB.PROVINCE_TABLE, DB.PROVINCE_COLUMNS);
 		this.countryDAO = countryDAO;
 
 	}
@@ -23,8 +22,7 @@ public class ProvinceDAO extends BaseDAO<Province> {
 		province.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
 		province.setCountryId(cursor.getLong(cursor
 				.getColumnIndex(DB.COUNTRY_ID)));
-		province.setName(cursor.getString(cursor
-				.getColumnIndex(DB.NAME)));
+		province.setName(cursor.getString(cursor.getColumnIndex(DB.NAME)));
 		province.setCountry(countryDAO.getByCloudID(province.getCountryId()));
 		return province;
 	}

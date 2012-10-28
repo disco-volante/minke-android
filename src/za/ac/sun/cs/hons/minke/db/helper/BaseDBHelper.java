@@ -11,8 +11,7 @@ import android.util.Log;
 public class BaseDBHelper extends SQLiteOpenHelper {
 
 	public BaseDBHelper(Context context) {
-		super(context, DB.DATABASE_NAME, null,
-				DB.DATABASE_VERSION);
+		super(context, DB.DATABASE_NAME, null, DB.DATABASE_VERSION);
 	}
 
 	@Override
@@ -29,8 +28,7 @@ public class BaseDBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		if (DEBUG.ON) {
 			Log.v(TAGS.DB, "Upgrading database from version " + oldVersion
-					+ " to " + newVersion
-					+ ", which will destroy all old data");
+					+ " to " + newVersion + ", which will destroy all old data");
 		}
 		for (String t : DB.TABLES) {
 			db.execSQL("DROP TABLE IF EXISTS " + t);

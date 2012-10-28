@@ -15,6 +15,7 @@ public class HomeActivityTest extends
 		super(HomeActivity.class);
 	}
 
+	@Override
 	public void setUp() throws Exception {
 		solo = new Solo(getInstrumentation(), getActivity());
 		solo.waitForDialogToClose(30000);
@@ -29,13 +30,14 @@ public class HomeActivityTest extends
 
 	public void testInfoClick() throws Exception {
 		solo.clickOnActionBarItem(R.id.menu_item_info);
-		Assert.assertTrue(solo.waitForText(getActivity().getString(R.string.website)));
+		Assert.assertTrue(solo.waitForText(getActivity().getString(
+				R.string.website)));
 		Assert.assertTrue(solo.searchText(getActivity().getString(
 				R.string.website)));
 
 	}
-	
-	public void testScanClick() throws Exception{
+
+	public void testScanClick() throws Exception {
 		solo.clickOnButton(getActivity().getString(R.id.btn_scan));
 		solo.clickInList(0);
 	}

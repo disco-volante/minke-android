@@ -19,9 +19,5 @@ public class ScanFragment extends SherlockFragment {
 		View v = inflater.inflate(R.layout.fragment_scan, container, false);
 		return v;
 	}
-	
-		
 
-	
-	
 }

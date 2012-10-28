@@ -20,13 +20,10 @@ public class CityDAO extends BaseDAO<City> {
 	protected City parse(Cursor cursor) {
 		City city = new City();
 		city.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
-		city.setProvinceId(cursor.getLong(cursor
-				.getColumnIndex(DB.PROVINCE_ID)));
+		city.setProvinceId(cursor.getLong(cursor.getColumnIndex(DB.PROVINCE_ID)));
 		city.setName(cursor.getString(cursor.getColumnIndex(DB.NAME)));
-		city.setLat(cursor.getDouble(cursor
-				.getColumnIndex(DB.LATITUDE)));
-		city.setLon(cursor.getDouble(cursor
-				.getColumnIndex(DB.LONGITUDE)));
+		city.setLat(cursor.getDouble(cursor.getColumnIndex(DB.LATITUDE)));
+		city.setLon(cursor.getDouble(cursor.getColumnIndex(DB.LONGITUDE)));
 		city.setProvince(provinceDAO.getByCloudID(city.getProvinceId()));
 		return city;
 	}

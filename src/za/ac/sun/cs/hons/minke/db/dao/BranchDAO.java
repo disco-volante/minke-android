@@ -11,7 +11,8 @@ public class BranchDAO extends BaseDAO<Branch> {
 	private StoreDAO storeDAO;
 	private CityLocationDAO clDAO;
 
-	public BranchDAO(BaseDBHelper dbHelper, StoreDAO storeDAO, CityLocationDAO clDAO) {
+	public BranchDAO(BaseDBHelper dbHelper, StoreDAO storeDAO,
+			CityLocationDAO clDAO) {
 		super(dbHelper, DB.BRANCH_TABLE, DB.BRANCH_COLUMNS);
 		this.storeDAO = storeDAO;
 		this.clDAO = clDAO;
@@ -24,8 +25,7 @@ public class BranchDAO extends BaseDAO<Branch> {
 		branch.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
 		branch.setCityLocationId(cursor.getLong(cursor
 				.getColumnIndex(DB.CITY_LOCATION_ID)));
-		branch.setStoreId(cursor.getLong(cursor
-				.getColumnIndex(DB.STORE_ID)));
+		branch.setStoreId(cursor.getLong(cursor.getColumnIndex(DB.STORE_ID)));
 		branch.setName(cursor.getString(cursor.getColumnIndex(DB.NAME)));
 		branch.setStore(storeDAO.getByCloudID(branch.getStoreId()));
 		branch.setCityLocation(clDAO.getByCloudID(branch.getCityLocationId()));

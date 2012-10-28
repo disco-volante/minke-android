@@ -10,7 +10,8 @@ import android.app.AlertDialog.Builder;
 public class UpdateDataFGTask extends ProgressTask {
 
 	public UpdateDataFGTask(Activity activity) {
-		super(activity, activity.getString(R.string.updating), activity.getString(R.string.updating_msg));
+		super(activity, activity.getString(R.string.updating), activity
+				.getString(R.string.updating_msg));
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class UpdateDataFGTask extends ProgressTask {
 		if (!isNetworkAvailable()) {
 			return ERROR.CLIENT;
 		}
-		if(RPCUtils.startServer() == ERROR.SERVER){
+		if (RPCUtils.startServer() == ERROR.SERVER) {
 			return ERROR.SERVER;
 		}
 		return RPCUtils.retrieveAll(activity);

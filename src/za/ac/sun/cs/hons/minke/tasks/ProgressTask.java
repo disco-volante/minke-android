@@ -2,7 +2,6 @@ package za.ac.sun.cs.hons.minke.tasks;
 
 import za.ac.sun.cs.hons.minke.R;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 
@@ -24,7 +23,7 @@ public abstract class ProgressTask extends LoadTask {
 		progressDialog.setMessage(message);
 		progressDialog.setCancelable(true);
 		progressDialog.setIndeterminate(false);
-		progressDialog.setButton(Dialog.BUTTON_NEGATIVE,
+		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
 				activity.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -64,7 +63,7 @@ public abstract class ProgressTask extends LoadTask {
 		progressDialog.setMessage(message);
 		progressDialog.setCancelable(true);
 		progressDialog.setIndeterminate(false);
-		progressDialog.setButton(Dialog.BUTTON_NEGATIVE,
+		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
 				activity.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override

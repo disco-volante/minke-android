@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.entities.product;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 /**
  * DB Entity used to store data about a {@link Product}'s categories, e.g. Milk,
  * Dairy, Consumables.
@@ -11,7 +10,7 @@ import org.json.JSONObject;
  * @author godfried
  * 
  */
-public class Category{
+public class Category {
 	private long id;
 	private String name;
 
@@ -44,7 +43,8 @@ public class Category{
 	public void setId(long id) {
 		this.id = id;
 	}
-	public JSONObject toJSON() throws JSONException{
+
+	public JSONObject toJSON() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "category");
 		obj.put("id", id);

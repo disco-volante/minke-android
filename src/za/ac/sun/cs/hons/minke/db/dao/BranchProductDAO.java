@@ -25,10 +25,8 @@ public class BranchProductDAO extends BaseDAO<BranchProduct> {
 	protected BranchProduct parse(Cursor cursor) {
 		BranchProduct bp = new BranchProduct();
 		bp.setId(cursor.getLong(cursor.getColumnIndex(DB.CLOUD_ID)));
-		bp.setBranchId(cursor.getLong(cursor
-				.getColumnIndex(DB.BRANCH_ID)));
-		bp.setProductId(cursor.getLong(cursor
-				.getColumnIndex(DB.PRODUCT_ID)));
+		bp.setBranchId(cursor.getLong(cursor.getColumnIndex(DB.BRANCH_ID)));
+		bp.setProductId(cursor.getLong(cursor.getColumnIndex(DB.PRODUCT_ID)));
 		bp.setDatePriceId(cursor.getLong(cursor
 				.getColumnIndex(DB.DATE_PRICE_ID)));
 		bp.setDatePrice(datePriceDAO.getByCloudID(bp.getDatePriceId()));

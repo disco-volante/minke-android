@@ -16,11 +16,11 @@ public class ScanUtils {
 	public static Category category;
 	public static double size;
 	public static int price, measurePos;
-	public static String categoryName, brandName, productName, cityName, branchName, storeName;
+	public static String categoryName, brandName, productName, cityName,
+			branchName, storeName;
 	public static Province province;
 	public static City city;
-	public  static Store store;
-	
+	public static Store store;
 
 	public static Product getProduct() {
 		return product;
@@ -57,7 +57,7 @@ public class ScanUtils {
 		store = null;
 		province = null;
 		categoryName = brandName = productName = cityName = branchName = storeName = null;
-		size = price = measurePos  = -1;
+		size = price = measurePos = -1;
 	}
 
 }

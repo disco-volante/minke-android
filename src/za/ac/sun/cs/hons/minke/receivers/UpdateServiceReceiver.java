@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.receivers;
 
-import za.ac.sun.cs.hons.minke.services.UpdateService;
+import za.ac.sun.cs.hons.minke.services.ScheduledUpdateService;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,7 +13,7 @@ public class UpdateServiceReceiver extends BroadcastReceiver {
 		if (DEBUG.ON) {
 			Log.d("UPDATER", " Updater started");
 		}
-		Intent service = new Intent(context, UpdateService.class);
+		Intent service = new Intent(context, ScheduledUpdateService.class);
 		context.startService(service);
 
 	}

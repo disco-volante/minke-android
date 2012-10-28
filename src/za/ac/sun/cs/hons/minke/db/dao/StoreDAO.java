@@ -9,7 +9,7 @@ import za.ac.sun.cs.hons.minke.utils.constants.DB;
 public class StoreDAO extends BaseDAO<Store> {
 
 	public StoreDAO(BaseDBHelper dbHelper) {
-		super( dbHelper, DB.STORE_TABLE, DB.STORE_COLUMNS);
+		super(dbHelper, DB.STORE_TABLE, DB.STORE_COLUMNS);
 
 	}
 

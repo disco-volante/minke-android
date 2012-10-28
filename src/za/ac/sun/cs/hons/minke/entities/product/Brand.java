@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.entities.product;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
 public class Brand {
 	private long id;
 	private String name;
@@ -36,7 +35,8 @@ public class Brand {
 	public String toString() {
 		return name;
 	}
-	public JSONObject toJSON() throws JSONException{
+
+	public JSONObject toJSON() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("type", "brand");
 		obj.put("id", id);

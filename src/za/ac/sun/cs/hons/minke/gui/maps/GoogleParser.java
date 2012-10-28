@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.maps.google;
+package za.ac.sun.cs.hons.minke.gui.maps;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +31,7 @@ public class GoogleParser extends XMLParser implements RouteParser {
 	 * @return a Route object based on the JSON object.
 	 */
 
+	@Override
 	public Route parse() {
 		// turn the stream into a string
 		final String result = convertStreamToString(this.getInputStream());

@@ -50,6 +50,11 @@
         <uses-library android:name="android.test.runner" />
 
         <service
+            android:name=".services.ScheduledUpdateService"
+            android:label="@string/scheduled_update"
+            android:process=":scheduled_update_process" >
+        </service>
+        <service
             android:name=".services.UpdateService"
             android:label="@string/update"
             android:process=":update_process" >
@@ -63,7 +68,9 @@
         <receiver android:name=".receivers.UpdateServiceReceiver" >
         </receiver>
 
-        <activity android:name=".gui.HomeActivity" >
+        <activity
+            android:name=".gui.HomeActivity"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -81,9 +88,9 @@
         <fragment android:name=".gui.browse.LocationSearchFragment" />
 
         <activity
-            android:name=".gui.graph.ChartActivity"
+            android:name=".gui.chart.ChartActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".gui.maps.google.GoogleMapsActivity" />
+        <activity android:name=".gui.maps.MapsActivity" />
         <activity android:name=".gui.prefs.SettingsActivity" >
         </activity>
     </application>

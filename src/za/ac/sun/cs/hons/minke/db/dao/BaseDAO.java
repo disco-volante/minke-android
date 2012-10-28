@@ -29,8 +29,7 @@ public abstract class BaseDAO<T> {
 			return -1;
 		}
 		if (DEBUG.ON) {
-			Log.d(TAGS.DB,
-					"adding " + obj + " to " + table);
+			Log.d(TAGS.DB, "adding " + obj + " to " + table);
 		}
 		return database.insert(table, null, getContentValues(obj));
 
@@ -109,8 +108,7 @@ public abstract class BaseDAO<T> {
 	}
 
 	public T getByCloudID(long id) {
-		Cursor cursor = database.query(table, columns,
-				DB.CLOUD_ID_FILTER,
+		Cursor cursor = database.query(table, columns, DB.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
 		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
 			cursor.close();
@@ -151,11 +149,10 @@ public abstract class BaseDAO<T> {
 			return false;
 		}
 		if (DEBUG.ON) {
-			Log.d(TAGS.DB,
-					"updating " + _new + " in " + table );
+			Log.d(TAGS.DB, "updating " + _new + " in " + table);
 		}
-		return database.update(table, getContentValues(_new),
-				DB.ID_FILTER, new String[] { String.valueOf(id) }) > 0;
+		return database.update(table, getContentValues(_new), DB.ID_FILTER,
+				new String[] { String.valueOf(id) }) > 0;
 	}
 
 	public boolean updateByCloudID(T _new, long id) {
@@ -163,18 +160,15 @@ public abstract class BaseDAO<T> {
 			return false;
 		}
 		if (DEBUG.ON) {
-			Log.d(TAGS.DB,
-					"updating " + _new + " in " + table );
+			Log.d(TAGS.DB, "updating " + _new + " in " + table);
 		}
 		return database.update(table, getContentValues(_new),
-				DB.CLOUD_ID_FILTER,
-				new String[] { String.valueOf(id) }) > 0;
+				DB.CLOUD_ID_FILTER, new String[] { String.valueOf(id) }) > 0;
 	}
 
 	public boolean delete(long id) {
 		if (DEBUG.ON) {
-			Log.d(TAGS.DB,
-					"deleting" + id + " in " + table );
+			Log.d(TAGS.DB, "deleting" + id + " in " + table);
 		}
 		return database.delete(table, DB.ID_FILTER,
 				new String[] { String.valueOf(id) }) > 0;

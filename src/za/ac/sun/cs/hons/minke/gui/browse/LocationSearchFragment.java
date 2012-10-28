@@ -80,7 +80,8 @@ public class LocationSearchFragment extends SherlockFragment {
 		};
 		ListView locationList = (ListView) v.findViewById(R.id.location_list);
 		locationList.setAdapter(locationListAdapter);
-		ImageButton searchButton = (ImageButton) v.findViewById(R.id.btn_location_search);
+		ImageButton searchButton = (ImageButton) v
+				.findViewById(R.id.btn_location_search);
 		searchButton.setOnClickListener(new OnClickListener() {
 
 			@Override

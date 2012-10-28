@@ -1,8 +1,8 @@
 package za.ac.sun.cs.hons.minke.gui.prefs;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.services.IUpdateService;
-import za.ac.sun.cs.hons.minke.services.UpdateService;
+import za.ac.sun.cs.hons.minke.services.IScheduledUpdateService;
+import za.ac.sun.cs.hons.minke.services.ScheduledUpdateService;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import android.content.ComponentName;
@@ -20,7 +20,7 @@ import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 public class SettingsActivity extends SherlockPreferenceActivity {
-	private IUpdateService updater;
+	private IScheduledUpdateService updater;
 	private SharedPreferences prefs;
 	private UpdateConnection uConnection;
 	private SharedPreferences.OnSharedPreferenceChangeListener spChanged = new SharedPreferences.OnSharedPreferenceChangeListener() {
@@ -44,10 +44,12 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 
 	class UpdateConnection implements ServiceConnection {
 
+		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
-			updater = IUpdateService.Stub.asInterface((IBinder) binder);
+			updater = IScheduledUpdateService.Stub.asInterface(binder);
 		}
 
+		@Override
 		public void onServiceDisconnected(ComponentName className) {
 			updater = null;
 		}
@@ -64,7 +66,7 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 		prefs.registerOnSharedPreferenceChangeListener(spChanged);
 		initService();
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
@@ -80,7 +82,7 @@ public class SettingsActivity extends SherlockPreferenceActivity {
 		uConnection = new UpdateConnection();
 		Intent i = new Intent();
 		i.setClassName("za.ac.sun.cs.hons.minke.services",
-				UpdateService.class.getName());
+				ScheduledUpdateService.class.getName());
 		bindService(i, uConnection, Context.BIND_AUTO_CREATE);
 	}
 

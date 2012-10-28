@@ -249,6 +249,7 @@ public class NewProductFragment extends SherlockFragment {
 			Builder dlg = DialogUtils.getErrorDialog(getActivity(), error_code);
 			dlg.setPositiveButton(getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							createProduct();
 							dialog.cancel();
@@ -256,6 +257,7 @@ public class NewProductFragment extends SherlockFragment {
 					});
 			dlg.setNegativeButton(getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 									ScanFragment.class.getName());

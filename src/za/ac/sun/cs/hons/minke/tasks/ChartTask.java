@@ -1,21 +1,20 @@
 package za.ac.sun.cs.hons.minke.tasks;
 
-import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.gui.graph.TimelineChart;
+import za.ac.sun.cs.hons.minke.gui.chart.TimelineChart;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import android.app.AlertDialog.Builder;
 
-public class ChartTask extends ProgressTask {
+public class ChartTask extends LoadTask {
 
 	private TimelineChart chart;
 
 	public ChartTask(TimelineChart _chart) {
-		super(_chart.getGraphActivity(), _chart.getGraphActivity().getString(R.string.drawing)+"...",  _chart.getGraphActivity().getString(R.string.drawing_msg));
+		super(_chart.getGraphActivity());
 		this.chart = _chart;
 	}
-	
+
 	@Override
 	protected void success() {
 		chart.getGraphActivity().showChart();
@@ -31,11 +30,10 @@ public class ChartTask extends ProgressTask {
 	@Override
 	protected ERROR retrieve() {
 		chart.buildData(BrowseUtils.getBranchProducts());
-		if(!chart.isLoaded()){
+		if (!chart.isLoaded()) {
 			return ERROR.PARSE;
 		}
 		return ERROR.SUCCESS;
 	}
-	
 
 }

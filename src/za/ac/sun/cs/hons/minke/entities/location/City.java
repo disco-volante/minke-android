@@ -53,7 +53,6 @@ public class City {
 		this.lat = lat;
 	}
 
-
 	public double getLon() {
 		return lon;
 	}
@@ -61,7 +60,6 @@ public class City {
 	public void setLon(double lon) {
 		this.lon = lon;
 	}
-
 
 	public Province getProvince() {
 		return province;
@@ -73,10 +71,10 @@ public class City {
 
 	@Override
 	public String toString() {
-		if(province == null){
+		if (province == null) {
 			return name;
 		}
-		return name+", "+province.toString();
+		return name + ", " + province.toString();
 	}
 
 	public JSONObject toJSON() throws JSONException {

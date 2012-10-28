@@ -216,14 +216,14 @@ public class NewBranchFragment extends SherlockFragment {
 
 					@Override
 					public void onClick(DialogInterface arg0, int position) {
-						ScanUtils.province = provinces.get(
-								position);
+						ScanUtils.province = provinces.get(position);
 					}
 				});
 		location.setPositiveButton(
 				NewBranchFragment.this.getString(R.string.add) + " "
 						+ NewBranchFragment.this.getString(R.string.branch),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						createBranch();
 						dialog.cancel();
@@ -232,6 +232,7 @@ public class NewBranchFragment extends SherlockFragment {
 		location.setNegativeButton(
 				NewBranchFragment.this.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 								ScanFragment.class.getName());
@@ -262,12 +263,14 @@ public class NewBranchFragment extends SherlockFragment {
 			((HomeActivity) getActivity()).scan(null);
 		}
 
+		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(
 					NewBranchFragment.this.getActivity(), error_code);
 			dlg.setPositiveButton(
 					NewBranchFragment.this.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							createLocation();
 							dialog.cancel();
@@ -276,6 +279,7 @@ public class NewBranchFragment extends SherlockFragment {
 			dlg.setNegativeButton(
 					NewBranchFragment.this.getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 									ScanFragment.class.getName());

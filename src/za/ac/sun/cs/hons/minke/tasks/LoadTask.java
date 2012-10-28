@@ -55,7 +55,7 @@ public abstract class LoadTask extends AsyncTask<Void, Integer, Void> {
 	public void attach(Activity activity) {
 		this.activity = activity;
 	}
-	
+
 	public boolean done() {
 		return done;
 	}

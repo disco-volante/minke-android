@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 
-	private Context context;
+	protected Context context;
 	private ERROR error;
 
 	public UpdateDataBGTask(Context context) {
@@ -33,7 +33,8 @@ public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 	protected void onPostExecute(Void result) {
 		if (error != ERROR.SUCCESS) {
 			Log.v(TAGS.HTTP, "ERROR");
-			Toast.makeText(context, ErrorUtils.getErrorMessage(error, context), Toast.LENGTH_LONG).show();
+			Toast.makeText(context, ErrorUtils.getErrorMessage(error, context),
+					Toast.LENGTH_LONG).show();
 		} else {
 			Toast.makeText(context,
 					context.getString(R.string.update_success_msg),
@@ -62,4 +63,5 @@ public class UpdateDataBGTask extends AsyncTask<Void, Integer, Void> {
 		}
 		return error;
 	}
+
 }

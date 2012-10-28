@@ -1,4 +1,4 @@
-package za.ac.sun.cs.hons.minke.gui.graph;
+package za.ac.sun.cs.hons.minke.gui.chart;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -81,7 +81,7 @@ public class TimelineChart {
 			Date[] d = new Date[hist.size()];
 			int j = 0;
 			for (DatePrice ie : hist) {
-				DatePrice dp = (DatePrice) ie;
+				DatePrice dp = ie;
 				p[j] = dp.getActualPrice();
 				if (p[j] > maxPrice) {
 					maxPrice = (int) Math.ceil(p[j]);

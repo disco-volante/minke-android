@@ -11,6 +11,7 @@ public class TabInfo {
 		tag = _tag;
 		className = _className;
 	}
+
 	public String getTag() {
 		return tag;
 	}
@@ -22,11 +23,12 @@ public class TabInfo {
 	public void setFragment(Fragment fragment) {
 		this.fragment = fragment;
 	}
-	
+
 	public String getClassName() {
 		return className;
 	}
+
 	public void setClassName(String _className) {
-		className = _className;		
+		className = _className;
 	}
 }

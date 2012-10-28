@@ -58,7 +58,7 @@ public class ShopFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				addItem((Product) productAdapter.getItem(position));
+				addItem(productAdapter.getItem(position));
 			}
 
 		});
@@ -75,7 +75,8 @@ public class ShopFragment extends SherlockFragment {
 				ShopUtils.getAddedProducts());
 		ListView shoplist = (ListView) v.findViewById(R.id.list_shopping);
 		shoplist.setAdapter(shoplistAdapter);
-		ImageButton searchButton = (ImageButton) v.findViewById(R.id.btn_stores);
+		ImageButton searchButton = (ImageButton) v
+				.findViewById(R.id.btn_stores);
 		searchButton.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -100,17 +101,21 @@ public class ShopFragment extends SherlockFragment {
 
 		shopping.setText("");
 	}
+
 	public void findStores() {
 		curTask = new FindBranchesTask(this);
 		curTask.execute();
 	}
+
 	static class FindBranchesTask extends ProgressTask {
 
 		private Fragment fragment;
 
 		public FindBranchesTask(Fragment fragment) {
-			super(fragment.getActivity(), fragment.getActivity().getString(R.string.searching) + "...",
-					fragment.getActivity().getString(R.string.searching_branch_msg));
+			super(fragment.getActivity(), fragment.getActivity().getString(
+					R.string.searching)
+					+ "...", fragment.getActivity().getString(
+					R.string.searching_branch_msg));
 			this.fragment = fragment;
 		}
 
@@ -122,10 +127,10 @@ public class ShopFragment extends SherlockFragment {
 
 		@Override
 		protected void failure(ERROR error_code) {
-			Builder dlg = DialogUtils.getErrorDialog(activity,
-					error_code);
+			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
 			dlg.setPositiveButton(activity.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
+						@Override
 						public void onClick(DialogInterface dialog, int id) {
 							((ShopFragment) fragment).findStores();
 							dialog.cancel();
@@ -137,8 +142,7 @@ public class ShopFragment extends SherlockFragment {
 
 		@Override
 		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranches(ShopUtils
-					.getAddedProducts());
+			return EntityUtils.retrieveBranches(ShopUtils.getAddedProducts());
 		}
 	}
 }

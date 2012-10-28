@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.gui.maps.google.GoogleParser;
-import za.ac.sun.cs.hons.minke.gui.maps.google.Route;
-import za.ac.sun.cs.hons.minke.gui.maps.google.RouteParser;
-import za.ac.sun.cs.hons.minke.gui.maps.google.Segment;
+import za.ac.sun.cs.hons.minke.gui.maps.GoogleParser;
+import za.ac.sun.cs.hons.minke.gui.maps.Route;
+import za.ac.sun.cs.hons.minke.gui.maps.RouteParser;
+import za.ac.sun.cs.hons.minke.gui.maps.Segment;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -46,7 +46,7 @@ public class MapUtils {
 		locsChanged = true;
 		branch = null;
 		if (DEBUG.EMULATOR) {
-			setUserLocation(-33,18);
+			setUserLocation(-33, 18);
 			return ERROR.SUCCESS;
 		}
 		Location location = locationManager
@@ -56,8 +56,7 @@ public class MapUtils {
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		}
 		if (location != null) {
-			setUserLocation(location.getLatitude(),
-					location.getLongitude());
+			setUserLocation(location.getLatitude(), location.getLongitude());
 			if (DEBUG.ON) {
 				Log.d("MAPUTILS", location.toString());
 			}
@@ -69,13 +68,13 @@ public class MapUtils {
 	public static GeoPoint getUserLocation() {
 		return user;
 	}
-	
+
 	public static double getUserLat() {
-		return ((double) user.getLatitudeE6())/1E6;
+		return user.getLatitudeE6() / 1E6;
 	}
-	
+
 	public static double getUserLon() {
-		return ((double) user.getLongitudeE6())/1E6;
+		return user.getLongitudeE6() / 1E6;
 	}
 
 	public static Branch getUserBranch() {
@@ -83,7 +82,6 @@ public class MapUtils {
 	}
 
 	public static void setUserBranch(Branch _branch) {
-		System.out.println(branch);
 		branch = _branch;
 	}
 
@@ -106,9 +104,9 @@ public class MapUtils {
 		return r * c;
 
 	}
-	
+
 	public static Route directions() {
-		if(r != null && directions != null && !locsChanged){
+		if (r != null && directions != null && !locsChanged) {
 			return r;
 		}
 		RouteParser parser;
@@ -128,7 +126,7 @@ public class MapUtils {
 		directions = r.getSegments();
 		return r;
 	}
-	
+
 	private static String getDist(int length) {
 		if (length > 1000) {
 			double actual = ((double) length) / 1000;
@@ -137,6 +135,7 @@ public class MapUtils {
 			return length + "m.\n";
 		}
 	}
+
 	public static void addDirections(Context context) {
 		if (locsChanged && directions != null && directions.size() > 0) {
 			int i = 0;
@@ -164,7 +163,7 @@ public class MapUtils {
 		}
 		locsChanged = false;
 	}
-	
+
 	private static int getMistakes(char[] chars) {
 		char c0 = ' ';
 		int pos = 0;
@@ -179,5 +178,5 @@ public class MapUtils {
 		}
 		return chars.length;
 	}
-	
+
 }
