@@ -58,12 +58,13 @@ public class UpdateService extends Service {
 					PendingIntent pending = PendingIntent.getActivity(context,
 							0, IntentUtils.getHomeIntent(context),
 							Intent.FLAG_ACTIVITY_NEW_TASK);
-					CharSequence title = getText(R.string.updating);
+					CharSequence title = getText(R.string.app_name);
+					CharSequence text = getText(R.string.updating_msg);
 					mNotifyBuilder = new NotificationCompat2.Builder(context)
-							.setContentTitle(title)
+							.setContentTitle(title).setProgress(0, 0, true)
+							.setContentText(text)
 							.setSmallIcon(R.drawable.ic_launcher)
-							.setAutoCancel(false).setProgress(0, 0, true)
-							.setContentIntent(pending);
+							.setAutoCancel(false).setContentIntent(pending);
 					mNM.notify(NOTIFICATION, mNotifyBuilder.build());
 				}
 
