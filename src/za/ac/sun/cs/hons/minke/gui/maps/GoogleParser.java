@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
-
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;

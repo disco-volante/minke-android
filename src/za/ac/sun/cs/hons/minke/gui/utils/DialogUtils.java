@@ -101,8 +101,7 @@ public class DialogUtils {
 		store.setText(item.getBranch().toString());
 		size.setText(item.getProduct().getSize()
 				+ item.getProduct().getMeasure());
-		price.setText("R "
-				+ String.format("%.2f", item.getDatePrice().getActualPrice()));
+		price.setText(item.getDatePrice().getFormattedPrice());
 		date.setText(item.getDatePrice().getFormattedDate());
 		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
 		dlg.setTitle(item.getProduct().toString());

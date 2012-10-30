@@ -58,32 +58,31 @@ public class RPCUtils {
 			if (DEBUG.ON) {
 				Log.v(TAGS.JSON, obj.toString());
 			}
-			EntityUtils.persistBranches(context,
-					JSONParser.parseBranches(obj.getJSONObject("branches")));
+			EntityUtils.persistBranches(context, JSONParser.parseBranches(obj.getJSONObject("branches")));
 			EntityUtils.persistProducts(context,
-					JSONParser.parseProducts(obj.getJSONObject("products")));
+					JSONParser.parseProducts( obj.getJSONObject("products")));
 			EntityUtils.persistStores(context,
-					JSONParser.parseStores(obj.getJSONObject("stores")));
-			EntityUtils.persistBranchProducts(context, JSONParser
-					.parseBranchProducts(obj.getJSONObject("branchProducts")));
+					JSONParser.parseStores( obj.getJSONObject("stores")));
+			EntityUtils.persistBranchProducts(context,  JSONParser
+					.parseBranchProducts( obj.getJSONObject("branchProducts")));
 			EntityUtils
-					.persistCategories(context, JSONParser.parseCategories(obj
+					.persistCategories( context, JSONParser.parseCategories(obj
 							.getJSONObject("categories")));
 			EntityUtils.persistCities(context,
-					JSONParser.parseCities(obj.getJSONObject("cities")));
+					JSONParser.parseCities( obj.getJSONObject("cities")));
 			EntityUtils.persistProvinces(context,
-					JSONParser.parseProvinces(obj.getJSONObject("provinces")));
+					JSONParser.parseProvinces( obj.getJSONObject("provinces")));
 			EntityUtils.persistCountries(context,
-					JSONParser.parseCountries(obj.getJSONObject("countries")));
+					JSONParser.parseCountries( obj.getJSONObject("countries")));
 			EntityUtils
-					.persistDatePrices(context, JSONParser.parseDatePrices(obj
+					.persistDatePrices( context, JSONParser.parseDatePrices(obj
 							.getJSONObject("datePrices")));
-			EntityUtils.persistCityLocations(context, JSONParser
+			EntityUtils.persistCityLocations(context,  JSONParser
 					.parseCityLocations(obj.getJSONObject("cityLocations")));
-			EntityUtils.persistProductCategories(context, JSONParser
+			EntityUtils.persistProductCategories(context,  JSONParser
 					.parseProductCategories(obj
 							.getJSONObject("productCategories")));
-			EntityUtils.persistBrands(context,
+			EntityUtils.persistBrands(context, 
 					JSONParser.parseBrands(obj.getJSONObject("brands")));
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
@@ -104,7 +103,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR updateBranchProduct(BranchProduct bp, int price) {
+	public static ERROR updateBranchProduct(Context context, BranchProduct bp, int price) {
 		String suffix = "update_branchproduct";
 		String url = Constants.URL_PREFIX + suffix;
 		try {
@@ -117,9 +116,9 @@ public class RPCUtils {
 					.getJSONObject("branchProduct"));
 			DatePrice dp = JSONParser.parseDatePrice(obj
 					.getJSONObject("datePrice"));
-			EntityUtils.addDatePrice(dp);
-			bp = EntityUtils.updateBranchProduct(bp);
-			ScanUtils.setBranchProduct(bp);
+			EntityUtils.addDatePrice(context, dp);
+			bp = EntityUtils.updateBranchProduct(context, bp);
+			ScanUtils.setBranchProduct(context, bp);
 			if (bp == null) {
 				return ERROR.SERVER;
 			}
@@ -143,7 +142,7 @@ public class RPCUtils {
 
 	}
 
-	public static ERROR createBranch(City city, Store store, double lat,
+	public static ERROR createBranch(Context context,City city, Store store, double lat,
 			double lon, String branchName) {
 		String suffix = "create_branch0";
 		String url = Constants.URL_PREFIX + suffix;
@@ -161,8 +160,8 @@ public class RPCUtils {
 			if (b == null || cl == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addCityLocation(cl);
-			b = EntityUtils.addBranch(b);
+			EntityUtils.addCityLocation(context, cl);
+			b = EntityUtils.addBranch(context, b);
 			MapUtils.setUserBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
@@ -183,7 +182,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR createBranch(City city, double lat, double lon,
+	public static ERROR createBranch(Context context,City city, double lat, double lon,
 			String storeName, String branchName) {
 		String suffix = "create_branch1";
 		String url = Constants.URL_PREFIX + suffix;
@@ -202,9 +201,9 @@ public class RPCUtils {
 			if (b == null || s == null || cl == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addStore(s);
-			EntityUtils.addCityLocation(cl);
-			b = EntityUtils.addBranch(b);
+			EntityUtils.addStore(context, s);
+			EntityUtils.addCityLocation(context, cl);
+			b = EntityUtils.addBranch(context, b);
 			MapUtils.setUserBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
@@ -225,7 +224,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR createBranch(Province province, Store store,
+	public static ERROR createBranch(Context context,Province province, Store store,
 			double lat, double lon, String cityName, String branchName) {
 		String suffix = "create_branch2";
 		String url = Constants.URL_PREFIX + suffix;
@@ -244,9 +243,9 @@ public class RPCUtils {
 			if (b == null || c == null || cl == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addCity(c);
-			EntityUtils.addCityLocation(cl);
-			b = EntityUtils.addBranch(b);
+			EntityUtils.addCity(context, c);
+			EntityUtils.addCityLocation(context, cl);
+			b = EntityUtils.addBranch(context, b);
 			MapUtils.setUserBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
@@ -267,7 +266,7 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static ERROR createBranch(Province province, double lat, double lon,
+	public static ERROR createBranch(Context context,Province province, double lat, double lon,
 			String cityName, String storeName, String branchName) {
 		String suffix = "create_branch3";
 		String url = Constants.URL_PREFIX + suffix;
@@ -287,10 +286,10 @@ public class RPCUtils {
 			if (b == null || c == null || cl == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addStore(s);
-			EntityUtils.addCity(c);
-			EntityUtils.addCityLocation(cl);
-			b = EntityUtils.addBranch(b);
+			EntityUtils.addStore(context, s);
+			EntityUtils.addCity(context, c);
+			EntityUtils.addCityLocation(context, cl);
+			b = EntityUtils.addBranch(context, b);
 			MapUtils.setUserBranch(b);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
@@ -311,7 +310,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Context context,Branch branch, String name,
 			Brand brand, Category category, double size, String measure,
 			int price, long barCode) {
 		String suffix = "create_branchproduct0";
@@ -333,10 +332,10 @@ public class RPCUtils {
 			if (bp == null || p == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addDatePrice(dp);
-			EntityUtils.addProduct(p);
-			bp = EntityUtils.addBranchProduct(bp);
-			ScanUtils.setBranchProduct(bp);
+			EntityUtils.addDatePrice(context, dp);
+			EntityUtils.addProduct(context, p);
+			bp = EntityUtils.addBranchProduct(context, bp);
+			ScanUtils.setBranchProduct(context, bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (DEBUG.ON) {
@@ -356,7 +355,7 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static ERROR createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Context context,Branch branch, String name,
 			Brand brand, String category, double size, String measure,
 			int price, long barCode) {
 		String suffix = "create_branchproduct1";
@@ -380,11 +379,11 @@ public class RPCUtils {
 			if (bp == null || p == null || c == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addDatePrice(dp);
-			EntityUtils.addCategory(c);
-			EntityUtils.addProduct(p);
-			bp = EntityUtils.addBranchProduct(bp);
-			ScanUtils.setBranchProduct(bp);
+			EntityUtils.addDatePrice(context, dp);
+			EntityUtils.addCategory(context, c);
+			EntityUtils.addProduct(context, p);
+			bp = EntityUtils.addBranchProduct(context, bp);
+			ScanUtils.setBranchProduct(context, bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (DEBUG.ON) {
@@ -404,7 +403,7 @@ public class RPCUtils {
 		return ERROR.PARSE;
 	}
 
-	public static ERROR createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Context context,Branch branch, String name,
 			String brand, Category category, double size, String measure,
 			int price, long barCode) {
 		String suffix = "create_branchproduct2";
@@ -428,11 +427,11 @@ public class RPCUtils {
 			if (bp == null || p == null || b == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addDatePrice(dp);
-			EntityUtils.addBrand(b);
-			EntityUtils.addProduct(p);
-			bp = EntityUtils.addBranchProduct(bp);
-			ScanUtils.setBranchProduct(bp);
+			EntityUtils.addDatePrice(context, dp);
+			EntityUtils.addBrand(context, b);
+			EntityUtils.addProduct(context, p);
+			bp = EntityUtils.addBranchProduct(context, bp);
+			ScanUtils.setBranchProduct(context, bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (DEBUG.ON) {
@@ -452,7 +451,7 @@ public class RPCUtils {
 		}
 	}
 
-	public static ERROR createBranchProduct(Branch branch, String name,
+	public static ERROR createBranchProduct(Context context,Branch branch, String name,
 			String brand, String category, double size, String measure,
 			int price, long barCode) {
 		String suffix = "create_branchproduct3";
@@ -478,12 +477,12 @@ public class RPCUtils {
 			if (bp == null || p == null || c == null || b == null) {
 				return ERROR.SERVER;
 			}
-			EntityUtils.addDatePrice(dp);
-			EntityUtils.addBrand(b);
-			EntityUtils.addCategory(c);
-			EntityUtils.addProduct(p);
-			bp = EntityUtils.addBranchProduct(bp);
-			ScanUtils.setBranchProduct(bp);
+			EntityUtils.addDatePrice(context, dp);
+			EntityUtils.addBrand(context, b);
+			EntityUtils.addCategory(context, c);
+			EntityUtils.addProduct(context, p);
+			bp = EntityUtils.addBranchProduct(context, bp);
+			ScanUtils.setBranchProduct(context, bp);
 			return ERROR.SUCCESS;
 		} catch (JSONException e) {
 			if (DEBUG.ON) {

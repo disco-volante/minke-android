@@ -3,11 +3,10 @@ package za.ac.sun.cs.hons.minke.entities.store;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import android.util.Log;
 
 /**
  * DB Entity used to store data about a specific store's branch, e.g. Spar - Die

@@ -76,7 +76,7 @@ public class TimelineChart {
 			colours[i] = colour;
 			titles[i++] = bp.getProduct().toString() + " ("
 					+ bp.getBranch().toString() + ")";
-			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(bp.getId());
+			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(activity, bp.getId());
 			double[] p = new double[hist.size()];
 			Date[] d = new Date[hist.size()];
 			int j = 0;

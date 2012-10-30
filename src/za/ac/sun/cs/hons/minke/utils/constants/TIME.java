@@ -1,0 +1,9 @@
+package za.ac.sun.cs.hons.minke.utils.constants;
+
+public class TIME {
+	public static final long SECOND = 1000;
+	public static final long MINUTE = 60000;
+	public static final long HOUR = 3600000;
+	public static final long DAY = 86400000;
+	public static final long WEEK = 604800000;
+}

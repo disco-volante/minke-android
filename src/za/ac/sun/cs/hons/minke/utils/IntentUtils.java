@@ -47,7 +47,7 @@ public class IntentUtils {
 		Intent intent = new Intent();
 		intent.putExtra("SCAN_RESULT_FORMAT", "UPC_A");
 		intent.putExtra("SCAN_RESULT",
-				String.valueOf((long) (100000 * Math.random())));
+				String.valueOf((long) (100002)));// * Math.random())));
 		return intent;
 	}
 

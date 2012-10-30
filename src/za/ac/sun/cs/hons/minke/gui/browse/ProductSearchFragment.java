@@ -81,9 +81,9 @@ public class ProductSearchFragment extends SherlockFragment {
 
 		});
 		categoryAdapter = new ArrayAdapter<Category>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCategories());
+				R.layout.listitem_default, EntityUtils.getCategories(getActivity()));
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getProducts());
+				R.layout.listitem_default, EntityUtils.getProducts(getActivity()));
 		RadioButton productBtn = (RadioButton) v
 				.findViewById(R.id.rbtn_product);
 		productBtn.setOnClickListener(new OnClickListener() {
@@ -210,7 +210,7 @@ public class ProductSearchFragment extends SherlockFragment {
 
 		@Override
 		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranchProducts(SearchUtils
+			return EntityUtils.retrieveBranchProducts(activity, SearchUtils
 					.isProductsActive());
 		}
 	}

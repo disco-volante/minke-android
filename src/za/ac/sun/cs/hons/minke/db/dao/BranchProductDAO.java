@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.db.dao;
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.utils.constants.DB;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 

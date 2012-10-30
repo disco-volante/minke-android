@@ -46,7 +46,7 @@ public class LocationSearchFragment extends SherlockFragment {
 	private void initBoxes(View v) {
 		locationBox = (AutoCompleteTextView) v.findViewById(R.id.text_location);
 		locationAdapter = new ArrayAdapter<Object>(this.getActivity(),
-				R.layout.listitem_default, EntityUtils.getLocations());
+				R.layout.listitem_default, EntityUtils.getLocations(getActivity()));
 		locationBox.setAdapter(locationAdapter);
 		locationBox.setOnItemClickListener(new OnItemClickListener() {
 

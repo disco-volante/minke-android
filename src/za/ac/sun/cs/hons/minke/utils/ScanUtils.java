@@ -7,6 +7,7 @@ import za.ac.sun.cs.hons.minke.entities.product.Brand;
 import za.ac.sun.cs.hons.minke.entities.product.Category;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
+import android.content.Context;
 
 public class ScanUtils {
 	private static Product product;
@@ -34,10 +35,10 @@ public class ScanUtils {
 		return branchProduct;
 	}
 
-	public static void setBranchProduct(BranchProduct branchProduct) {
+	public static void setBranchProduct(Context context, BranchProduct branchProduct) {
 		ScanUtils.branchProduct = branchProduct;
 		if (branchProduct != null) {
-			BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(
+			BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(context,
 					branchProduct.getProductId(), branchProduct));
 		}
 	}

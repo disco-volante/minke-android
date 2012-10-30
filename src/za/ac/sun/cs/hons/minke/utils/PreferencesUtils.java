@@ -3,6 +3,7 @@ package za.ac.sun.cs.hons.minke.utils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -33,13 +34,13 @@ public class PreferencesUtils {
 	public static void setUpdateInterval() {
 		switch (updateFrequency) {
 		case Constants.HOURLY:
-			updateInterval = Constants.HOUR;
+			updateInterval = TIME.HOUR;
 			break;
 		case Constants.DAILY:
-			updateInterval = Constants.DAY;
+			updateInterval = TIME.DAY;
 			break;
 		case Constants.WEEKLY:
-			updateInterval = Constants.WEEK;
+			updateInterval = TIME.WEEK;
 			break;
 		}
 	}

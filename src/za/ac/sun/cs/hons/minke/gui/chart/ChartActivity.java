@@ -8,7 +8,6 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
-import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -37,7 +36,7 @@ public class ChartActivity extends SherlockActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
-		if (!EntityUtils.isLoaded()) {
+		if (BrowseUtils.getBranchProducts() == null || BrowseUtils.getBranchProducts().size() == 0) {
 			startActivity(IntentUtils.getHomeIntent(this));
 			finish();
 		} else if (getLastNonConfigurationInstance() != null) {
@@ -46,7 +45,7 @@ public class ChartActivity extends SherlockActivity {
 				curTask.attach(this);
 				setBuilding(true);
 			}
-		} else if (BrowseUtils.getBranchProducts().size() != 0) {
+		} else {
 			buildChart();
 		}
 

@@ -19,8 +19,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -50,7 +50,7 @@ public class ShopFragment extends SherlockFragment {
 
 	private void initGUI(View v) {
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getProducts());
+				R.layout.listitem_default, EntityUtils.getProducts(getActivity()));
 		shopping = (AutoCompleteTextView) v.findViewById(R.id.text_shops);
 		shopping.setAdapter(productAdapter);
 		shopping.setOnItemClickListener(new OnItemClickListener() {
@@ -142,7 +142,7 @@ public class ShopFragment extends SherlockFragment {
 
 		@Override
 		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranches(ShopUtils.getAddedProducts());
+			return EntityUtils.retrieveBranches(activity, ShopUtils.getAddedProducts());
 		}
 	}
 }

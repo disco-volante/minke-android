@@ -18,7 +18,6 @@ import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.product.ProductCategory;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
-import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 
 public class JSONParser {
 
@@ -250,14 +249,15 @@ public class JSONParser {
 		return obj.getBoolean("success");
 	}
 
-	public static boolean parseScanResult(JSONObject obj) throws JSONException {
+	public static Object[] parseScanResult(JSONObject obj) throws JSONException {
 		if (!obj.isNull("branchProduct") && !obj.isNull("product")) {
-			ScanUtils.setBranchProduct(parseBranchProduct(obj
-					.getJSONObject("branchProduct")));
-			ScanUtils.setProduct(parseProduct(obj.getJSONObject("product")));
-			return true;
+			Object[] res = new Object[2];
+			res[0] = parseBranchProduct(obj
+					.getJSONObject("branchProduct"));
+			res[1] = parseProduct(obj.getJSONObject("product"));
+			return res;
 		}
-		return false;
+		return null;
 	}
 
 	public static boolean notAll(JSONObject obj) {

@@ -90,7 +90,7 @@ public class NewBranchFragment extends SherlockFragment {
 		branchText = (EditText) v.findViewById(R.id.text_branch);
 		storeBox = (AutoCompleteTextView) v.findViewById(R.id.text_store);
 		storeAdapter = new ArrayAdapter<Store>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getStores());
+				R.layout.listitem_default, EntityUtils.getStores(getActivity()));
 		storeBox.setAdapter(storeAdapter);
 		storeBox.setOnItemClickListener(new OnItemClickListener() {
 
@@ -112,7 +112,7 @@ public class NewBranchFragment extends SherlockFragment {
 		});
 		cityBox = (AutoCompleteTextView) v.findViewById(R.id.text_city);
 		cityAdapter = new ArrayAdapter<City>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCities());
+				R.layout.listitem_default, EntityUtils.getCities(getActivity()));
 		cityBox.setAdapter(cityAdapter);
 		cityBox.setOnItemClickListener(new OnItemClickListener() {
 
@@ -194,7 +194,7 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	private void requestProvince() {
-		final ArrayList<Province> provinces = EntityUtils.getProvinces();
+		final ArrayList<Province> provinces = EntityUtils.getProvinces(getActivity());
 		if (provinces == null) {
 			return;
 		}
@@ -299,22 +299,22 @@ public class NewBranchFragment extends SherlockFragment {
 			}
 			if (ScanUtils.store == null) {
 				if (ScanUtils.city == null) {
-					return RPCUtils.createBranch(ScanUtils.province,
+					return RPCUtils.createBranch(activity, ScanUtils.province,
 							MapUtils.getUserLat(), MapUtils.getUserLon(),
 							ScanUtils.cityName, ScanUtils.storeName,
 							ScanUtils.branchName);
 				} else {
-					return RPCUtils.createBranch(ScanUtils.city,
+					return RPCUtils.createBranch(activity,ScanUtils.city,
 							MapUtils.getUserLat(), MapUtils.getUserLon(),
 							ScanUtils.storeName, ScanUtils.branchName);
 				}
 			} else if (ScanUtils.city == null) {
-				return RPCUtils.createBranch(ScanUtils.province,
+				return RPCUtils.createBranch(activity,ScanUtils.province,
 						ScanUtils.store, MapUtils.getUserLat(),
 						MapUtils.getUserLon(), ScanUtils.cityName,
 						ScanUtils.branchName);
 			} else {
-				return RPCUtils.createBranch(ScanUtils.city, ScanUtils.store,
+				return RPCUtils.createBranch(activity,ScanUtils.city, ScanUtils.store,
 						MapUtils.getUserLat(), MapUtils.getUserLon(),
 						ScanUtils.branchName);
 			}

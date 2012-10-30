@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
-
 import android.util.Log;
 
 public class XMLParser {

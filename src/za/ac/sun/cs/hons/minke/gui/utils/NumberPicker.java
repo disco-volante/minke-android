@@ -13,9 +13,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.View.OnLongClickListener;
-import android.widget.TextView;
-import android.widget.LinearLayout;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * This class has been pulled from the Android platform source code, its an
@@ -345,9 +345,6 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
 	}
 
 	private class NumberRangeKeyListener extends NumberKeyListener {
-
-		// XXX This doesn't allow for range limits when controlled by a
-		// soft input method!
 		@Override
 		public int getInputType() {
 			return InputType.TYPE_CLASS_NUMBER;

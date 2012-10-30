@@ -1,13 +1,18 @@
 package za.ac.sun.cs.hons.minke.services;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.tasks.UpdateDataBGTask;
+import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
+import za.ac.sun.cs.hons.minke.utils.RPCUtils;
+import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -35,10 +40,10 @@ public class UpdateService extends Service {
 	@Override
 	public IBinder onBind(Intent intent) {
 		return new IUpdateService.Stub() {
-
 			@Override
-			public void iStart() throws RemoteException {
-				showNotification();
+			public boolean iStart() throws RemoteException {
+				return showNotification().equals(ERROR.SUCCESS);
+
 			}
 
 		};
@@ -47,38 +52,50 @@ public class UpdateService extends Service {
 	/**
 	 * Show a notification while this service is running.
 	 */
-	private void showNotification() {
+	private ERROR showNotification() {
 		if (!running) {
-			running = true;
-			UpdateDataBGTask update = new UpdateDataBGTask(this) {
-				private Builder mNotifyBuilder;
-
-				@Override
-				public void onPreExecute() {
-					PendingIntent pending = PendingIntent.getActivity(context,
-							0, IntentUtils.getHomeIntent(context),
-							Intent.FLAG_ACTIVITY_NEW_TASK);
-					CharSequence title = getText(R.string.app_name);
-					CharSequence text = getText(R.string.updating_msg);
-					mNotifyBuilder = new NotificationCompat2.Builder(context)
-							.setContentTitle(title).setProgress(0, 0, true)
-							.setContentText(text)
-							.setSmallIcon(R.drawable.ic_launcher)
-							.setAutoCancel(false).setContentIntent(pending);
-					mNM.notify(NOTIFICATION, mNotifyBuilder.build());
-				}
-
-				@Override
-				public void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					mNM.cancelAll();
-					running = false;
-					UpdateService.this.stopSelf();
-				}
-			};
-			update.execute();
+			try {
+				running = true;
+				PendingIntent pending = PendingIntent.getActivity(this, 0,
+						IntentUtils.getHomeIntent(this),
+						Intent.FLAG_ACTIVITY_NEW_TASK);
+				CharSequence title = getText(R.string.app_name);
+				CharSequence text = getText(R.string.updating_msg);
+				Builder mNotifyBuilder = new NotificationCompat2.Builder(this)
+						.setContentTitle(title).setProgress(0, 0, true)
+						.setContentText(text)
+						.setSmallIcon(R.drawable.ic_launcher)
+						.setAutoCancel(false).setContentIntent(pending);
+				mNM.notify(NOTIFICATION, mNotifyBuilder.build());
+				ERROR error = retrieve();
+				mNM.cancelAll();
+				running = false;
+				stopSelf();
+				return error;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		}
+		return ERROR.SUCCESS;
+	}
+
+	protected boolean isNetworkAvailable() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager
+				.getActiveNetworkInfo();
+		return activeNetworkInfo != null;
+	}
+
+	protected ERROR retrieve() {
+		if (!isNetworkAvailable()) {
+			return ERROR.CLIENT;
+		}
+		if (RPCUtils.startServer() == ERROR.SERVER) {
+			return ERROR.SERVER;
+		}
+		EntityUtils.init(this);
+		return RPCUtils.retrieveAll(this);
 	}
 
 }

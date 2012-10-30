@@ -1,10 +1,10 @@
 package za.ac.sun.cs.hons.minke.db.dao;
 
-import android.content.ContentValues;
-import android.database.Cursor;
 import za.ac.sun.cs.hons.minke.db.helper.BaseDBHelper;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.utils.constants.DB;
+import android.content.ContentValues;
+import android.database.Cursor;
 
 public class StoreDAO extends BaseDAO<Store> {
 

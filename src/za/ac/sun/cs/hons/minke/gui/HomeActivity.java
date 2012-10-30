@@ -3,13 +3,13 @@ package za.ac.sun.cs.hons.minke.gui;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import za.ac.sun.cs.hons.minke.MinkeApplication;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.assets.IntentIntegrator;
 import za.ac.sun.cs.hons.minke.assets.IntentResult;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
+import za.ac.sun.cs.hons.minke.gui.scan.NewBranchFragment;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
@@ -29,28 +29,37 @@ import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -62,32 +71,15 @@ public class HomeActivity extends SherlockFragmentActivity {
 	TabInfo browse, shop, scan;
 	protected int selectedBranch, str;
 	public ProgressTask curTask;
-	private boolean choosing, updating, errorShowing, downloading;
-	private DialogErrorCommand cmd;
+	private boolean choosing, updating, errorShowing, downloading, bound;
+	private Command cmd;
 	private ERROR errorCode;
 	private Object[] params;
-	private ServiceConnection uConnection = new ServiceConnection() {
-		private IUpdateService updateService;
-
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			try {
-				updateService = IUpdateService.Stub.asInterface(service);
-				updateService.iStart();
-				Log.v(TAGS.STATE, "Update service initialised");
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
-
-		public void onServiceDisconnected(ComponentName className) {
-			updateService = null;
-		}
-	};
-	private boolean bound;
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		EntityUtils.getDatePrices(this, 0);
 		if (DEBUG.ON) {
 			Log.v(TAGS.STATE, "HomeActivity started");
 			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -97,32 +89,55 @@ public class HomeActivity extends SherlockFragmentActivity {
 					.detectAll().build());
 		}
 		initGUI();
-		if (!EntityUtils.isLoaded()) {
-			curTask = new WaitTask(this,
-					getLastCustomNonConfigurationInstance(), savedInstanceState) {
-				@Override
-				public void onPostExecute(Void result) {
-					super.onPostExecute(result);
-					getSavedState(savedInstanceState);
-				}
-			};
-			curTask.execute();
+		getSavedState(savedInstanceState);
+		if (getLastCustomNonConfigurationInstance() != null) {
+			curTask = (ProgressTask) getLastCustomNonConfigurationInstance();
 
-		} else {
-			getSavedState(savedInstanceState);
-			if (getLastCustomNonConfigurationInstance() != null) {
-				curTask = (ProgressTask) getLastCustomNonConfigurationInstance();
-
-				if (curTask.getStatus().equals(Status.FINISHED)) {
-					curTask.cancel(true);
-				} else {
-					curTask.attach(this);
-				}
-
+			if (curTask.getStatus().equals(Status.FINISHED)) {
+				curTask.cancel(true);
+			} else {
+				curTask.attach(this);
 			}
+
 		}
+		requestLocation();
 	}
 
+	private void requestLocation() {
+		final LocationManager lm = (LocationManager) getApplication()
+				.getSystemService(Context.LOCATION_SERVICE);
+		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+				10 * TIME.MINUTE, 1, new LocationListener() {
+
+					@Override
+					public void onLocationChanged(Location loc) {
+						if (loc != null) {
+							MapUtils.setUserLocation(loc.getLatitude(),
+									loc.getLongitude());
+						}
+					}
+
+					@Override
+					public void onProviderDisabled(String arg0) {
+						lm.removeUpdates(this);
+					}
+
+					@Override
+					public void onProviderEnabled(String arg0) {
+					}
+
+					@Override
+					public void onStatusChanged(String arg0, int arg1,
+							Bundle arg2) {
+					}
+
+				});
+	}
+
+	/**
+	 * 
+	 * Setup the tabs and the {@link ActionBar}
+	 */
 	private void initGUI() {
 		setContentView(R.layout.activity_home);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -142,27 +157,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 						getString(R.string.shop)), NAMES.SHOP);
 	}
 
-	private void initService() {
-		Intent i = new Intent(this, UpdateService.class);
-		startService(i);
-		bindService(i, uConnection, Context.BIND_AUTO_CREATE);
-		bound = true;
-	}
-
-	private void releaseService() {
-		if (uConnection != null && bound) {
-			unbindService(uConnection);
-			uConnection = null;
-			bound = false;
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		releaseService();
-	}
-
+	/**
+	 * Retrieves saved data from the previous instance's {@link Bundle}.
+	 * 
+	 * @param savedInstanceState
+	 *            the previous instance's Bundle.
+	 */
 	private void getSavedState(Bundle savedInstanceState) {
 		if (savedInstanceState == null) {
 			return;
@@ -172,7 +172,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 				savedInstanceState.getString("CLASS"));
 		long branchId = savedInstanceState.getLong("USER_BRANCH", -1);
 		if (branchId != -1) {
-			MapUtils.setUserBranch(EntityUtils.getBranch(branchId));
+			MapUtils.setUserBranch(EntityUtils.getBranch(this, branchId));
 
 		}
 		if (savedInstanceState.getBoolean("CHOOSING")) {
@@ -185,14 +185,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 			errorCode = (ERROR) savedInstanceState.getSerializable("ERROR");
 			str = savedInstanceState.getInt("STRING");
 			cmd = getCommand(savedInstanceState.getInt("COMMAND_ID"));
-			if (cmd instanceof UpdateProductError) {
+			if (cmd instanceof UpdateProduct) {
 				if (params == null || params.length != 2) {
 					params = new Object[2];
 				}
-				params[0] = EntityUtils.getBranchProduct(savedInstanceState
-						.getLong("BP_ID"));
-				params[1] = EntityUtils.getProduct(savedInstanceState
-						.getLong("PRODUCT_ID"));
+				params[0] = EntityUtils.getBranchProduct(this,
+						savedInstanceState.getLong("BP_ID"));
+				params[1] = EntityUtils.getProduct(this,
+						savedInstanceState.getLong("PRODUCT_ID"));
 			}
 			showError(cmd, errorCode, str, params);
 		}
@@ -227,7 +227,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			savedInstanceState.putSerializable("ERROR", errorCode);
 			savedInstanceState.putInt("STRING", str);
 			savedInstanceState.putInt("COMMAND_ID", cmd.getId());
-			if (cmd instanceof UpdateProductError) {
+			if (cmd instanceof UpdateProduct) {
 				savedInstanceState.putLong("BP_ID",
 						((BranchProduct) params[0]).getId());
 				savedInstanceState.putLong("PRODUCT_ID",
@@ -249,7 +249,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			startActivity(IntentUtils.getSettingsIntent(this));
 			return true;
 		case R.id.menu_item_refresh:
-			initService();
+			update();
 			return true;
 		case android.R.id.home:
 			mTabManager.showParentFragment();
@@ -276,14 +276,34 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
+	/**
+	 * Switches the {@link Activity}'s tabs.
+	 * 
+	 * @param tag
+	 *            the name of the tab to be switched to.
+	 * @param className
+	 *            the name of the {@link Fragment} to shown in the tab.
+	 */
 	public void changeTab(String tag, String className) {
 		mTabManager.changeTab(tag, className);
 	}
 
+	/**
+	 * OnClick method which shows the product price histories.
+	 * 
+	 * @param view
+	 */
 	public void showHistories(View view) {
 		startActivity(IntentUtils.getGraphIntent(this));
 	}
 
+	/**
+	 * OnClick method which performs a barcode scan. The user's location is
+	 * requested in order to perform an accurate search after the barcode is
+	 * scanned. ZXing Barcode Scanner is launched hereafter.
+	 * 
+	 * @param view
+	 */
 	public void scan(View view) {
 		ScanUtils.setBarCode(0L);
 		if (view != null || MapUtils.getUserBranch() == null) {
@@ -316,19 +336,29 @@ public class HomeActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	/**
+	 * Helper method for finding a product asynchronously.
+	 */
 	private void findProduct() {
 		curTask = new FindProductTask(this);
 		curTask.execute();
 	}
 
-	private void updateProduct(final BranchProduct found, final int price) {
-		curTask = new UpdateProductTask(this, found, price);
+	protected void update() {
+		curTask = new Updater(this);
 		curTask.execute();
 	}
 
-	private void update() {
-
-		curTask = new Updater(this);
+	/**
+	 * Helper method for updating a product's price asynchronously.
+	 * 
+	 * @param found
+	 *            the product to be updated.
+	 * @param price
+	 *            the product's new price.
+	 */
+	private void updateProduct(final BranchProduct found, final int price) {
+		curTask = new UpdateProductTask(this, found, price);
 		curTask.execute();
 	}
 
@@ -363,10 +393,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	/**
+	 * Allows the user to select the branch they are at from a list.
+	 */
 	public void confirmLocation() {
 		choosing = true;
 		selectedBranch = 0;
-		final ArrayList<Branch> branches = EntityUtils.getBranches();
+		final ArrayList<Branch> branches = EntityUtils.getBranches(this);
 		if (branches == null) {
 			return;
 		}
@@ -415,6 +448,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
+	/**
+	 * Switch to the {@link NewBranchFragment} to allow the user to create a new
+	 * {@link Branch}.
+	 */
 	protected void editLocation() {
 		if (DEBUG.ON) {
 			Log.v("LOCATION", MapUtils.getUserLocation().toString());
@@ -422,6 +459,12 @@ public class HomeActivity extends SherlockFragmentActivity {
 		changeTab(VIEW.SCAN, NAMES.BRANCH);
 	}
 
+	/**
+	 * Allows the user to update the price of an existing product.
+	 * 
+	 * @param found
+	 * @param product
+	 */
 	private void updatePrice(final BranchProduct found, final Product product) {
 		updating = true;
 		LayoutInflater factory = LayoutInflater.from(this);
@@ -430,6 +473,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 				.findViewById(R.id.lbl_product);
 		final EditText updatePriceText = (EditText) updateView
 				.findViewById(R.id.text_price);
+		if (found != null && found.getDatePrice() != null) {
+			updatePriceText.setText(found.getDatePrice()._getFormattedPrice());
+		}
 		updatePriceText.addTextChangedListener(new TextErrorWatcher(this,
 				updatePriceText, true));
 		productText.setText(product.toString());
@@ -454,6 +500,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
+	/**
+	 * Overriden in order to allow the back button to function between tabs.
+	 */
 	@Override
 	public void onBackPressed() {
 		if (DEBUG.ON) {
@@ -472,7 +521,20 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
-	public void showError(DialogErrorCommand _cmd, ERROR _errorCode, int _str,
+	/**
+	 * Shows an {@link AsyncTask}'s error {@link Dialog}.
+	 * 
+	 * @param _cmd
+	 *            The command to be called should the positive button be
+	 *            clicked.
+	 * @param _errorCode
+	 *            The type of {@link ERROR} to be shown.
+	 * @param _str
+	 *            The positive button's text.
+	 * @param _params
+	 *            the {@link Command}'s parameters.
+	 */
+	public void showError(Command _cmd, ERROR _errorCode, int _str,
 			final Object... _params) {
 		errorShowing = true;
 		cmd = _cmd;
@@ -496,73 +558,39 @@ public class HomeActivity extends SherlockFragmentActivity {
 		dlg.show();
 	}
 
-	public DialogErrorCommand getCommand(int id) {
+	/**
+	 * Used to retrieve a {@link Command} by id.
+	 * 
+	 * @param id
+	 *            a Command id.
+	 * @return the corresponding Command.
+	 */
+	public Command getCommand(int id) {
 		switch (id) {
 		case 0:
-			return new FindError();
+			return new CreateProduct();
 		case 1:
-			return new UpdateProductError();
+			return new UpdateProduct();
 		case 2:
-			return new UpdateDataError();
+			return new UpdateData();
 		}
 		return null;
 	}
 
-	static class Updater extends UpdateDataFGTask {
-		public Updater(Activity activity) {
-			super(activity);
-		}
+	/**
+	 * {@link AsyncTask} subclass used to wait for the application to
+	 * initialised.
+	 * 
+	 * @author pieter
+	 * 
+	 */
 
-		@Override
-		protected void success() {
-			super.success();
-			if (PreferencesUtils.isFirstTime()) {
-				PreferencesUtils.changeFirstTime(activity, false);
-			}
-		}
-
-		@Override
-		protected void failure(ERROR error_code) {
-			((HomeActivity) activity).showError(
-					((HomeActivity) activity).new UpdateDataError(),
-					error_code, R.string.retry);
-		}
-	}
-
-	static class WaitTask extends ProgressTask {
-		public WaitTask(Activity activity, Object object,
-				Bundle savedInstanceState) {
-			super(activity, activity.getString(R.string.initialising) + "...",
-					activity.getString(R.string.initialising_msg));
-		}
-
-		@Override
-		protected ERROR retrieve() {
-			while (!MinkeApplication.loaded()) {
-				try {
-					Thread.sleep(100, 10);
-				} catch (InterruptedException e) {
-					return ERROR.PARSE;
-				}
-			}
-			return ERROR.SUCCESS;
-		}
-
-		@Override
-		protected void success() {
-			if (PreferencesUtils.isFirstTime()
-					|| PreferencesUtils.getUpdateFrequency() == Constants.STARTUP) {
-				((HomeActivity) activity).update();
-			}
-		}
-
-		@Override
-		protected void failure(ERROR error_code) {
-			((HomeActivity) activity).showError(null, error_code, -1);
-		}
-
-	}
-
+	/**
+	 * {@link AsyncTask} subclass used to find a scanned product.
+	 * 
+	 * @author pieter
+	 * 
+	 */
 	static class FindProductTask extends ProgressTask {
 
 		public FindProductTask(Activity activity) {
@@ -580,16 +608,16 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR code) {
 			if (code == ERROR.NOT_FOUND) {
 				if (ScanUtils.getProduct() != null) {
-					ScanUtils.setBranchProduct(new BranchProduct(0L, ScanUtils
-							.getProduct().getId(), MapUtils.getUserBranch()
-							.getId(), 0L));
+					ScanUtils.setBranchProduct(activity, new BranchProduct(0L,
+							ScanUtils.getProduct().getId(), MapUtils
+									.getUserBranch().getId(), 0L));
 					((HomeActivity) activity).updatePrice(
 							ScanUtils.getBranchProduct(),
 							ScanUtils.getProduct());
 				} else {
 					((HomeActivity) activity).showError(
-							((HomeActivity) activity).new FindError(), code,
-							R.string.create_product);
+							((HomeActivity) activity).new CreateProduct(),
+							code, R.string.create_product);
 				}
 
 			} else {
@@ -600,8 +628,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected ERROR retrieve() {
 			ScanUtils.setProduct(null);
-			ScanUtils.setBranchProduct(null);
-			Product p = EntityUtils.retrieveProduct(ScanUtils.getBarCode());
+			ScanUtils.setBranchProduct(activity, null);
+			Product p = EntityUtils.retrieveProduct(activity,
+					ScanUtils.getBarCode());
 			if (p == null) {
 				if (!PreferencesUtils.checkServer()) {
 					return ERROR.NOT_FOUND;
@@ -609,13 +638,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				p = EntityUtils.retrieveProductServer(ScanUtils.getBarCode());
+				p = EntityUtils.retrieveProductServer(activity,
+						ScanUtils.getBarCode());
 				if (p == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
 			ScanUtils.setProduct(p);
-			BranchProduct bp = EntityUtils.retrieveBranchProduct(
+			BranchProduct bp = EntityUtils.retrieveBranchProduct(activity,
 					ScanUtils.getBarCode(), MapUtils.getUserBranch().getId());
 			if (bp == null) {
 				if (!PreferencesUtils.checkServer()) {
@@ -624,18 +654,25 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				bp = EntityUtils.retrieveBranchProductServer(ScanUtils
-						.getBarCode(), MapUtils.getUserBranch().getId());
+				bp = EntityUtils.retrieveBranchProductServer(activity,
+						ScanUtils.getBarCode(), MapUtils.getUserBranch()
+								.getId());
 				if (bp == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
-			ScanUtils.setBranchProduct(bp);
+			ScanUtils.setBranchProduct(activity, bp);
 			return ERROR.SUCCESS;
 		}
 
 	}
 
+	/**
+	 * {@link AsyncTask} subclass used to update a scanned product's price.
+	 * 
+	 * @author pieter
+	 * 
+	 */
 	static class UpdateProductTask extends ProgressTask {
 		BranchProduct bp;
 		private int price;
@@ -655,7 +692,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
-			return RPCUtils.updateBranchProduct(bp, price);
+			return RPCUtils.updateBranchProduct(activity, bp, price);
 		}
 
 		@Override
@@ -666,18 +703,62 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected void failure(ERROR error_code) {
 			((HomeActivity) activity).showError(
-					((HomeActivity) activity).new UpdateProductError(),
-					error_code, R.string.retry, bp, ScanUtils.getProduct());
+					((HomeActivity) activity).new UpdateProduct(), error_code,
+					R.string.retry, bp, ScanUtils.getProduct());
 		}
 	}
 
-	public interface DialogErrorCommand {
+	static class Updater extends UpdateDataFGTask {
+		public Updater(Activity activity) {
+			super(activity);
+		}
+
+		@Override
+		protected void success() {
+			super.success();
+			if (PreferencesUtils.isFirstTime()) {
+				PreferencesUtils.changeFirstTime(activity, false);
+			}
+		}
+
+		@Override
+		protected void failure(final ERROR error_code) {
+			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
+			dlg.setPositiveButton(activity.getString(R.string.retry),
+					new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dlg, int arg1) {
+							((HomeActivity) activity).showError(
+									((HomeActivity) activity).new UpdateData(),
+									error_code, R.string.retry);
+							dlg.cancel();
+						}
+
+					});
+			dlg.show();
+
+		}
+	}
+
+	/**
+	 * Interface to facilitate passing methods as parameters.
+	 * 
+	 * @author pieter
+	 * 
+	 */
+	public interface Command {
 		public int getId();
 
 		public void execute(HomeActivity activity, Object... data);
 	}
 
-	public class FindError implements DialogErrorCommand {
+	/**
+	 * Allows a user to create a new product if it cannot be found.
+	 * 
+	 * @author pieter
+	 * 
+	 */
+	public class CreateProduct implements Command {
 		@Override
 		public void execute(HomeActivity activity, Object... data) {
 			activity.changeTab(VIEW.SCAN, NAMES.BRANCHPRODUCT);
@@ -690,7 +771,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
-	public class UpdateProductError implements DialogErrorCommand {
+	/**
+	 * Allows a user to update a product's price.
+	 * 
+	 * @author pieter
+	 * 
+	 */
+	public class UpdateProduct implements Command {
 
 		@Override
 		public void execute(HomeActivity activity, Object... data) {
@@ -704,7 +791,13 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 	}
 
-	public class UpdateDataError implements DialogErrorCommand {
+	/**
+	 * Allows a user to update data.
+	 * 
+	 * @author pieter
+	 * 
+	 */
+	public class UpdateData implements Command {
 
 		@Override
 		public void execute(HomeActivity activity, Object... data) {
@@ -716,6 +809,64 @@ public class HomeActivity extends SherlockFragmentActivity {
 			return 2;
 		}
 
+	}
+
+	/**
+	 * Not Used
+	 */
+
+	/**
+	 * Connects to and launches the @{link UpdateService}.
+	 */
+	private ServiceConnection uConnection = new ServiceConnection() {
+		private IUpdateService updateService;
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			try {
+				updateService = IUpdateService.Stub.asInterface(service);
+				if (updateService.iStart()) {
+					Toast.makeText(HomeActivity.this,
+							getString(R.string.update_success_msg),
+							Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(HomeActivity.this,
+							getString(R.string.err_server_msg),
+							Toast.LENGTH_SHORT).show();
+				}
+				Log.v(TAGS.STATE, "Update service initialised");
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			updateService = null;
+		}
+	};
+
+	/**
+	 * Starts and binds to the @{link UpdateService}.
+	 */
+	@SuppressWarnings("unused")
+	private void initService() {
+		Intent i = new Intent(this, UpdateService.class);
+		startService(i);
+		bindService(i, uConnection, Context.BIND_AUTO_CREATE);
+		bound = true;
+	}
+
+	/**
+	 * Disconnects from the @{link UpdateService}.
+	 */
+	@SuppressWarnings("unused")
+	private void releaseService() {
+		if (uConnection != null && bound) {
+			unbindService(uConnection);
+			uConnection = null;
+			bound = false;
+		}
 	}
 
 }

@@ -21,7 +21,7 @@ public abstract class ProgressTask extends LoadTask {
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setTitle(title);
 		progressDialog.setMessage(message);
-		progressDialog.setCancelable(true);
+		progressDialog.setCancelable(false);
 		progressDialog.setIndeterminate(false);
 		progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
 				activity.getString(R.string.cancel),

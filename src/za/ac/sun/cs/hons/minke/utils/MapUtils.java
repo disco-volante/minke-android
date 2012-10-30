@@ -44,7 +44,6 @@ public class MapUtils {
 
 	public static ERROR refreshLocation(LocationManager locationManager) {
 		locsChanged = true;
-		branch = null;
 		if (DEBUG.EMULATOR) {
 			setUserLocation(-33, 18);
 			return ERROR.SUCCESS;

@@ -51,50 +51,134 @@ public class EntityUtils {
 	private static BranchDAO branchDAO;
 	private static BranchProductDAO branchProductDAO;
 	private static ProductCategoryDAO productCategoryDAO;
-	private static boolean loaded;
 
-	public static ERROR init(Context context) {
-		loaded = false;
+	public static void init(Context context) {
 		dbHelper = new BaseDBHelper(context);
-		countryDAO = new CountryDAO(dbHelper);
-		storeDAO = new StoreDAO(dbHelper);
-		categoryDAO = new CategoryDAO(dbHelper);
-		brandDAO = new BrandDAO(dbHelper);
-		datePriceDAO = new DatePriceDAO(dbHelper);
-		provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
-		cityDAO = new CityDAO(dbHelper, provinceDAO);
-		cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
-		productDAO = new ProductDAO(dbHelper, brandDAO);
-		branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
-		branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
-				productDAO, branchDAO);
-		productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
-				categoryDAO);
-		loaded = true;
-		return ERROR.SUCCESS;
 	}
 
-	public static List<Category> getCategories() {
+	public static void initCountry(Context context) {
+		if (dbHelper == null) {
+			init(context);
+		}
+		countryDAO = new CountryDAO(dbHelper);
+	}
+
+	public static void initStore(Context context) {
+		if (dbHelper == null) {
+			init(context);
+		}
+		storeDAO = new StoreDAO(dbHelper);
+
+	}
+
+	public static void initCategory(Context context) {
+		if (dbHelper == null) {
+			init(context);
+		}
+		categoryDAO = new CategoryDAO(dbHelper);
+
+	}
+
+	public static void initBrand(Context context) {
+		if (dbHelper == null) {
+			init(context);
+		}
+		brandDAO = new BrandDAO(dbHelper);
+	}
+
+	public static void initDatePrice(Context context) {
+		if (dbHelper == null) {
+			init(context);
+		}
+		datePriceDAO = new DatePriceDAO(dbHelper);
+	}
+
+	public static void initProvince(Context context) {
+		initCountry(context);
+		provinceDAO = new ProvinceDAO(dbHelper, countryDAO);
+	}
+
+	public static void initCity(Context context) {
+		initProvince(context);
+		cityDAO = new CityDAO(dbHelper, provinceDAO);
+	}
+
+	public static void initCityLocation(Context context) {
+		initCity(context);
+		cityLocationDAO = new CityLocationDAO(dbHelper, cityDAO);
+	}
+
+	public static void initProduct(Context context) {
+		initBrand(context);
+		productDAO = new ProductDAO(dbHelper, brandDAO);
+	}
+
+	public static void initBranch(Context context) {
+		initStore(context);
+		initCityLocation(context);
+		branchDAO = new BranchDAO(dbHelper, storeDAO, cityLocationDAO);
+	}
+
+	public static void initBranchProduct(Context context) {
+		initBranch(context);
+		initProduct(context);
+		initDatePrice(context);
+		branchProductDAO = new BranchProductDAO(dbHelper, datePriceDAO,
+				productDAO, branchDAO);
+	}
+
+	public static void initProductCategory(Context context) {
+		initProduct(context);
+		initCategory(context);
+		productCategoryDAO = new ProductCategoryDAO(dbHelper, productDAO,
+				categoryDAO);
+	}
+
+	public static List<Category> getCategories(Context context) {
+		if (categoryDAO == null) {
+			initCategory(context);
+		}
 		return categoryDAO.getAll();
 	}
 
-	public static ArrayList<Product> getProducts() {
+	public static ArrayList<Product> getProducts(Context context) {
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		return productDAO.getAll();
 	}
 
-	public static ArrayList<Branch> getBranches() {
+	public static ArrayList<Branch> getBranches(Context context) {
+		if (branchDAO == null) {
+			initBranch(context);
+		}
 		return branchDAO.getAll();
 	}
 
-	public static ArrayList<Brand> getBrands() {
+	public static ArrayList<Brand> getBrands(Context context) {
+		if (brandDAO == null) {
+			initBrand(context);
+		}
 		return brandDAO.getAll();
 	}
 
-	public static ArrayList<Store> getStores() {
+	public static ArrayList<Store> getStores(Context context) {
+		if (storeDAO == null) {
+			initStore(context);
+		}
 		return storeDAO.getAll();
 	}
 
-	public static ArrayList<Object> getLocations() {
+	public static ArrayList<Object> getLocations(Context context) {
+		if (cityDAO == null) {
+			initCity(context);
+		}
+		if (provinceDAO == null) {
+			initProvince(context);
+		}
+		if (countryDAO == null) {
+			initCountry(context);
+		}
 		ArrayList<Object> locs = new ArrayList<Object>();
 		locs.addAll(countryDAO.getAll());
 		locs.addAll(provinceDAO.getAll());
@@ -104,62 +188,102 @@ public class EntityUtils {
 
 	public static void persistBranchProducts(Context context,
 			ArrayList<BranchProduct> _bps) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		branchProductDAO.addAll(_bps);
 	}
 
 	public static void persistProductCategories(Context context,
 			ArrayList<ProductCategory> _pcs) {
+		if (productCategoryDAO == null) {
+			initProductCategory(context);
+		}
 		productCategoryDAO.addAll(_pcs);
 	}
 
 	public static void persistBranches(Context context,
 			ArrayList<Branch> _branches) {
+		if (branchDAO == null) {
+			initBranch(context);
+		}
 		branchDAO.addAll(_branches);
 	}
 
 	public static void persistCountries(Context context,
 			ArrayList<Country> _countries) {
+		if (countryDAO == null) {
+			initCountry(context);
+		}
 		countryDAO.addAll(_countries);
 	}
 
 	public static void persistStores(Context context, ArrayList<Store> _stores) {
+		if (storeDAO == null) {
+			initStore(context);
+		}
 		storeDAO.addAll(_stores);
 	}
 
 	public static void persistBrands(Context context, ArrayList<Brand> _brands) {
+		if (brandDAO == null) {
+			initBrand(context);
+		}
 		brandDAO.addAll(_brands);
 	}
 
 	public static void persistDatePrices(Context context,
 			ArrayList<DatePrice> _datePrices) {
+		if (datePriceDAO == null) {
+			initDatePrice(context);
+		}
 		datePriceDAO.addAll(_datePrices);
 	}
 
 	public static void persistProvinces(Context context,
 			ArrayList<Province> _provinces) {
+		if (provinceDAO == null) {
+			initProvince(context);
+		}
 		provinceDAO.addAll(_provinces);
 	}
 
 	public static void persistCities(Context context, ArrayList<City> _cities) {
+		if (cityDAO == null) {
+			initCity(context);
+		}
 		cityDAO.addAll(_cities);
 	}
 
 	public static void persistCityLocations(Context context,
 			ArrayList<CityLocation> _cityLocations) {
+		if (cityLocationDAO == null) {
+			initCityLocation(context);
+		}
 		cityLocationDAO.addAll(_cityLocations);
 	}
 
 	public static void persistProducts(Context context,
 			ArrayList<Product> _products) {
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		productDAO.addAll(_products);
 	}
 
 	public static void persistCategories(Context context,
 			ArrayList<Category> _categories) {
+		if (categoryDAO == null) {
+			initCategory(context);
+		}
 		categoryDAO.addAll(_categories);
 	}
 
-	public static ERROR retrieveBranches(ArrayList<Product> addedProducts) {
+	public static ERROR retrieveBranches(Context context,
+			ArrayList<Product> addedProducts) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		HashMap<Branch, ArrayList<BranchProduct>> branchMap = new HashMap<Branch, ArrayList<BranchProduct>>();
 		HashSet<Branch> notfound = new HashSet<Branch>();
 		if (addedProducts.size() == 0) {
@@ -206,13 +330,26 @@ public class EntityUtils {
 		return ERROR.SUCCESS;
 	}
 
-	public static ArrayList<DatePrice> getDatePrices(long id) {
+	public static ArrayList<DatePrice> getDatePrices(Context context, long id) {
+		if (datePriceDAO == null) {
+			initDatePrice(context);
+		}
 		return datePriceDAO.getAllByParameters(
 				new String[] { DB.BRANCH_PRODUCT_ID },
 				new String[] { String.valueOf(id) });
 	}
 
-	public static ERROR retrieveBranchProducts(boolean productsActive) {
+	public static ERROR retrieveBranchProducts(Context context,
+			boolean productsActive) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
+		if (productCategoryDAO == null) {
+			initProductCategory(context);
+		}
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		SearchUtils.setSearched(null);
 		HashSet<Product> _p = new HashSet<Product>();
 		if (!productsActive) {
@@ -260,133 +397,191 @@ public class EntityUtils {
 	}
 
 	private static boolean inLocations(City city) {
-		return SearchUtils.getAddedLocations().size() == 0
-				|| SearchUtils.getAddedCities().contains(city)
-				|| SearchUtils.getAddedProvinces().contains(city.getProvince())
-				|| SearchUtils.getAddedCountries().contains(
-						city.getProvince().getCountry());
+		try {
+			return SearchUtils.getAddedLocations().size() == 0
+					|| SearchUtils.getAddedCities().contains(city)
+					|| SearchUtils.getAddedProvinces().contains(
+							city.getProvince())
+					|| SearchUtils.getAddedCountries().contains(
+							city.getProvince().getCountry());
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
-	public static BranchProduct addBranchProduct(BranchProduct bp) {
+	public static BranchProduct addBranchProduct(Context context,
+			BranchProduct bp) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		long id = branchProductDAO.add(bp);
 		return branchProductDAO.getByID(id);
 	}
 
-	public static BranchProduct updateBranchProduct(BranchProduct bp) {
+	public static BranchProduct updateBranchProduct(Context context,
+			BranchProduct bp) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		if (!branchProductDAO.updateByCloudID(bp, bp.getId())) {
-			return addBranchProduct(bp);
+			return addBranchProduct(context, bp);
 		}
 		return branchProductDAO.getByCloudID(bp.getId());
 	}
 
-	public static Product addProduct(Product p) {
+	public static Product addProduct(Context context, Product p) {
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		long id = productDAO.add(p);
 		p = productDAO.getByID(id);
 		return p;
 	}
 
-	public static Brand addBrand(Brand b) {
+	public static Brand addBrand(Context context, Brand b) {
+		if (brandDAO == null) {
+			initBrand(context);
+		}
 		long id = brandDAO.add(b);
 		b = brandDAO.getByID(id);
 		return b;
 	}
 
-	public static Branch addBranch(Branch branch) {
+	public static Branch addBranch(Context context, Branch branch) {
+		if (branchDAO == null) {
+			initBranch(context);
+		}
 		long id = branchDAO.add(branch);
 		branch = branchDAO.getByID(id);
 		return branch;
 	}
 
-	public static Category addCategory(Category c) {
+	public static Category addCategory(Context context, Category c) {
+		if (categoryDAO == null) {
+			initCategory(context);
+		}
 		long id = categoryDAO.add(c);
 		c = categoryDAO.getByID(id);
 		return c;
 	}
 
-	public static CityLocation addCityLocation(CityLocation cl) {
+	public static CityLocation addCityLocation(Context context, CityLocation cl) {
+		if (cityLocationDAO == null) {
+			initCityLocation(context);
+		}
 		long id = cityLocationDAO.add(cl);
 		return cityLocationDAO.getByID(id);
 	}
 
-	public static City addCity(City c) {
+	public static City addCity(Context context, City c) {
+		if (cityDAO == null) {
+			initCity(context);
+		}
 		long id = cityDAO.add(c);
 		c = cityDAO.getByID(id);
 		return c;
 
 	}
 
-	public static Store addStore(Store s) {
+	public static Store addStore(Context context, Store s) {
+		if (storeDAO == null) {
+			initStore(context);
+		}
 		long id = storeDAO.add(s);
 		s = storeDAO.getByID(id);
 		return s;
 	}
 
-	public static DatePrice addDatePrice(DatePrice dp) {
+	public static DatePrice addDatePrice(Context context, DatePrice dp) {
+		if (datePriceDAO == null) {
+			initDatePrice(context);
+		}
 		long id = datePriceDAO.add(dp);
 		return datePriceDAO.getByID(id);
 	}
 
-	public static Product retrieveProduct(long code) {
+	public static Product retrieveProduct(Context context, long code) {
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		return productDAO.getByCloudID(code);
 	}
 
-	public static Product retrieveProductServer(long code) {
+	public static Product retrieveProductServer(Context context, long code) {
 		if (DEBUG.ON) {
 			Log.v(TAGS.SCAN, String.valueOf(code));
 		}
 		Product product = RPCUtils.retrieveProduct(code);
 		if (product != null) {
-			return addProduct(product);
+			return addProduct(context, product);
 		}
 		return product;
 	}
 
-	public static BranchProduct retrieveBranchProduct(long productId,
-			long branchId) {
+	public static BranchProduct retrieveBranchProduct(Context context,
+			long productId, long branchId) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		return branchProductDAO.getByParameters(new String[] { DB.PRODUCT_ID,
 				DB.BRANCH_ID }, new String[] { String.valueOf(productId),
 				String.valueOf(branchId) });
 	}
 
-	public static BranchProduct retrieveBranchProductServer(long productId,
-			long branchId) {
+	public static BranchProduct retrieveBranchProductServer(Context context,
+			long productId, long branchId) {
 		BranchProduct branchProduct = RPCUtils.retrieveBranchProduct(productId,
 				branchId);
 		if (branchProduct != null) {
-			return addBranchProduct(branchProduct);
+			return addBranchProduct(context, branchProduct);
 		}
 		return branchProduct;
 	}
 
 	public static ArrayList<BranchProduct> retrieveBranchProducts(
-			long productId, BranchProduct main) {
+			Context context, long productId, BranchProduct main) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		ArrayList<BranchProduct> branchProducts = branchProductDAO
 				.getAllByParameters(new String[] { DB.PRODUCT_ID },
 						new String[] { String.valueOf(productId) });
 		return branchProducts;
 	}
 
-	public static ArrayList<Province> getProvinces() {
+	public static ArrayList<Province> getProvinces(Context context) {
+		if (provinceDAO == null) {
+			initProvince(context);
+		}
 		return provinceDAO.getAll();
 	}
 
-	public static ArrayList<City> getCities() {
+	public static ArrayList<City> getCities(Context context) {
+		if (cityDAO == null) {
+			initCity(context);
+		}
 		return cityDAO.getAll();
 	}
 
-	public static boolean isLoaded() {
-		return loaded;
-	}
-
-	public static Branch getBranch(long branchId) {
+	public static Branch getBranch(Context context, long branchId) {
+		if (branchDAO == null) {
+			initBranch(context);
+		}
 		return branchDAO.getByCloudID(branchId);
 	}
 
-	public static BranchProduct getBranchProduct(long branchProductId) {
+	public static BranchProduct getBranchProduct(Context context,
+			long branchProductId) {
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
 		return branchProductDAO.getByCloudID(branchProductId);
 	}
 
-	public static Product getProduct(long productId) {
+	public static Product getProduct(Context context, long productId) {
+		if (productDAO == null) {
+			initProduct(context);
+		}
 		return productDAO.getByCloudID(productId);
 	}
 
