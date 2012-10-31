@@ -8,6 +8,7 @@ import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.receivers.InfoProvider;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
+import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.app.PendingIntent;
@@ -53,6 +54,8 @@ public class UpdateWidgetService extends Service {
 					PendingIntent.FLAG_UPDATE_CURRENT);
 			remoteViews.setOnClickPendingIntent(R.id.layout_info_widget,
 					pendingIntent);
+			PendingIntent appIntent = PendingIntent.getActivity(getApplicationContext(), 0, IntentUtils.getHomeIntent(getApplicationContext()), 0);
+			remoteViews.setOnClickPendingIntent(R.id.img_header, appIntent);
 			appWidgetManager.updateAppWidget(widgetId, remoteViews);
 		}
 		stopSelf();
