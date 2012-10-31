@@ -66,9 +66,11 @@ public class TimelineChart {
 		Date maxDate = null, minDate = null;
 		for (BranchProduct bp : bps) {
 			int colour = 0x000000;
-			while (!darkEnough(colour)) {
+			int attempts = 0;
+			while (!darkEnough(colour) && attempts < 10) {
 				colour = Color.argb(255, rCol.nextInt(256), rCol.nextInt(256),
 						rCol.nextInt(256));
+				attempts ++;
 			}
 			if (DEBUG.ON) {
 				Log.v(TAGS.CHART, "colour " + colour);
@@ -76,18 +78,18 @@ public class TimelineChart {
 			colours[i] = colour;
 			titles[i++] = bp.getProduct().toString() + " ("
 					+ bp.getBranch().toString() + ")";
-			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(activity, bp.getId());
+			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(activity,
+					bp.getId());
 			double[] p = new double[hist.size()];
 			Date[] d = new Date[hist.size()];
 			int j = 0;
-			for (DatePrice ie : hist) {
-				DatePrice dp = ie;
+			for (DatePrice dp : hist) {
 				p[j] = dp.getActualPrice();
 				if (p[j] > maxPrice) {
 					maxPrice = (int) Math.ceil(p[j]);
 				}
 				if (minPrice > p[j]) {
-					minPrice = (int) Math.round(p[j]);
+					minPrice = (int) Math.floor(p[j]);
 				}
 				if (maxDate == null || dp.getDate().after(maxDate)) {
 					maxDate = dp.getDate();
@@ -109,7 +111,7 @@ public class TimelineChart {
 				activity.getString(R.string.chart_xaxis),
 				activity.getString(R.string.chart_yaxis), minDate, maxDate,
 				minPrice, maxPrice);
-		renderer.setXLabels(5);
+		renderer.setXLabels(6);
 		renderer.setYLabels(5);
 		int length = renderer.getSeriesRendererCount();
 		for (int k = 0; k < length; k++) {
@@ -218,7 +220,7 @@ public class TimelineChart {
 		renderer.setChartTitleTextSize(40);
 		renderer.setLabelsTextSize(20);
 		renderer.setLegendTextSize(20);
-		renderer.setPointSize(3f);
+		renderer.setPointSize(5f);
 		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int length = colours.length;
@@ -268,6 +270,8 @@ public class TimelineChart {
 		renderer.setXAxisMax(xMax.getTime());
 		renderer.setYAxisMin(yMin);
 		renderer.setYAxisMax(yMax);
+		renderer.setInitialRange(new double[] { xMin.getTime(), xMax.getTime(),
+				yMin, yMax });
 		renderer.setShowGridY(true);
 		renderer.setShowGridX(true);
 		renderer.setApplyBackgroundColor(true);
