@@ -585,4 +585,57 @@ public class EntityUtils {
 		return productDAO.getByCloudID(productId);
 	}
 
+	public static BranchProduct selectBranchProduct(Context context,
+			ArrayList<Branch> branches) {
+		if(branches == null){
+			return null; 
+		}
+		if (branchProductDAO == null) {
+			initBranchProduct(context);
+		}
+		int pos,count = 0;
+		ArrayList<BranchProduct> bps = null;
+		while (bps == null && count < branches.size()) {
+			pos = (int) (Math.random() * (branches.size() - 1));
+			bps = branchProductDAO.getAllByParameters(
+			new String[] { DB.BRANCH_ID },
+					new String[] { String.valueOf(branches.get(pos).getId()) });
+			count ++;
+		}
+		if(bps == null){
+			return null;
+		}
+		pos = (int) (Math.random() * (bps.size() - 1));
+		return bps.get(pos);
+	}
+
+	public static City getCity(Context context, long cityID) {
+		if (cityDAO == null) {
+			initCity(context);
+		}
+		return cityDAO.getByCloudID(cityID);
+	}
+
+	public static ArrayList<Branch> getBranches(Context context, City city) {
+		if (branchDAO == null) {
+			initBranch(context);
+		}
+		if (cityLocationDAO == null) {
+			initCityLocation(context);
+		}
+		ArrayList<CityLocation> locs = cityLocationDAO.getAllByParameters(
+				new String[] { DB.CITY_ID },
+				new String[] { String.valueOf(city.getId()) });
+		ArrayList<Branch> branches = new ArrayList<Branch>();
+		for (CityLocation cl : locs) {
+			ArrayList<Branch> temp = branchDAO.getAllByParameters(
+					new String[] { DB.CITY_LOCATION_ID },
+					new String[] { String.valueOf(cl.getId()) });
+			if (temp != null) {
+				branches.addAll(temp);
+			}
+		}
+		return branches;
+	}
+
 }

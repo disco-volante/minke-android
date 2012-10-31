@@ -104,34 +104,37 @@ public class HomeActivity extends SherlockFragmentActivity {
 	}
 
 	private void requestLocation() {
-		final LocationManager lm = (LocationManager) getApplication()
-				.getSystemService(Context.LOCATION_SERVICE);
-		lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-				10 * TIME.MINUTE, 1, new LocationListener() {
+		if (!DEBUG.EMULATOR) {
+			final LocationManager lm = (LocationManager) getApplication()
+					.getSystemService(Context.LOCATION_SERVICE);
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+					10 * TIME.MINUTE, 1, new LocationListener() {
 
-					@Override
-					public void onLocationChanged(Location loc) {
-						if (loc != null) {
-							MapUtils.setUserLocation(loc.getLatitude(),
-									loc.getLongitude());
+						@Override
+						public void onLocationChanged(Location loc) {
+							if (loc != null) {
+								MapUtils.setUserLocation(loc.getLatitude(),
+										loc.getLongitude());
+								MapUtils.changeCity(getApplicationContext());
+							}
 						}
-					}
 
-					@Override
-					public void onProviderDisabled(String arg0) {
-						lm.removeUpdates(this);
-					}
+						@Override
+						public void onProviderDisabled(String arg0) {
+							lm.removeUpdates(this);
+						}
 
-					@Override
-					public void onProviderEnabled(String arg0) {
-					}
+						@Override
+						public void onProviderEnabled(String arg0) {
+						}
 
-					@Override
-					public void onStatusChanged(String arg0, int arg1,
-							Bundle arg2) {
-					}
+						@Override
+						public void onStatusChanged(String arg0, int arg1,
+								Bundle arg2) {
+						}
 
-				});
+					});
+		}
 	}
 
 	/**
@@ -370,27 +373,33 @@ public class HomeActivity extends SherlockFragmentActivity {
 					requestCode, resultCode, data);
 			if (scanResult != null) {
 				try {
-					ScanUtils.setBarCode(Long.parseLong(scanResult
-							.getContents()));
-					findProduct();
-					return;
+					if (!ScanUtils.setBarCode(Long.parseLong(scanResult
+							.getContents()))) {
+						scanFail();
+					} else {
+						findProduct();
+					}
 				} catch (NumberFormatException nfe) {
 					nfe.printStackTrace();
 				}
 			}
 		} else if (!downloading && resultCode == Activity.RESULT_CANCELED) {
-			AlertDialog.Builder failed = DialogUtils.getErrorDialog(this,
-					ERROR.SCAN);
-			failed.setPositiveButton(getString(R.string.retry),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							scan(null);
-							dialog.cancel();
-						}
-					});
-			failed.show();
+			scanFail();
 		}
+	}
+
+	private void scanFail() {
+		AlertDialog.Builder failed = DialogUtils.getErrorDialog(this,
+				ERROR.SCAN);
+		failed.setPositiveButton(getString(R.string.retry),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						scan(null);
+						dialog.cancel();
+					}
+				});
+		failed.show();
 	}
 
 	/**

@@ -62,6 +62,14 @@ public class Product {
 		return measure;
 	}
 
+	public CharSequence getSizeString() {
+		int intified = (int) size;
+		if (size / intified != 1) {
+			return size + " " + measure;
+		}
+		return intified + " " + measure;
+	}
+
 	public void setSize(double size) {
 		this.size = size;
 	}
@@ -73,13 +81,10 @@ public class Product {
 	@Override
 	public String toString() {
 		if (brand == null) {
-			return size + measure + " " + name;
+			return getSizeString() + " " + name;
 		}
-		int intified = (int) size;
-		if (size / intified != 1) {
-			return size + " " + measure + " " + brand.toString() + " " + name;
-		}
-		return intified + " " + measure + " " + brand.toString() + " " + name;
+		return getSizeString() + " " + brand.toString() + " " + name;
+
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -157,4 +162,5 @@ public class Product {
 	public int getQuantity() {
 		return quantity;
 	}
+
 }

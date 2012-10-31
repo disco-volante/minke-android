@@ -1,8 +1,10 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import za.ac.sun.cs.hons.minke.R;
+import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.maps.GoogleParser;
 import za.ac.sun.cs.hons.minke.gui.maps.Route;
@@ -12,8 +14,10 @@ import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
@@ -87,6 +91,7 @@ public class MapUtils {
 	public static void setUserLocation(double lat, double lon) {
 		user = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
 		locsChanged = true;
+		
 	}
 
 	public static double rad(double x) {
@@ -177,5 +182,33 @@ public class MapUtils {
 		}
 		return chars.length;
 	}
+
+	public static City changeCity(Context context){
+		City city = null;
+		ArrayList<Branch> branches = EntityUtils.getBranches(context);
+		if (branches == null || branches.size() == 0) {
+			return null;
+		}
+		Collections.sort(branches);
+		int pos = 0;
+		while (city == null) {
+			if (pos == branches.size()) {
+				return null;
+			}
+			System.out.println();
+			if (branches.get(pos) != null
+					&& branches.get(pos).getCityLocation() != null
+					&& branches.get(pos).getCityLocation().getCity() != null) {
+				city = branches.get(pos).getCityLocation().getCity();
+				break;
+			}
+			pos++;
+		}
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		prefs.edit().putLong("cityID", city.getId()).commit();
+		return city;
+	}
+	
 
 }

@@ -35,16 +35,21 @@ public class ScanUtils {
 		return branchProduct;
 	}
 
-	public static void setBranchProduct(Context context, BranchProduct branchProduct) {
+	public static void setBranchProduct(Context context,
+			BranchProduct branchProduct) {
 		ScanUtils.branchProduct = branchProduct;
 		if (branchProduct != null) {
-			BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(context,
-					branchProduct.getProductId(), branchProduct));
+			BrowseUtils.setBranchProducts(EntityUtils.retrieveBranchProducts(
+					context, branchProduct.getProductId(), branchProduct));
 		}
 	}
 
-	public static void setBarCode(long _barCode) {
+	public static boolean setBarCode(long _barCode) {
+		if (!validate(_barCode)) {
+			return false;
+		}
 		barCode = _barCode;
+		return true;
 	}
 
 	public static long getBarCode() {
@@ -59,6 +64,19 @@ public class ScanUtils {
 		province = null;
 		categoryName = brandName = productName = cityName = branchName = storeName = null;
 		size = price = measurePos = -1;
+	}
+
+	public static boolean validate(long code) {
+		int len = String.valueOf(code).length();
+		return len > 11 && len < 14;
+	}
+
+	public static long getDummyCode() {
+		long code = 0;
+		while (!validate(code)) {
+			code = (long) (Math.random() * 1E13);
+		}
+		return code;
 	}
 
 }

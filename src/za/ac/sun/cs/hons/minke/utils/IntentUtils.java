@@ -46,8 +46,7 @@ public class IntentUtils {
 	public static Intent getEmulatorIntent() {
 		Intent intent = new Intent();
 		intent.putExtra("SCAN_RESULT_FORMAT", "UPC_A");
-		intent.putExtra("SCAN_RESULT",
-				String.valueOf((long) (100002)));// * Math.random())));
+		intent.putExtra("SCAN_RESULT", String.valueOf(ScanUtils.getDummyCode()));
 		return intent;
 	}
 

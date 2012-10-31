@@ -1,6 +1,5 @@
 package za.ac.sun.cs.hons.minke.entities.product;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -60,8 +59,15 @@ public class DatePrice implements Comparable<DatePrice> {
 	}
 
 	public String _getFormattedPrice() {
-		DecimalFormat twoDForm = new DecimalFormat("#.##");
-		return twoDForm.format(getActualPrice()).replace(',', '.');
+		String sPrice = String.valueOf(getActualPrice());
+		if(sPrice.indexOf('.')==-1){
+			sPrice = sPrice.concat(".00");
+		}else if(sPrice.indexOf('.')==sPrice.length()-1){
+			sPrice = sPrice.concat("00");
+		}else if(sPrice.indexOf('.')==sPrice.length()-2){
+			sPrice = sPrice.concat("0");
+		}
+		return sPrice;
 	}
 
 	public void setBranchProductID(long branchProductID) {

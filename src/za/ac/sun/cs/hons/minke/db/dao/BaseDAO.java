@@ -107,6 +107,20 @@ public abstract class BaseDAO<T> {
 		return ret;
 	}
 
+	public T getRandom() {
+		Cursor cursor = database.query(table, columns, null, null, null, null,
+				null);
+		if (!cursor.moveToFirst() || cursor.getCount() == 0) {
+			cursor.close();
+			return null;
+		}
+		int pos = (int) (cursor.getCount() * Math.random());
+		cursor.move(pos);
+		T entry = parse(cursor);
+		cursor.close();
+		return entry;
+	}
+
 	public T getByCloudID(long id) {
 		Cursor cursor = database.query(table, columns, DB.CLOUD_ID_FILTER,
 				new String[] { String.valueOf(id) }, null, null, null);
