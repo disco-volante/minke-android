@@ -1,7 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.utils;
 
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.REGEX;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,11 +23,13 @@ public class TextErrorWatcher implements TextWatcher {
 	public void afterTextChanged(Editable s) {
 		if (s == null || s.toString() == null || s.toString().length() == 0) {
 			view.setError(context.getString(R.string.str_input));
-		} else if (numeric && !s.toString().matches(Constants.DECIMALS_0)
-				&& !s.toString().matches(Constants.DECIMALS_1)
-				&& !s.toString().matches(Constants.DECIMALS_2)) {
+		} else if (numeric && !s.toString().matches(REGEX.DECIMALS_0)
+				&& !s.toString().matches(REGEX.DECIMALS_1)
+				&& !s.toString().matches(REGEX.DECIMALS_2)) {
 			view.setError(context.getString(R.string.str_input_numeric));
-		} else {
+		} else if(!numeric && !s.toString().matches(REGEX.STRING)){
+			view.setError(context.getString(R.string.str_input_chars));
+		}else{
 			view.setError(null);
 		}
 	}
