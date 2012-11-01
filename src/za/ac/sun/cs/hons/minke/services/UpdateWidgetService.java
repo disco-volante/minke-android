@@ -28,10 +28,10 @@ public class UpdateWidgetService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(TAGS.STATE, "UpdateWidgetService Called");
 		City city = getCity(getApplicationContext());
-		ArrayList<Branch> branches = getBranches(city);
+		ArrayList<Branch> branches = getBranches();
 		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		BranchProduct bp = EntityUtils.selectBranchProduct(
-				getApplicationContext(), branches);
+				getApplicationContext(), branches, city.getId());
 		if (bp == null) {
 			stopSelf();
 			return super.onStartCommand(intent, flags, startId);
@@ -61,11 +61,11 @@ public class UpdateWidgetService extends Service {
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private ArrayList<Branch> getBranches(City city) {
-		if(city == null){
+	private ArrayList<Branch> getBranches() {
+		//if(city == null){
 			return EntityUtils.getBranches(getApplicationContext());
-		}
-		return EntityUtils.getBranches(getApplicationContext(), city);
+		//}
+		//return EntityUtils.getBranches(getApplicationContext(), city);
 	}
 
 	public static City getCity(Context context) {

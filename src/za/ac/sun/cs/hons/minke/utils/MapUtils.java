@@ -195,7 +195,6 @@ public class MapUtils {
 			if (pos == branches.size()) {
 				return null;
 			}
-			System.out.println();
 			if (branches.get(pos) != null
 					&& branches.get(pos).getCityLocation() != null
 					&& branches.get(pos).getCityLocation().getCity() != null) {

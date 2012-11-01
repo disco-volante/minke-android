@@ -2,7 +2,6 @@ package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -395,6 +394,7 @@ public class EntityUtils {
 				|| SearchUtils.getSearched().size() == 0) {
 			return ERROR.NOT_FOUND;
 		}
+		Collections.sort(SearchUtils.getSearched());
 		return ERROR.SUCCESS;
 	}
 
@@ -588,7 +588,7 @@ public class EntityUtils {
 	}
 
 	public static BranchProduct selectBranchProduct(Context context,
-			ArrayList<Branch> branches) {
+			ArrayList<Branch> branches, long cityID) {
 		if (branches == null) {
 			return null;
 		}
@@ -598,6 +598,11 @@ public class EntityUtils {
 		int pos = 0;
 		ArrayList<BranchProduct> bps = new ArrayList<BranchProduct>();
 		for (Branch b : branches) {
+			if (b == null || b.getCityLocation() == null
+					|| b.getCityLocation().getCity() == null
+					|| b.getCityLocation().getCityId() != cityID) {
+				continue;
+			}
 			ArrayList<BranchProduct> temp = branchProductDAO
 					.getAllByParameters(new String[] { DB.BRANCH_ID },
 							new String[] { String.valueOf(b.getId()) });
@@ -615,23 +620,7 @@ public class EntityUtils {
 
 	private static ArrayList<BranchProduct> filterLatest(
 			ArrayList<BranchProduct> bps) {
-		Comparator<BranchProduct> comp = new Comparator<BranchProduct>() {
-
-			@Override
-			public int compare(BranchProduct first, BranchProduct second) {
-				if (first == null || first.getDatePrice() == null
-						|| first.getDatePrice().getDate() == null) {
-					return 1;
-				} else if (second == null || second.getDatePrice() == null
-						|| second.getDatePrice().getDate() == null) {
-					return -1;
-				}
-				return second.getDatePrice().getDate()
-						.compareTo(first.getDatePrice().getDate());
-			}
-
-		};
-		Collections.sort(bps, comp);
+		Collections.sort(bps);
 		ArrayList<BranchProduct> latest = new ArrayList<BranchProduct>();
 		int len = Math.min(10, bps.size());
 		latest.addAll(bps.subList(0, len));
