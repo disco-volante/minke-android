@@ -1,6 +1,8 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -587,26 +589,54 @@ public class EntityUtils {
 
 	public static BranchProduct selectBranchProduct(Context context,
 			ArrayList<Branch> branches) {
-		if(branches == null){
-			return null; 
+		if (branches == null) {
+			return null;
 		}
 		if (branchProductDAO == null) {
 			initBranchProduct(context);
 		}
-		int pos,count = 0;
-		ArrayList<BranchProduct> bps = null;
-		while (bps == null && count < branches.size()) {
-			pos = (int) (Math.random() * (branches.size() - 1));
-			bps = branchProductDAO.getAllByParameters(
-			new String[] { DB.BRANCH_ID },
-					new String[] { String.valueOf(branches.get(pos).getId()) });
-			count ++;
+		int pos = 0;
+		ArrayList<BranchProduct> bps = new ArrayList<BranchProduct>();
+		for (Branch b : branches) {
+			ArrayList<BranchProduct> temp = branchProductDAO
+					.getAllByParameters(new String[] { DB.BRANCH_ID },
+							new String[] { String.valueOf(b.getId()) });
+			if (temp != null) {
+				bps.addAll(temp);
+			}
 		}
-		if(bps == null){
+		if (bps.size() == 0) {
 			return null;
 		}
+		bps = filterLatest(bps);
 		pos = (int) (Math.random() * (bps.size() - 1));
 		return bps.get(pos);
+	}
+
+	private static ArrayList<BranchProduct> filterLatest(
+			ArrayList<BranchProduct> bps) {
+		Comparator<BranchProduct> comp = new Comparator<BranchProduct>() {
+
+			@Override
+			public int compare(BranchProduct first, BranchProduct second) {
+				if (first == null || first.getDatePrice() == null
+						|| first.getDatePrice().getDate() == null) {
+					return 1;
+				} else if (second == null || second.getDatePrice() == null
+						|| second.getDatePrice().getDate() == null) {
+					return -1;
+				}
+				return second.getDatePrice().getDate()
+						.compareTo(first.getDatePrice().getDate());
+			}
+
+		};
+		Collections.sort(bps, comp);
+		ArrayList<BranchProduct> latest = new ArrayList<BranchProduct>();
+		int len = Math.min(10, bps.size());
+		latest.addAll(bps.subList(0, len));
+		return latest;
+
 	}
 
 	public static City getCity(Context context, long cityID) {

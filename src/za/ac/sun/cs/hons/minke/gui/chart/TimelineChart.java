@@ -25,6 +25,7 @@ import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
+import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.Gravity;
@@ -44,7 +45,7 @@ public class TimelineChart {
 	private HashSet<String> added, removed;
 
 	public TimelineChart(ChartActivity _activity) {
-		this.activity = _activity;
+		activity = _activity;
 	}
 
 	/**
@@ -72,6 +73,12 @@ public class TimelineChart {
 						rCol.nextInt(256));
 				attempts ++;
 			}
+			float[] hsv =  new float[3];
+			Color.RGBToHSV(Color.red(colour),
+					Color.green(colour),
+					Color.blue(colour), hsv);
+			hsv[2] = 0.5f * ( 1f + hsv[2] );
+			colour = Color.HSVToColor(hsv);
 			if (DEBUG.ON) {
 				Log.v(TAGS.CHART, "colour " + colour);
 			}
@@ -106,6 +113,12 @@ public class TimelineChart {
 			dates.add(d);
 
 		}
+		maxPrice += 1;
+		if(minPrice > 0){
+			minPrice -= 1;
+		}
+		minDate.setTime(minDate.getTime()-TIME.DAY);
+		maxDate.setTime(maxDate.getTime()+TIME.DAY);
 		renderer = buildRenderer(colours, styles);
 		setChartSettings(renderer, activity.getString(R.string.chart_title),
 				activity.getString(R.string.chart_xaxis),
@@ -220,13 +233,14 @@ public class TimelineChart {
 		renderer.setChartTitleTextSize(40);
 		renderer.setLabelsTextSize(20);
 		renderer.setLegendTextSize(20);
-		renderer.setPointSize(5f);
+		renderer.setPointSize(10f);
 		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int length = colours.length;
 		int stylePos = 0;
 		for (int i = 0; i < length; i++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
+			r.setLineWidth(3f);
 			r.setColor(colours[i]);
 			r.setPointStyle(styles[stylePos++]);
 			if (stylePos == styles.length) {

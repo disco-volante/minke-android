@@ -23,9 +23,9 @@ public class ShopListAdapter extends ArrayAdapter<ShopList> {
 		protected TextView store, total;
 	}
 
-	public ShopListAdapter(HomeActivity context, ArrayList<ShopList> shopLists) {
-		super(context, R.layout.row_branch, shopLists);
-		this.context = context;
+	public ShopListAdapter(HomeActivity _context, ArrayList<ShopList> shopLists) {
+		super(_context, R.layout.row_branch, shopLists);
+		context = _context;
 
 	}
 

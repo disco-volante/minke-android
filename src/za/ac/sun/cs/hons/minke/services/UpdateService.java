@@ -56,8 +56,8 @@ public class UpdateService extends Service {
 		if (!running) {
 			try {
 				running = true;
-				PendingIntent pending = PendingIntent.getActivity(this, 0,
-						IntentUtils.getHomeIntent(this),
+				PendingIntent pending = PendingIntent.getActivity(getApplicationContext(), 0,
+						IntentUtils.getHomeIntent(getApplicationContext()),
 						Intent.FLAG_ACTIVITY_NEW_TASK);
 				CharSequence title = getText(R.string.app_name);
 				CharSequence text = getText(R.string.updating_msg);

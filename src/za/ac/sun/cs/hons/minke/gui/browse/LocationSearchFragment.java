@@ -45,8 +45,8 @@ public class LocationSearchFragment extends SherlockFragment {
 
 	private void initBoxes(View v) {
 		locationBox = (AutoCompleteTextView) v.findViewById(R.id.text_location);
-		locationAdapter = new ArrayAdapter<Object>(this.getActivity(),
-				R.layout.listitem_default, EntityUtils.getLocations(getActivity()));
+		locationAdapter = new ArrayAdapter<Object>(getActivity(),
+				R.layout.listitem_default, EntityUtils.getLocations(getActivity().getApplicationContext()));
 		locationBox.setAdapter(locationAdapter);
 		locationBox.setOnItemClickListener(new OnItemClickListener() {
 
@@ -69,7 +69,7 @@ public class LocationSearchFragment extends SherlockFragment {
 	}
 
 	private void initLists(View v) {
-		locationListAdapter = new ItemListAdapter<Object>(this.getActivity(),
+		locationListAdapter = new ItemListAdapter<Object>(getActivity(),
 				SearchUtils.getAddedLocations()) {
 			@Override
 			public void removeFromSearch(Object loc) {
@@ -105,7 +105,7 @@ public class LocationSearchFragment extends SherlockFragment {
 			SearchUtils.addLocation(location);
 			locationListAdapter.notifyDataSetChanged();
 		} else {
-			Toast msg = Toast.makeText(this.getActivity(),
+			Toast msg = Toast.makeText(getActivity(),
 					getString(R.string.str_added), Toast.LENGTH_LONG);
 			msg.setGravity(Gravity.CENTER_VERTICAL, Gravity.CENTER_HORIZONTAL,
 					0);

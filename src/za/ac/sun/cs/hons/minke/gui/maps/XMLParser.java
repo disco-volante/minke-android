@@ -15,9 +15,9 @@ public class XMLParser {
 
 	protected URL feedUrl;
 
-	protected XMLParser(final String feedUrl) {
+	protected XMLParser(final String _feedUrl) {
 		try {
-			this.feedUrl = new URL(feedUrl);
+			feedUrl = new URL(_feedUrl);
 		} catch (MalformedURLException e) {
 			if (DEBUG.ON) {
 				Log.e(e.getMessage(), "XML parser - " + feedUrl);

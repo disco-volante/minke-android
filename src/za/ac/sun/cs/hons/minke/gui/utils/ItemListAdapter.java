@@ -31,16 +31,16 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 
 	}
 
-	public ItemListAdapter(Activity activity, ArrayList<T> added, int _rowType) {
-		super(activity, _rowType, added);
-		this.setActivity(activity);
+	public ItemListAdapter(Activity _activity, ArrayList<T> added, int _rowType) {
+		super(_activity, _rowType, added);
+		activity = _activity;
 		rowType = _rowType;
 
 	}
 
-	public ItemListAdapter(Activity activity, ArrayList<T> added) {
-		super(activity, R.layout.row_removable, added);
-		this.setActivity(activity);
+	public ItemListAdapter(Activity _activity, ArrayList<T> added) {
+		super(_activity, R.layout.row_removable, added);
+		activity = _activity;
 		rowType = R.layout.row_removable;
 
 	}
@@ -142,8 +142,5 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 		return activity;
 	}
 
-	public void setActivity(Activity activity) {
-		this.activity = activity;
-	}
-
+	
 }

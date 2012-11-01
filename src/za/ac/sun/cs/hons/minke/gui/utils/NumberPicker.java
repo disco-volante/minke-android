@@ -40,12 +40,6 @@ public class NumberPicker extends LinearLayout implements OnClickListener,
 		String toString(int value);
 	}
 
-	/*
-	 * Use a custom NumberPicker formatting callback to use two-digit minutes
-	 * strings like "01". Keeping a static formatter etc. is the most efficient
-	 * way to do this; it avoids creating temporary objects on every call to
-	 * format().
-	 */
 	public static final NumberPicker.Formatter TWO_DIGIT_FORMATTER = new NumberPicker.Formatter() {
 		final StringBuilder mBuilder = new StringBuilder();
 		final java.util.Formatter mFmt = new java.util.Formatter(mBuilder);

@@ -24,8 +24,8 @@ public class Route {
 		points.add(p);
 	}
 
-	public void addPoints(final List<GeoPoint> points) {
-		this.points.addAll(points);
+	public void addPoints(final List<GeoPoint> _points) {
+		points.addAll(_points);
 	}
 
 	public List<GeoPoint> getPoints() {
@@ -44,8 +44,8 @@ public class Route {
 	 * @param name
 	 *            the name to set
 	 */
-	public void setName(final String name) {
-		this.name = name;
+	public void setName(final String _name) {
+		name = _name;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class Route {
 	 * @param copyright
 	 *            the copyright to set
 	 */
-	public void setCopyright(String copyright) {
-		this.copyright = copyright;
+	public void setCopyright(String _copyright) {
+		copyright = _copyright;
 	}
 
 	/**
@@ -74,8 +74,8 @@ public class Route {
 	 * @param warning
 	 *            the warning to set
 	 */
-	public void setWarning(String warning) {
-		this.warning = warning;
+	public void setWarning(String _warning) {
+		warning = _warning;
 	}
 
 	/**
@@ -89,8 +89,8 @@ public class Route {
 	 * @param country
 	 *            the country to set
 	 */
-	public void setCountry(String country) {
-		this.country = country;
+	public void setCountry(String _country) {
+		country = _country;
 	}
 
 	/**
@@ -104,8 +104,8 @@ public class Route {
 	 * @param length
 	 *            the length to set
 	 */
-	public void setLength(int length) {
-		this.length = length;
+	public void setLength(int _length) {
+		length = _length;
 	}
 
 	/**
@@ -119,8 +119,8 @@ public class Route {
 	 * @param polyline
 	 *            the polyline to set
 	 */
-	public void setPolyline(String polyline) {
-		this.polyline = polyline;
+	public void setPolyline(String _polyline) {
+		polyline = _polyline;
 	}
 
 	/**

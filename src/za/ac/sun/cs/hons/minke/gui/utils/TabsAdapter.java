@@ -81,7 +81,7 @@ public class TabsAdapter implements TabHost.OnTabChangeListener {
 	}
 
 	public void setBackPress(boolean _backPress) {
-		this.backPress = _backPress;
+		backPress = _backPress;
 	}
 
 	public boolean isStackEmpty() {

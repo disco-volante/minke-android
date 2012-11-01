@@ -107,7 +107,7 @@ public class MapsActivity extends SherlockMapActivity {
 	}
 	
 	public void home(){
-		startActivity(IntentUtils.getHomeIntent(this));
+		startActivity(IntentUtils.getHomeIntent(getApplicationContext()));
 		finish();
 	}
 
@@ -144,17 +144,17 @@ public class MapsActivity extends SherlockMapActivity {
 			mapController = mapView.getController();
 			mapController.setZoom(15);
 			mapController.setCenter(MapUtils.getUserLocation());
-			BasicOverlay shopsOverlay = new BasicOverlay(MapsActivity.this
+			BasicOverlay shopsOverlay = new BasicOverlay(this
 					.getResources().getDrawable(R.drawable.shop),
-					MapsActivity.this);
+					this);
 			for (ShopList sl : ShopUtils.getShopLists()) {
 				shopsOverlay.addOverlay(new OverlayItem(sl.getBranch()
 						.getCityLocation().getGeoPoint(), sl.toString(), sl
 						.getBranch().getCityLocation().toString()));
 			}
-			BasicOverlay iconOverlay = new BasicOverlay(MapsActivity.this
+			BasicOverlay iconOverlay = new BasicOverlay(this
 					.getResources().getDrawable(R.drawable.user),
-					MapsActivity.this);
+					this);
 			iconOverlay.addOverlay(new OverlayItem(MapUtils.getUserLocation(),
 					getString(R.string.you), getString(R.string.str_you)));
 			mapView.getOverlays().add(shopsOverlay);
@@ -202,8 +202,8 @@ public class MapsActivity extends SherlockMapActivity {
 		if (mapView.getOverlays().size() > 3) {
 			mapView.getOverlays().remove(mapView.getOverlays().size() - 1);
 		}
-		BasicOverlay iconOverlay = new BasicOverlay(MapsActivity.this
-				.getResources().getDrawable(R.drawable.pin), MapsActivity.this);
+		BasicOverlay iconOverlay = new BasicOverlay(this
+				.getResources().getDrawable(R.drawable.pin), this);
 		iconOverlay.addOverlay(new OverlayItem(point, title, message));
 		mapView.getOverlays().add(iconOverlay);
 		mapController.animateTo(point);

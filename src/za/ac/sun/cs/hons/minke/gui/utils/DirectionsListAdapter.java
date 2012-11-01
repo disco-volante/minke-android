@@ -21,10 +21,10 @@ public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 
 	}
 
-	public DirectionsListAdapter(MapsActivity activity, ArrayList<Segment> added) {
-		super(activity, R.layout.row_directions, added);
+	public DirectionsListAdapter(MapsActivity _activity, ArrayList<Segment> added) {
+		super(_activity, R.layout.row_directions, added);
 		rowType = R.layout.row_directions;
-		this.activity = activity;
+		activity = _activity;
 	}
 
 	@Override

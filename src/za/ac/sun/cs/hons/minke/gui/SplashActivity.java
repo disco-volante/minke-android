@@ -53,7 +53,7 @@ public class SplashActivity extends Activity {
 	}
 
 	private void loadHome() {
-		startActivity(IntentUtils.getHomeIntent(this));
+		startActivity(IntentUtils.getHomeIntent(getApplicationContext()));
 		finish();
 	}
 
@@ -66,23 +66,26 @@ public class SplashActivity extends Activity {
 	 * 
 	 */
 	static class Updater extends UpdateDataBGTask {
-		public Updater(Activity activity) {
-			super(activity);
+		private Activity activity;
+
+		public Updater(Activity _activity) {
+			super(_activity.getApplicationContext());
+			activity = _activity;
 		}
 
 		@Override
 		protected void onPostExecute(Void result) {
 			if (error != ERROR.SUCCESS) {
 				Log.v(TAGS.HTTP, "ERROR");
-				Toast.makeText(context,
-						ErrorUtils.getErrorMessage(error, context),
+				Toast.makeText(activity,
+						ErrorUtils.getErrorMessage(error, activity),
 						Toast.LENGTH_LONG).show();
 			} else {
 				if (PreferencesUtils.isFirstTime()) {
 					PreferencesUtils.changeFirstTime(context, false);
 				}
 			}
-			((SplashActivity) context).loadHome();
+			((SplashActivity) activity).loadHome();
 
 		}
 	}

@@ -22,9 +22,9 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		protected TextView name, price;
 	}
 
-	public BPListAdapter(Activity context, ArrayList<BranchProduct> bps) {
-		super(context, R.layout.row_branchproduct, bps);
-		this.context = context;
+	public BPListAdapter(Activity _context, ArrayList<BranchProduct> bps) {
+		super(_context, R.layout.row_branchproduct, bps);
+		context = _context;
 
 	}
 

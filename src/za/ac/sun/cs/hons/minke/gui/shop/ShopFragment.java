@@ -50,7 +50,7 @@ public class ShopFragment extends SherlockFragment {
 
 	private void initGUI(View v) {
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getProducts(getActivity()));
+				R.layout.listitem_default, EntityUtils.getProducts(getActivity().getApplicationContext()));
 		shopping = (AutoCompleteTextView) v.findViewById(R.id.text_shops);
 		shopping.setAdapter(productAdapter);
 		shopping.setOnItemClickListener(new OnItemClickListener() {
@@ -92,7 +92,7 @@ public class ShopFragment extends SherlockFragment {
 			ShopUtils.addProduct(item);
 			shoplistAdapter.notifyDataSetChanged();
 		} else {
-			Toast msg = Toast.makeText(this.getActivity(),
+			Toast msg = Toast.makeText(getActivity(),
 					getString(R.string.str_added), Toast.LENGTH_LONG);
 			msg.setGravity(Gravity.CENTER_VERTICAL, Gravity.CENTER_HORIZONTAL,
 					0);
@@ -142,7 +142,7 @@ public class ShopFragment extends SherlockFragment {
 
 		@Override
 		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranches(activity, ShopUtils.getAddedProducts());
+			return EntityUtils.retrieveBranches(activity.getApplicationContext(), ShopUtils.getAddedProducts());
 		}
 	}
 }

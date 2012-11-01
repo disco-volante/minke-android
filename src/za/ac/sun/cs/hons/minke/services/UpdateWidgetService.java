@@ -29,8 +29,7 @@ public class UpdateWidgetService extends Service {
 		Log.i(TAGS.STATE, "UpdateWidgetService Called");
 		City city = getCity(getApplicationContext());
 		ArrayList<Branch> branches = getBranches(city);
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this
-				.getApplicationContext());
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
 		BranchProduct bp = EntityUtils.selectBranchProduct(
 				getApplicationContext(), branches);
 		if (bp == null) {

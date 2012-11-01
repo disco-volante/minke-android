@@ -12,10 +12,10 @@ public class TextErrorWatcher implements TextWatcher {
 	private boolean numeric;
 	private Context context;
 
-	public TextErrorWatcher(Context context, EditText view, boolean numeric) {
-		this.view = view;
-		this.numeric = numeric;
-		this.context = context;
+	public TextErrorWatcher(Context _context, EditText _view, boolean _numeric) {
+		view = _view;
+		numeric = _numeric;
+		context = _context;
 		afterTextChanged(view.getEditableText());
 	}
 

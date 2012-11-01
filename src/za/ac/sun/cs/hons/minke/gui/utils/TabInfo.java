@@ -20,8 +20,8 @@ public class TabInfo {
 		return fragment;
 	}
 
-	public void setFragment(Fragment fragment) {
-		this.fragment = fragment;
+	public void setFragment(Fragment _fragment) {
+		fragment = _fragment;
 	}
 
 	public String getClassName() {

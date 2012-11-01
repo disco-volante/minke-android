@@ -90,7 +90,7 @@ public class NewBranchFragment extends SherlockFragment {
 		branchText = (EditText) v.findViewById(R.id.text_branch);
 		storeBox = (AutoCompleteTextView) v.findViewById(R.id.text_store);
 		storeAdapter = new ArrayAdapter<Store>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getStores(getActivity()));
+				R.layout.listitem_default, EntityUtils.getStores(getActivity().getApplicationContext()));
 		storeBox.setAdapter(storeAdapter);
 		storeBox.setOnItemClickListener(new OnItemClickListener() {
 
@@ -112,7 +112,7 @@ public class NewBranchFragment extends SherlockFragment {
 		});
 		cityBox = (AutoCompleteTextView) v.findViewById(R.id.text_city);
 		cityAdapter = new ArrayAdapter<City>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCities(getActivity()));
+				R.layout.listitem_default, EntityUtils.getCities(getActivity().getApplicationContext()));
 		cityBox.setAdapter(cityAdapter);
 		cityBox.setOnItemClickListener(new OnItemClickListener() {
 
@@ -194,7 +194,7 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	private void requestProvince() {
-		final ArrayList<Province> provinces = EntityUtils.getProvinces(getActivity());
+		final ArrayList<Province> provinces = EntityUtils.getProvinces(getActivity().getApplicationContext());
 		if (provinces == null) {
 			return;
 		}
@@ -209,7 +209,7 @@ public class NewBranchFragment extends SherlockFragment {
 			names[i++] = p.toString();
 		}
 		AlertDialog.Builder location = new AlertDialog.Builder(getActivity());
-		location.setTitle(NewBranchFragment.this
+		location.setTitle(this
 				.getString(R.string.str_province));
 		location.setSingleChoiceItems(names, 0,
 				new android.content.DialogInterface.OnClickListener() {
@@ -220,8 +220,8 @@ public class NewBranchFragment extends SherlockFragment {
 					}
 				});
 		location.setPositiveButton(
-				NewBranchFragment.this.getString(R.string.add) + " "
-						+ NewBranchFragment.this.getString(R.string.branch),
+				getString(R.string.add) + " "
+						+ getString(R.string.branch),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
@@ -230,7 +230,7 @@ public class NewBranchFragment extends SherlockFragment {
 					}
 				});
 		location.setNegativeButton(
-				NewBranchFragment.this.getString(R.string.cancel),
+				getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
@@ -299,22 +299,22 @@ public class NewBranchFragment extends SherlockFragment {
 			}
 			if (ScanUtils.store == null) {
 				if (ScanUtils.city == null) {
-					return RPCUtils.createBranch(activity, ScanUtils.province,
+					return RPCUtils.createBranch(activity.getApplicationContext(), ScanUtils.province,
 							MapUtils.getUserLat(), MapUtils.getUserLon(),
 							ScanUtils.cityName, ScanUtils.storeName,
 							ScanUtils.branchName);
 				} else {
-					return RPCUtils.createBranch(activity,ScanUtils.city,
+					return RPCUtils.createBranch(activity.getApplicationContext(),ScanUtils.city,
 							MapUtils.getUserLat(), MapUtils.getUserLon(),
 							ScanUtils.storeName, ScanUtils.branchName);
 				}
 			} else if (ScanUtils.city == null) {
-				return RPCUtils.createBranch(activity,ScanUtils.province,
+				return RPCUtils.createBranch(activity.getApplicationContext(),ScanUtils.province,
 						ScanUtils.store, MapUtils.getUserLat(),
 						MapUtils.getUserLon(), ScanUtils.cityName,
 						ScanUtils.branchName);
 			} else {
-				return RPCUtils.createBranch(activity,ScanUtils.city, ScanUtils.store,
+				return RPCUtils.createBranch(activity.getApplicationContext(),ScanUtils.city, ScanUtils.store,
 						MapUtils.getUserLat(), MapUtils.getUserLon(),
 						ScanUtils.branchName);
 			}

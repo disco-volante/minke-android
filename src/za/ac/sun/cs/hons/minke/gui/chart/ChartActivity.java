@@ -37,7 +37,7 @@ public class ChartActivity extends SherlockActivity {
 		setContentView(R.layout.activity_graph);
 		holder = (RelativeLayout) findViewById(R.id.graph_holder);
 		if (BrowseUtils.getBranchProducts() == null || BrowseUtils.getBranchProducts().size() == 0) {
-			startActivity(IntentUtils.getHomeIntent(this));
+			startActivity(IntentUtils.getHomeIntent(getApplicationContext()));
 			finish();
 		} else if (getLastNonConfigurationInstance() != null) {
 			curTask = (ChartTask) getLastNonConfigurationInstance();

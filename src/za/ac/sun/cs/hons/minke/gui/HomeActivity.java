@@ -192,9 +192,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (params == null || params.length != 2) {
 					params = new Object[2];
 				}
-				params[0] = EntityUtils.getBranchProduct(this,
+				params[0] = EntityUtils.getBranchProduct(getApplicationContext(),
 						savedInstanceState.getLong("BP_ID"));
-				params[1] = EntityUtils.getProduct(this,
+				params[1] = EntityUtils.getProduct(getApplicationContext(),
 						savedInstanceState.getLong("PRODUCT_ID"));
 			}
 			showError(cmd, errorCode, str, params);
@@ -297,7 +297,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 	 * @param view
 	 */
 	public void showHistories(View view) {
-		startActivity(IntentUtils.getGraphIntent(this));
+		startActivity(IntentUtils.getGraphIntent(getApplicationContext()));
 	}
 
 	/**
@@ -617,7 +617,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR code) {
 			if (code == ERROR.NOT_FOUND) {
 				if (ScanUtils.getProduct() != null) {
-					ScanUtils.setBranchProduct(activity, new BranchProduct(0L,
+					ScanUtils.setBranchProduct(activity.getApplicationContext(), new BranchProduct(0L,
 							ScanUtils.getProduct().getId(), MapUtils
 									.getUserBranch().getId(), 0L));
 					((HomeActivity) activity).updatePrice(
@@ -638,7 +638,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected ERROR retrieve() {
 			ScanUtils.setProduct(null);
 			ScanUtils.setBranchProduct(activity, null);
-			Product p = EntityUtils.retrieveProduct(activity,
+			Product p = EntityUtils.retrieveProduct(activity.getApplicationContext(),
 					ScanUtils.getBarCode());
 			if (p == null) {
 				if (!PreferencesUtils.checkServer()) {
@@ -647,14 +647,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				p = EntityUtils.retrieveProductServer(activity,
+				p = EntityUtils.retrieveProductServer(activity.getApplicationContext(),
 						ScanUtils.getBarCode());
 				if (p == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
 			ScanUtils.setProduct(p);
-			BranchProduct bp = EntityUtils.retrieveBranchProduct(activity,
+			BranchProduct bp = EntityUtils.retrieveBranchProduct(activity.getApplicationContext(),
 					ScanUtils.getBarCode(), MapUtils.getUserBranch().getId());
 			if (bp == null) {
 				if (!PreferencesUtils.checkServer()) {
@@ -663,14 +663,14 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				bp = EntityUtils.retrieveBranchProductServer(activity,
+				bp = EntityUtils.retrieveBranchProductServer(activity.getApplicationContext(),
 						ScanUtils.getBarCode(), MapUtils.getUserBranch()
 								.getId());
 				if (bp == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
-			ScanUtils.setBranchProduct(activity, bp);
+			ScanUtils.setBranchProduct(activity.getApplicationContext(), bp);
 			return ERROR.SUCCESS;
 		}
 
@@ -686,11 +686,11 @@ public class HomeActivity extends SherlockFragmentActivity {
 		BranchProduct bp;
 		private int price;
 
-		public UpdateProductTask(Activity activity, BranchProduct bp, int price) {
+		public UpdateProductTask(Activity activity, BranchProduct _bp, int _price) {
 			super(activity, activity.getString(R.string.updating) + "...",
 					activity.getString(R.string.updating_product_msg));
-			this.bp = bp;
-			this.price = price;
+			bp = _bp;
+			price = _price;
 		}
 
 		@Override
@@ -701,7 +701,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
-			return RPCUtils.updateBranchProduct(activity, bp, price);
+			return RPCUtils.updateBranchProduct(activity.getApplicationContext(), bp, price);
 		}
 
 		@Override

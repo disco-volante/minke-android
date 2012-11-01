@@ -28,7 +28,7 @@ public class Segment {
 	 */
 
 	public void setInstruction(final String turn) {
-		this.instruction = turn;
+		instruction = turn;
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class Segment {
 	 * @param length
 	 *            the length to set
 	 */
-	public void setLength(final int length) {
-		this.length = length;
+	public void setLength(final int _length) {
+		length = _length;
 	}
 
 	/**
@@ -96,8 +96,8 @@ public class Segment {
 	 * @param distance
 	 *            the distance to set
 	 */
-	public void setDistance(double distance) {
-		this.distance = distance;
+	public void setDistance(double _distance) {
+		distance = _distance;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class Segment {
 	}
 
 	public void setMessage(String _message) {
-		this.message = _message;
+		message = _message;
 	}
 
 }

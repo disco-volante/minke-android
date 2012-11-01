@@ -76,7 +76,7 @@ public class StoreFragment extends SherlockFragment {
 				.getSystemService(Context.LOCATION_SERVICE));
 		if (ShopUtils.getShopLists().size() == 1) {
 			MapUtils.setDestination(ShopUtils.getShopLists().get(0));
-			startActivity(IntentUtils.getMapIntent(getActivity()));
+			startActivity(IntentUtils.getMapIntent(getActivity().getApplicationContext()));
 		} else {
 			String[] names = new String[ShopUtils.getShopLists().size()];
 			MapUtils.setDestination(ShopUtils.getShopLists().get(0));
@@ -100,7 +100,7 @@ public class StoreFragment extends SherlockFragment {
 						public void onClick(DialogInterface dialog, int id) {
 							startActivity(IntentUtils
 									.getMapIntent(StoreFragment.this
-											.getActivity()));
+											.getActivity().getApplicationContext()));
 						}
 					});
 			builder.setNegativeButton(getString(R.string.cancel),

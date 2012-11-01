@@ -81,9 +81,9 @@ public class ProductSearchFragment extends SherlockFragment {
 
 		});
 		categoryAdapter = new ArrayAdapter<Category>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCategories(getActivity()));
+				R.layout.listitem_default, EntityUtils.getCategories(getActivity().getApplicationContext()));
 		productAdapter = new ArrayAdapter<Product>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getProducts(getActivity()));
+				R.layout.listitem_default, EntityUtils.getProducts(getActivity().getApplicationContext()));
 		RadioButton productBtn = (RadioButton) v
 				.findViewById(R.id.rbtn_product);
 		productBtn.setOnClickListener(new OnClickListener() {
@@ -153,7 +153,7 @@ public class ProductSearchFragment extends SherlockFragment {
 			}
 			searchBox.setText("");
 		} else {
-			Toast msg = Toast.makeText(this.getActivity(),
+			Toast msg = Toast.makeText(getActivity(),
 					getString(R.string.str_added), Toast.LENGTH_LONG);
 			msg.setGravity(Gravity.CENTER_VERTICAL, Gravity.CENTER_HORIZONTAL,
 					0);
@@ -177,12 +177,12 @@ public class ProductSearchFragment extends SherlockFragment {
 
 		private Fragment fragment;
 
-		public SearchTask(Fragment fragment) {
-			super(fragment.getActivity(), fragment.getActivity().getString(
+		public SearchTask(Fragment _fragment) {
+			super(_fragment.getActivity(), _fragment.getActivity().getString(
 					R.string.searching)
-					+ "...", fragment.getActivity().getString(
+					+ "...", _fragment.getActivity().getString(
 					R.string.searching_product_msg));
-			this.fragment = fragment;
+			fragment = _fragment;
 		}
 
 		@Override

@@ -82,7 +82,7 @@ public class NewProductFragment extends SherlockFragment {
 		brandBox = (AutoCompleteTextView) v.findViewById(R.id.text_brand);
 		final ArrayAdapter<Brand> brands = new ArrayAdapter<Brand>(
 				getActivity(), R.layout.listitem_default,
-				EntityUtils.getBrands(getActivity()));
+				EntityUtils.getBrands(getActivity().getApplicationContext()));
 		brandBox.setAdapter(brands);
 		brandBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -104,7 +104,8 @@ public class NewProductFragment extends SherlockFragment {
 		categoryBox = (AutoCompleteTextView) v.findViewById(R.id.text_category);
 		final ArrayAdapter<Category> categories = new ArrayAdapter<Category>(
 				getActivity(), R.layout.listitem_default,
-				EntityUtils.getCategories(getActivity()));
+				EntityUtils
+						.getCategories(getActivity().getApplicationContext()));
 		categoryBox.setAdapter(categories);
 		categoryBox.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -277,28 +278,32 @@ public class NewProductFragment extends SherlockFragment {
 				return ERROR.SERVER;
 			}
 			if (ScanUtils.brand != null && ScanUtils.category != null) {
-				return RPCUtils.createBranchProduct(activity, MapUtils.getUserBranch(),
+				return RPCUtils.createBranchProduct(activity
+						.getApplicationContext(), MapUtils.getUserBranch(),
 						ScanUtils.productName, ScanUtils.brand,
 						ScanUtils.category, ScanUtils.size, unitSpinner
 								.getItemAtPosition(ScanUtils.measurePos)
 								.toString(), ScanUtils.price, ScanUtils
 								.getBarCode());
 			} else if (ScanUtils.brand != null) {
-				return RPCUtils.createBranchProduct(activity, MapUtils.getUserBranch(),
+				return RPCUtils.createBranchProduct(activity
+						.getApplicationContext(), MapUtils.getUserBranch(),
 						ScanUtils.productName, ScanUtils.brand,
 						ScanUtils.categoryName, ScanUtils.size, unitSpinner
 								.getItemAtPosition(ScanUtils.measurePos)
 								.toString(), ScanUtils.price, ScanUtils
 								.getBarCode());
 			} else if (ScanUtils.category != null) {
-				return RPCUtils.createBranchProduct(activity, MapUtils.getUserBranch(),
+				return RPCUtils.createBranchProduct(activity
+						.getApplicationContext(), MapUtils.getUserBranch(),
 						ScanUtils.productName, ScanUtils.brandName,
 						ScanUtils.category, ScanUtils.size, unitSpinner
 								.getItemAtPosition(ScanUtils.measurePos)
 								.toString(), ScanUtils.price, ScanUtils
 								.getBarCode());
 			} else {
-				return RPCUtils.createBranchProduct(activity, MapUtils.getUserBranch(),
+				return RPCUtils.createBranchProduct(activity
+						.getApplicationContext(), MapUtils.getUserBranch(),
 						ScanUtils.productName, ScanUtils.brandName,
 						ScanUtils.categoryName, ScanUtils.size, unitSpinner
 								.getItemAtPosition(ScanUtils.measurePos)

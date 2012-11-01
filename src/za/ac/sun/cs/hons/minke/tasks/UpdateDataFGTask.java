@@ -32,6 +32,6 @@ public class UpdateDataFGTask extends ProgressTask {
 		if (RPCUtils.startServer() == ERROR.SERVER) {
 			return ERROR.SERVER;
 		}
-		return RPCUtils.retrieveAll(activity);
+		return RPCUtils.retrieveAll(activity.getApplicationContext());
 	}
 }
