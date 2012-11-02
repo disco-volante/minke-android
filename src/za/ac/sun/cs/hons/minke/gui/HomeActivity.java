@@ -409,7 +409,7 @@ public class HomeActivity extends SherlockFragmentActivity {
 		choosing = true;
 		selectedBranch = 0;
 		final ArrayList<Branch> branches = EntityUtils.getBranches(this);
-		if (branches == null) {
+		if (branches == null || branches.size() == 0) {
 			return;
 		}
 		Collections.sort(branches);

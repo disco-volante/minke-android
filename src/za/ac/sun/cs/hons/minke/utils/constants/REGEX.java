@@ -5,5 +5,5 @@ public class REGEX {
 	public static final String DECIMALS_1 = "[0-9]+(\\.[0-9][1-9])";
 	public static final String DECIMALS_2 = "[0-9]+(\\.[1-9][0-9]?)";
 	public static final String INTS = "([1-9][0-9]*)";
-	public static final String STRING = "[a-zA-ZäöüßÄÖÜ\\s'-]+";
+	public static final String STRING = "[a-zA-ZäöüßÄÖÜ\\s'-,]+";
 }

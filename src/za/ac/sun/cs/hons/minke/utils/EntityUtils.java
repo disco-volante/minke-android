@@ -139,35 +139,55 @@ public class EntityUtils {
 		if (categoryDAO == null) {
 			initCategory(context);
 		}
-		return categoryDAO.getAll();
+		ArrayList<Category> categories = categoryDAO.getAll();
+		if(categories != null){
+			return categories;
+		}
+		return new ArrayList<Category>();
 	}
 
 	public static ArrayList<Product> getProducts(Context context) {
 		if (productDAO == null) {
 			initProduct(context);
 		}
-		return productDAO.getAll();
+		ArrayList<Product> products = productDAO.getAll();
+		if(products != null){
+			return products;
+		}
+		return new ArrayList<Product>();
 	}
 
 	public static ArrayList<Branch> getBranches(Context context) {
 		if (branchDAO == null) {
 			initBranch(context);
 		}
-		return branchDAO.getAll();
+		ArrayList<Branch> branches =  branchDAO.getAll();
+		if(branches != null){
+			return branches;
+		}
+		return new ArrayList<Branch>();
 	}
 
 	public static ArrayList<Brand> getBrands(Context context) {
 		if (brandDAO == null) {
 			initBrand(context);
 		}
-		return brandDAO.getAll();
+		ArrayList<Brand> brands =  brandDAO.getAll();
+		if(brands != null){
+			return brands;
+		}
+		return new ArrayList<Brand>();
 	}
 
 	public static ArrayList<Store> getStores(Context context) {
 		if (storeDAO == null) {
 			initStore(context);
 		}
-		return storeDAO.getAll();
+		ArrayList<Store> stores =  storeDAO.getAll();
+		if(stores != null){
+			return stores;
+		}
+		return new ArrayList<Store>();
 	}
 
 	public static ArrayList<Object> getLocations(Context context) {
@@ -181,9 +201,18 @@ public class EntityUtils {
 			initCountry(context);
 		}
 		ArrayList<Object> locs = new ArrayList<Object>();
-		locs.addAll(countryDAO.getAll());
-		locs.addAll(provinceDAO.getAll());
-		locs.addAll(cityDAO.getAll());
+		ArrayList<Country> countries = countryDAO.getAll();
+		if (countries != null) {
+			locs.addAll(countries);
+		}
+		ArrayList<Province> provinces = provinceDAO.getAll();
+		if (provinces != null) {
+			locs.addAll(provinces);
+		}
+		ArrayList<City> cities = cityDAO.getAll();
+		if (cities != null) {
+			locs.addAll(cities);
+		}
 		return locs;
 	}
 
@@ -370,7 +399,7 @@ public class EntityUtils {
 		}
 		HashSet<BranchProduct> found = new HashSet<BranchProduct>();
 		if (_p.size() == 0) {
-			_p.addAll(productDAO.getAll());
+			_p.addAll(getProducts(context));
 		}
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
