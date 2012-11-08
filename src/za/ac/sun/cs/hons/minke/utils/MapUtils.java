@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
+import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.maps.GoogleParser;
 import za.ac.sun.cs.hons.minke.gui.maps.Route;
@@ -31,13 +32,13 @@ public class MapUtils {
 	private static boolean locsChanged;
 	private static Route r;
 
-	public static void setDestination(ShopList shopList) {
-		dest = shopList.getBranch().getCityLocation().getGeoPoint();
+	public static void setDestination(CityLocation cl) {
+		dest = cl.getGeoPoint();
 		if (DEBUG.ON) {
 			Log.v(TAGS.MAP, "latitude = "
-					+ shopList.getBranch().getCityLocation().getLat()
+					+ cl.getLat()
 					+ " longitude = "
-					+ shopList.getBranch().getCityLocation().getLon());
+					+ cl.getLon());
 		}
 		locsChanged = true;
 	}

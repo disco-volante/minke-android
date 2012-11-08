@@ -4,7 +4,8 @@ import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.chart.ChartActivity;
 import za.ac.sun.cs.hons.minke.gui.maps.MapsActivity;
 import za.ac.sun.cs.hons.minke.gui.prefs.SettingsActivity;
-import za.ac.sun.cs.hons.minke.utils.constants.Constants;
+import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
+import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import android.content.Context;
 import android.content.Intent;
 
@@ -22,12 +23,14 @@ public class IntentUtils {
 		return graph;
 	}
 
-	public static Intent getMapIntent(Context context) {
-		Intent map;
-		if (Constants.GOOGLE_MAPS) {
-			map = new Intent(context, MapsActivity.class);
-		}
+	public static Intent getMapIntent(Context context, boolean shop) {
+		Intent map = new Intent(context, MapsActivity.class);
 		map.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		if (shop) {
+			map.putExtra(NAMES.SHOP, true);
+		} else {
+			map.putExtra(NAMES.BROWSE, true);
+		}
 		return map;
 	}
 
@@ -46,7 +49,10 @@ public class IntentUtils {
 	public static Intent getEmulatorIntent() {
 		Intent intent = new Intent();
 		intent.putExtra("SCAN_RESULT_FORMAT", "UPC_A");
-		intent.putExtra("SCAN_RESULT", String.valueOf(ScanUtils.getDummyCode()));
+		if (DEBUG.EMULATOR) {
+			intent.putExtra("SCAN_RESULT",
+					String.valueOf(ScanUtils.getDummyCode()));
+		}
 		return intent;
 	}
 

@@ -647,8 +647,11 @@ public class EntityUtils {
 		return bps.get(pos);
 	}
 
-	private static ArrayList<BranchProduct> filterLatest(
+	static ArrayList<BranchProduct> filterLatest(
 			ArrayList<BranchProduct> bps) {
+		if(bps == null){
+			return null;
+		}
 		Collections.sort(bps);
 		ArrayList<BranchProduct> latest = new ArrayList<BranchProduct>();
 		int len = Math.min(10, bps.size());

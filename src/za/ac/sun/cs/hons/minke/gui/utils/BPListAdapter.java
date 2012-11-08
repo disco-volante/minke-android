@@ -4,10 +4,15 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
+import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
+import za.ac.sun.cs.hons.minke.utils.IntentUtils;
+import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,15 +21,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class BPListAdapter extends ArrayAdapter<BranchProduct> {
-	private Activity context;
+	private Activity activity;
 
 	static class ViewHolder {
 		protected TextView name, price;
 	}
 
-	public BPListAdapter(Activity _context, ArrayList<BranchProduct> bps) {
-		super(_context, R.layout.row_branchproduct, bps);
-		context = _context;
+	public BPListAdapter(Activity _activity, ArrayList<BranchProduct> bps) {
+		super(_activity, R.layout.row_branchproduct, bps);
+		activity = _activity;
 
 	}
 
@@ -33,7 +38,7 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		View rowView = convertView;
 		final BranchProduct item = getItem(position);
 		if (rowView == null) {
-			LayoutInflater inflater = context.getLayoutInflater();
+			LayoutInflater inflater = activity.getLayoutInflater();
 			rowView = inflater.inflate(R.layout.row_branchproduct, null);
 			rowView.setOnClickListener(new OnClickListener() {
 				@Override
@@ -56,7 +61,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	}
 
 	protected void showInfo(final BranchProduct item) {
-		Builder dlg = DialogUtils.getProductInfoDialog(context, item);
+		BrowseUtils.setCurrent(null);
+		Builder dlg = DialogUtils.getProductInfoDialog(activity, item);
 		dlg.setNeutralButton(R.string.share,
 				new DialogInterface.OnClickListener() {
 
@@ -67,8 +73,27 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 					}
 
 				});
+		dlg.setPositiveButton(R.string.product_location,
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						showMap(item);
+						dialog.cancel();
+					}
+
+				});
 		dlg.show();
 
+	}
+
+	protected void showMap(BranchProduct item) {
+		BrowseUtils.setCurrent(item);
+		MapUtils.refreshLocation((LocationManager) activity
+				.getSystemService(Context.LOCATION_SERVICE));		
+		MapUtils.setDestination(item.getBranch().getCityLocation());
+		activity.startActivity(IntentUtils
+				.getMapIntent(activity, false));
 	}
 
 	protected void shareItem(BranchProduct item) {
@@ -79,8 +104,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 		intent.putExtra(Intent.EXTRA_TEXT, item.getProduct().toString() + "\n "
 				+ item.getBranch().toString() + "\n"
 				+ item.getDatePrice().getFormattedPrice());
-		context.startActivity(Intent.createChooser(intent,
-				context.getString(R.string.how_share)));
+		activity.startActivity(Intent.createChooser(intent,
+				activity.getString(R.string.how_share)));
 
 	}
 

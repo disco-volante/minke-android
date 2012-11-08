@@ -52,7 +52,9 @@ public class ShopUtils {
 		}
 		double total = 0;
 		for (BranchProduct bp : bps) {
-			total += bp.getDatePrice().getPrice() * bp.getQuantity();
+			if (bp != null && bp.getDatePrice() != null) {
+				total += bp.getDatePrice().getPrice() * bp.getQuantity();
+			}
 		}
 		return total / 100;
 	}

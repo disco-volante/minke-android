@@ -107,7 +107,7 @@ public class DialogUtils {
 		dlg.setTitle(item.getProduct().toString());
 		dlg.setView(infoView);
 		dlg.setIcon(R.drawable.info);
-		dlg.setPositiveButton(context.getString(R.string.close),
+		dlg.setNegativeButton(context.getString(R.string.close),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {

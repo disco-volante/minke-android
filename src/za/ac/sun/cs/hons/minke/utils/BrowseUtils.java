@@ -8,6 +8,7 @@ public class BrowseUtils {
 
 	private static ArrayList<BranchProduct> branchProducts = new ArrayList<BranchProduct>();
 	private static boolean storeBrowse;
+	private static BranchProduct current;
 
 	public static void setBranchProducts(ArrayList<BranchProduct> bps) {
 		if (bps != null) {
@@ -31,5 +32,13 @@ public class BrowseUtils {
 
 	public static void setStoreBrowse(boolean storeBrowse) {
 		BrowseUtils.storeBrowse = storeBrowse;
+	}
+
+	public static BranchProduct getCurrent() {
+		return current;
+	}
+
+	public static void setCurrent(BranchProduct _current) {
+		current = _current;
 	}
 }

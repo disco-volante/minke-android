@@ -9,7 +9,7 @@ import org.json.JSONObject;
 public class DatePrice implements Comparable<DatePrice> {
 	private SimpleDateFormat formatter = new SimpleDateFormat("dd MMM, yyyy");
 	private Date date;
-	private int price;
+	private int price = 0;
 	private long id, branchProductID;
 
 	public DatePrice() {
@@ -35,7 +35,9 @@ public class DatePrice implements Comparable<DatePrice> {
 	}
 
 	public void setPrice(int price) {
-		this.price = price;
+		if (price > 0) {
+			this.price = price;
+		}
 	}
 
 	public Date getDate() {
@@ -60,11 +62,11 @@ public class DatePrice implements Comparable<DatePrice> {
 
 	public String _getFormattedPrice() {
 		String sPrice = String.valueOf(getActualPrice());
-		if(sPrice.indexOf('.')==-1){
+		if (sPrice.indexOf('.') == -1) {
 			sPrice = sPrice.concat(".00");
-		}else if(sPrice.indexOf('.')==sPrice.length()-1){
+		} else if (sPrice.indexOf('.') == sPrice.length() - 1) {
 			sPrice = sPrice.concat("00");
-		}else if(sPrice.indexOf('.')==sPrice.length()-2){
+		} else if (sPrice.indexOf('.') == sPrice.length() - 2) {
 			sPrice = sPrice.concat("0");
 		}
 		return sPrice;

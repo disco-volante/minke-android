@@ -147,11 +147,13 @@ public class Product {
 		if (name == null) {
 			if (other.name != null)
 				return false;
-		} else if (!name.equals(other.name))
+		} else if (!name.equals(other.name)){
 			return false;
+		}
 		if (Double.doubleToLongBits(size) != Double
-				.doubleToLongBits(other.size))
+				.doubleToLongBits(other.size)){
 			return false;
+		}
 		return true;
 	}
 

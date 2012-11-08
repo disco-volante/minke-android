@@ -75,11 +75,11 @@ public class StoreFragment extends SherlockFragment {
 		MapUtils.refreshLocation((LocationManager) getActivity()
 				.getSystemService(Context.LOCATION_SERVICE));
 		if (ShopUtils.getShopLists().size() == 1) {
-			MapUtils.setDestination(ShopUtils.getShopLists().get(0));
-			startActivity(IntentUtils.getMapIntent(getActivity().getApplicationContext()));
+			MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
+			startActivity(IntentUtils.getMapIntent(getActivity().getApplicationContext(), true));
 		} else {
 			String[] names = new String[ShopUtils.getShopLists().size()];
-			MapUtils.setDestination(ShopUtils.getShopLists().get(0));
+			MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
 			int i = 0;
 			for (ShopList sl : ShopUtils.getShopLists()) {
 				names[i++] = sl.toString();
@@ -91,7 +91,7 @@ public class StoreFragment extends SherlockFragment {
 				@Override
 				public void onClick(DialogInterface arg0, int position) {
 					MapUtils.setDestination(ShopUtils.getShopLists().get(
-							position));
+							position).getBranch().getCityLocation());
 				}
 			});
 			builder.setPositiveButton(getString(R.string.view_map),
@@ -100,7 +100,7 @@ public class StoreFragment extends SherlockFragment {
 						public void onClick(DialogInterface dialog, int id) {
 							startActivity(IntentUtils
 									.getMapIntent(StoreFragment.this
-											.getActivity().getApplicationContext()));
+											.getActivity().getApplicationContext(), true));
 						}
 					});
 			builder.setNegativeButton(getString(R.string.cancel),

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 
-public class BranchProduct implements Comparable<BranchProduct>{
+public class BranchProduct implements Comparable<BranchProduct> {
 	private long id, productId, branchId, datePriceId;
 	private Product product;
 	private DatePrice datePrice;
@@ -149,17 +149,18 @@ public class BranchProduct implements Comparable<BranchProduct>{
 	}
 
 	public void setQuantity(int _quantity) {
-		this.quantity = _quantity;
+		if (_quantity > 0) {
+			this.quantity = _quantity;
+		}
 	}
 
 	public int getQuantity() {
 		return quantity;
 	}
-	
+
 	@Override
 	public int compareTo(BranchProduct another) {
-		if (getDatePrice() == null
-				|| getDatePrice().getDate() == null) {
+		if (getDatePrice() == null || getDatePrice().getDate() == null) {
 			return 1;
 		} else if (another == null || another.getDatePrice() == null
 				|| another.getDatePrice().getDate() == null) {
