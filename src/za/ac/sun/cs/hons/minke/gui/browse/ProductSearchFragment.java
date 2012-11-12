@@ -1,8 +1,8 @@
 package za.ac.sun.cs.hons.minke.gui.browse;
 
+import java.util.ArrayList;
+
 import za.ac.sun.cs.hons.minke.R;
-import za.ac.sun.cs.hons.minke.entities.product.Category;
-import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ItemListAdapter;
@@ -29,7 +29,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -38,10 +37,8 @@ import com.actionbarsherlock.app.SherlockFragment;
 
 public class ProductSearchFragment extends SherlockFragment {
 	private AutoCompleteTextView searchBox;
-	private ArrayAdapter<Product> productAdapter;
-	private ArrayAdapter<Category> categoryAdapter;
-	private ItemListAdapter<Product> productListAdapter;
-	private ItemListAdapter<Category> categoryListAdapter;
+	private ArrayAdapter<Object> boxAdapter;
+	private ItemListAdapter<Object> listAdapter;
 	private ListView searchList;
 	private SearchTask curTask;
 
@@ -53,7 +50,6 @@ public class ProductSearchFragment extends SherlockFragment {
 				false);
 		initBoxes(v);
 		initLists(v);
-		setItems(true);
 		return v;
 	}
 
@@ -63,11 +59,7 @@ public class ProductSearchFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if (SearchUtils.isProductsActive()) {
-					addItem(productAdapter.getItem(position));
-				} else {
-					addItem(categoryAdapter.getItem(position));
-				}
+				addItem(boxAdapter.getItem(position));
 			}
 
 		});
@@ -80,26 +72,12 @@ public class ProductSearchFragment extends SherlockFragment {
 			}
 
 		});
-		categoryAdapter = new ArrayAdapter<Category>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getCategories(getActivity().getApplicationContext()));
-		productAdapter = new ArrayAdapter<Product>(getActivity(),
-				R.layout.listitem_default, EntityUtils.getProducts(getActivity().getApplicationContext()));
-		RadioButton productBtn = (RadioButton) v
-				.findViewById(R.id.rbtn_product);
-		productBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				setItems(true);
-			}
-		});
-		RadioButton categoryBtn = (RadioButton) v
-				.findViewById(R.id.rbtn_category);
-		categoryBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				setItems(false);
-			}
-		});
+		ArrayList<Object> all = new ArrayList<Object>();
+		all.addAll(EntityUtils
+						.getCategories(getActivity().getApplicationContext()));
+		all.addAll(EntityUtils.getProducts(getActivity().getApplicationContext()));
+		boxAdapter = new ArrayAdapter<Object>(getActivity().getApplicationContext(), R.layout.listitem_default, all);
+		searchBox.setAdapter(boxAdapter);
 		ImageButton searchButton = (ImageButton) v
 				.findViewById(R.id.btn_product_search);
 		searchButton.setOnClickListener(new OnClickListener() {
@@ -118,41 +96,27 @@ public class ProductSearchFragment extends SherlockFragment {
 	}
 
 	private void initLists(View v) {
-		productListAdapter = new ItemListAdapter<Product>(getActivity(),
-				SearchUtils.getAddedProducts()) {
+		listAdapter = new ItemListAdapter<Object>(getActivity(),
+				SearchUtils.getAddedEntities()) {
 			@Override
-			public void removeFromSearch(Product product) {
-				SearchUtils.removeProduct(product);
-				notifyDataSetChanged();
-			}
-
-		};
-		categoryListAdapter = new ItemListAdapter<Category>(getActivity(),
-				SearchUtils.getAddedCategories()) {
-			@Override
-			public void removeFromSearch(Category category) {
-				SearchUtils.removeCategory(category);
+			public void removeFromSearch(Object obj) {
+				SearchUtils.removeEntity(obj);
 				notifyDataSetChanged();
 			}
 
 		};
 		searchList = (ListView) v.findViewById(R.id.search_list);
-		searchList.setAdapter(productListAdapter);
+		searchList.setAdapter(listAdapter);
+
 	}
 
 	protected void addItem(Object entity) {
 		if (entity != null
-				&& !SearchUtils.getAddedCategories().contains(entity)
-				&& !SearchUtils.getAddedProducts().contains(entity)) {
-			if (SearchUtils.isProductsActive()) {
-				SearchUtils.addProduct((Product) entity);
-				productListAdapter.notifyDataSetChanged();
-			} else {
-				SearchUtils.addCategory((Category) entity);
-				categoryListAdapter.notifyDataSetChanged();
-			}
+				&& !SearchUtils.getAddedEntities().contains(entity)) {
+				SearchUtils.addEntity(entity);
+				listAdapter.notifyDataSetChanged();
 			searchBox.setText("");
-		} else {
+		}else {
 			Toast msg = Toast.makeText(getActivity(),
 					getString(R.string.str_added), Toast.LENGTH_LONG);
 			msg.setGravity(Gravity.CENTER_VERTICAL, Gravity.CENTER_HORIZONTAL,
@@ -160,17 +124,6 @@ public class ProductSearchFragment extends SherlockFragment {
 			msg.show();
 		}
 
-	}
-
-	public void setItems(boolean products) {
-		SearchUtils.setProductsActive(products);
-		if (products) {
-			searchList.setAdapter(productListAdapter);
-			searchBox.setAdapter(productAdapter);
-		} else {
-			searchList.setAdapter(categoryListAdapter);
-			searchBox.setAdapter(categoryAdapter);
-		}
 	}
 
 	static class SearchTask extends ProgressTask {
@@ -196,22 +149,25 @@ public class ProductSearchFragment extends SherlockFragment {
 		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
-			dlg.setPositiveButton(activity.getString(R.string.retry),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							((ProductSearchFragment) fragment).getProducts();
-							dialog.cancel();
-						}
-					});
-			dlg.show();
+			if (dlg != null) {
+				dlg.setPositiveButton(activity.getString(R.string.retry),
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int id) {
+								((ProductSearchFragment) fragment)
+										.getProducts();
+								dialog.cancel();
+							}
+						});
+				dlg.show();
+			}
 
 		}
 
 		@Override
 		protected ERROR retrieve() {
-			return EntityUtils.retrieveBranchProducts(activity, SearchUtils
-					.isProductsActive());
+			return EntityUtils.retrieveBranchProducts(activity,
+							true);
 		}
 	}
 

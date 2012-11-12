@@ -23,8 +23,9 @@ public class ChartTask extends LoadTask {
 	@Override
 	protected void failure(ERROR error_code) {
 		Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
-		dlg.show();
-
+		if (dlg != null) {
+			dlg.show();
+		}
 	}
 
 	@Override

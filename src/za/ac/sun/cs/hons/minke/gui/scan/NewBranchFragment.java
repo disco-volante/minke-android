@@ -1,10 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.scan;
 
-import java.util.ArrayList;
-
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
-import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.store.Store;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
@@ -16,7 +13,6 @@ import za.ac.sun.cs.hons.minke.utils.RPCUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
-import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -194,54 +190,13 @@ public class NewBranchFragment extends SherlockFragment {
 	}
 
 	private void requestProvince() {
-		final ArrayList<Province> provinces = EntityUtils.getProvinces(getActivity().getApplicationContext());
-		if (provinces == null) {
-			return;
+		Builder location = DialogUtils.getProvincesDialog(getActivity(), this);
+		if(location != null){
+			location.show();
 		}
-		ScanUtils.province = provinces.get(0);
-		final int size = Math.min(provinces.size(), 10);
-		final String[] names = new String[size];
-		int i = 0;
-		for (Province p : provinces) {
-			if (i == size) {
-				break;
-			}
-			names[i++] = p.toString();
-		}
-		AlertDialog.Builder location = new AlertDialog.Builder(getActivity());
-		location.setTitle(this
-				.getString(R.string.str_province));
-		location.setSingleChoiceItems(names, 0,
-				new android.content.DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface arg0, int position) {
-						ScanUtils.province = provinces.get(position);
-					}
-				});
-		location.setPositiveButton(
-				getString(R.string.add) + " "
-						+ getString(R.string.branch),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						createBranch();
-						dialog.cancel();
-					}
-				});
-		location.setNegativeButton(
-				getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
-								ScanFragment.class.getName());
-					}
-				});
-		location.show();
 	}
 
-	private void createBranch() {
+	public void createBranch() {
 		((HomeActivity) getActivity()).curTask = new CreateBranchTask();
 		((HomeActivity) getActivity()).curTask.execute();
 	}
@@ -267,6 +222,9 @@ public class NewBranchFragment extends SherlockFragment {
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(
 					NewBranchFragment.this.getActivity(), error_code);
+			if(dlg == null){
+				return;
+			}
 			dlg.setPositiveButton(
 					NewBranchFragment.this.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {

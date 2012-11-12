@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ShopListAdapter;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
-import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -78,39 +77,10 @@ public class StoreFragment extends SherlockFragment {
 			MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
 			startActivity(IntentUtils.getMapIntent(getActivity().getApplicationContext(), true));
 		} else {
-			String[] names = new String[ShopUtils.getShopLists().size()];
-			MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
-			int i = 0;
-			for (ShopList sl : ShopUtils.getShopLists()) {
-				names[i++] = sl.toString();
+			Builder builder = DialogUtils.getMapBranchesDialog(getActivity());
+			if(builder != null){
+				builder.show();
 			}
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(getString(R.string.str_directions));
-			builder.setSingleChoiceItems(names, 0, new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface arg0, int position) {
-					MapUtils.setDestination(ShopUtils.getShopLists().get(
-							position).getBranch().getCityLocation());
-				}
-			});
-			builder.setPositiveButton(getString(R.string.view_map),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							startActivity(IntentUtils
-									.getMapIntent(StoreFragment.this
-											.getActivity().getApplicationContext(), true));
-						}
-					});
-			builder.setNegativeButton(getString(R.string.cancel),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int id) {
-							dialog.cancel();
-						}
-					});
-			builder.create().show();
 		}
 	}
 

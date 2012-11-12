@@ -3,6 +3,7 @@ package za.ac.sun.cs.hons.minke.gui.utils;
 import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
+import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.utils.PreferencesUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import android.app.Activity;
@@ -15,34 +16,20 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 	private Activity activity;
-	private int rowType;
-
 	static class ViewHolder {
 		public TextView text;
 		public ImageButton btn;
-		public Button other_btn;
-
-	}
-
-	public ItemListAdapter(Activity _activity, ArrayList<T> added, int _rowType) {
-		super(_activity, _rowType, added);
-		activity = _activity;
-		rowType = _rowType;
-
 	}
 
 	public ItemListAdapter(Activity _activity, ArrayList<T> added) {
 		super(_activity, R.layout.row_removable, added);
 		activity = _activity;
-		rowType = R.layout.row_removable;
-
 	}
 
 	@Override
@@ -57,6 +44,9 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 		final T item = getItem(position);
 		if (rowView == null) {
 			rowView = inflate();
+			if(item instanceof Product){
+				
+			}
 		}
 		initHolder(item, rowView);
 		if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
@@ -121,14 +111,10 @@ public abstract class ItemListAdapter<T> extends ArrayAdapter<T> {
 
 	protected View inflate() {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		View rowView = inflater.inflate(rowType, null);
+		View rowView = inflater.inflate(R.layout.row_removable, null);
 		ViewHolder viewHolder = new ViewHolder();
 		viewHolder.text = (TextView) rowView.findViewById(R.id.lbl_remove);
 		viewHolder.btn = (ImageButton) rowView.findViewById(R.id.btn_remove);
-		if (rowType == R.layout.row_product) {
-			viewHolder.other_btn = (Button) rowView
-					.findViewById(R.id.btn_quantity);
-		}
 		if (PreferencesUtils.getAnimationLevel() == Constants.FULL) {
 			rowView.setVisibility(View.INVISIBLE);
 		}

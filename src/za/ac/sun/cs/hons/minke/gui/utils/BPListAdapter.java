@@ -63,6 +63,9 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 	protected void showInfo(final BranchProduct item) {
 		BrowseUtils.setCurrent(null);
 		Builder dlg = DialogUtils.getProductInfoDialog(activity, item);
+		if(dlg == null){
+			return;
+		}
 		dlg.setNeutralButton(R.string.share,
 				new DialogInterface.OnClickListener() {
 

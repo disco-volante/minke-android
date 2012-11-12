@@ -382,7 +382,11 @@ public class EntityUtils {
 		}
 		SearchUtils.setSearched(null);
 		HashSet<Product> _p = new HashSet<Product>();
-		if (!productsActive) {
+		if ((SearchUtils.getAddedCategories() == null ||SearchUtils.getAddedCategories().size() == 0) && 
+				(SearchUtils.getAddedProducts() == null ||SearchUtils.getAddedProducts().size() == 0)) {
+			_p.addAll(getProducts(context));
+		}
+		else{
 			if (SearchUtils.getAddedCategories().size() > 0) {
 				for (Category c : SearchUtils.getAddedCategories()) {
 					ArrayList<Product> matches = productCategoryDAO
@@ -391,16 +395,10 @@ public class EntityUtils {
 						_p.addAll(matches);
 					}
 				}
-			} else {
-				_p.addAll(productDAO.getAll());
-			}
-		} else {
+			} 
 			_p.addAll(SearchUtils.getAddedProducts());
 		}
 		HashSet<BranchProduct> found = new HashSet<BranchProduct>();
-		if (_p.size() == 0) {
-			_p.addAll(getProducts(context));
-		}
 		for (Product p : _p) {
 			ArrayList<BranchProduct> bps = branchProductDAO.getAllByParameters(
 					new String[] { DB.PRODUCT_ID },

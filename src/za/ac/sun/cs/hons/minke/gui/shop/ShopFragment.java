@@ -128,6 +128,9 @@ public class ShopFragment extends SherlockFragment {
 		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
+			if(dlg == null){
+				return;
+			}
 			dlg.setPositiveButton(activity.getString(R.string.retry),
 					new DialogInterface.OnClickListener() {
 						@Override

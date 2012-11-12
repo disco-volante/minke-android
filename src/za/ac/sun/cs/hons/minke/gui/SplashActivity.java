@@ -54,6 +54,9 @@ public class SplashActivity extends Activity {
 
 	private void loadHome() {
 		startActivity(IntentUtils.getHomeIntent(getApplicationContext()));
+		if (PreferencesUtils.getAnimationLevel() != Constants.NONE) {
+			overridePendingTransition(R.anim.fadein, R.anim.fadeout);
+		}
 		finish();
 	}
 

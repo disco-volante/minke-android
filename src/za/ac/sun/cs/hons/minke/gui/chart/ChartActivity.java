@@ -1,6 +1,7 @@
 package za.ac.sun.cs.hons.minke.gui.chart;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.achartengine.GraphicalView;
 
@@ -9,7 +10,7 @@ import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.tasks.ChartTask;
 import za.ac.sun.cs.hons.minke.utils.BrowseUtils;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
-import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class ChartActivity extends SherlockActivity {
 
 	private void buildChart() {
 		setBuilding(true);
-		chart = new TimelineChart(this);
+		chart = new TimelineChart(this, 5);
 		curTask = new ChartTask(chart);
 		curTask.execute();
 	}
@@ -115,7 +116,10 @@ public class ChartActivity extends SherlockActivity {
 			String btn) {
 		final String[] choices = items.toArray(new String[items.size()]);
 		final HashSet<String> changed = new HashSet<String>();
-		AlertDialog.Builder dlg = DialogUtils.getChartDialog(this);
+		Builder dlg = DialogUtils.getChartDialog(this);
+		if(dlg == null){
+			return;
+		}
 		if (items.size() == 0) {
 			dlg.setMessage(getString(R.string.no_change));
 		} else {
@@ -142,16 +146,14 @@ public class ChartActivity extends SherlockActivity {
 		dlg.show();
 	}
 
-	protected void editItems(HashSet<String> changed, boolean add) {
+	protected void editItems(Set<String> changed, boolean add) {
 		if (changed.size() == 0) {
 			return;
 		}
-		for (String s : changed) {
-			if (add) {
-				chart.addSeries(s);
-			} else {
-				chart.removeSeries(s);
-			}
+		if (add) {
+			chart.addSeries(changed);
+		} else {
+			chart.removeSeries(changed);
 		}
 		view.repaint();
 	}

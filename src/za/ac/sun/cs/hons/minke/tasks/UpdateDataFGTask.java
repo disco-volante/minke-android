@@ -21,7 +21,9 @@ public class UpdateDataFGTask extends ProgressTask {
 	@Override
 	protected void failure(ERROR error_code) {
 		Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
-		dlg.show();
+		if (dlg != null) {
+			dlg.show();
+		}
 	}
 
 	@Override

@@ -5,21 +5,13 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="9"
+        android:minSdkVersion="8"
         android:targetSdkVersion="15" />
-
-    <permission
-        android:name="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION"
-        android:description="@string/update_location_desc"
-        android:label="@string/update_location"
-        android:permissionGroup="android.permission-group.LOCATION"
-        android:protectionLevel="normal" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="za.ac.sun.cs.hons.minke" />
 
-    <uses-permission android:name="za.ac.sun.cs.hons.minke.permission.UPDATE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -43,7 +35,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light" >
+        android:theme="@style/Theme.Sherlock.Light.ForceOverflow" >
         <uses-library android:name="com.google.android.maps" />
         <uses-library android:name="android.test.runner" />
 

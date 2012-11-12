@@ -17,15 +17,13 @@ public class SearchUtils {
 
 	private static ArrayList<Product> addedProducts;
 	private static ArrayList<Category> addedCategories;
+	private static ArrayList<Object> addedEntities;
 
 	private static HashSet<Country> addedCountries;
 
 	private static ArrayList<Object> addedLocations;
 
 	private static ArrayList<BranchProduct> searched;
-
-	private static boolean productsActive;
-
 	public static ArrayList<Object> getAddedLocations() {
 		if (addedLocations == null) {
 			addedLocations = new ArrayList<Object>();
@@ -88,43 +86,12 @@ public class SearchUtils {
 		return addedCountries;
 	}
 
-	public static void removeProduct(int position) {
-		addedProducts.remove(position);
-	}
-
-	public static void removeProduct(Product product) {
-		addedProducts.remove(product);
-	}
-
-	public static void addProduct(Product product) {
-		addedProducts.add(0, product);
-	}
 
 	public static ArrayList<Category> getAddedCategories() {
 		if (addedCategories == null) {
 			addedCategories = new ArrayList<Category>();
 		}
 		return addedCategories;
-	}
-
-	public static void removeCategory(int position) {
-		addedCategories.remove(position);
-	}
-
-	public static void removeCategory(Category category) {
-		addedCategories.remove(category);
-	}
-
-	public static void addCategory(Category category) {
-		addedCategories.add(0, category);
-	}
-
-	public static boolean isProductsActive() {
-		return productsActive;
-	}
-
-	public static void setProductsActive(boolean active) {
-		productsActive = active;
 	}
 
 	public static ArrayList<BranchProduct> getSearched() {
@@ -149,6 +116,35 @@ public class SearchUtils {
 
 			}
 		}
+	}
+
+	public static ArrayList<Object> getAddedEntities() {
+		if (addedEntities == null) {
+			addedEntities = new ArrayList<Object>();
+		}
+		return addedEntities;
+	}
+
+	public static void removeEntity(Object obj) {
+		if(obj instanceof Product){
+			addedProducts.remove((Product)obj);
+		}else if(obj instanceof Category){
+			addedCategories.remove((Category)obj);
+		}else{
+			throw new IllegalArgumentException("Invalid entity passed");
+		}
+		addedEntities.remove(obj);
+	}
+
+	public static void addEntity(Object obj) {
+		if(obj instanceof Product){
+			addedProducts.add((Product) obj);
+		}else if(obj instanceof Category){
+			addedCategories.add((Category) obj);
+		}else{
+			throw new IllegalArgumentException("Invalid entity passed");
+		}
+		addedEntities.add(obj);
 	}
 
 }

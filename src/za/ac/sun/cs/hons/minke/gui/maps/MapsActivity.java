@@ -135,14 +135,16 @@ public class MapsActivity extends SherlockMapActivity {
 		}
 		if (error != null && !error.equals(ERROR.SUCCESS)) {
 			Builder dialog = DialogUtils.getErrorDialog(this, error);
-			dialog.setNegativeButton(R.string.ok, new OnClickListener() {
+			if(dialog != null){
+				dialog.setNegativeButton(R.string.ok, new OnClickListener() {
 
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					home();
-				}
-			});
-			dialog.show();
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						home();
+					}
+				});
+				dialog.show();
+			}
 		} else {
 			setContentView(R.layout.activity_maps);
 			RelativeLayout holder = (RelativeLayout) findViewById(R.id.map_holder);
@@ -214,6 +216,10 @@ public class MapsActivity extends SherlockMapActivity {
 
 	public void showDirections() {
 		if (MapUtils.directions != null && MapUtils.directions.size() > 0) {
+			Builder dlg = DialogUtils.getDirectionsDialog(this);
+			if(dlg == null){
+				return;
+			}
 			LayoutInflater factory = LayoutInflater.from(this);
 			final View directionsView = factory.inflate(
 					R.layout.dialog_directions, null);
@@ -222,7 +228,6 @@ public class MapsActivity extends SherlockMapActivity {
 			DirectionsListAdapter adapter = new DirectionsListAdapter(this,
 					MapUtils.directions);
 			dirList.setAdapter(adapter);
-			Builder dlg = DialogUtils.getDirectionsDialog(this);
 			dlg.setView(directionsView);
 			dirDlg = dlg.show();
 		}
@@ -261,6 +266,9 @@ public class MapsActivity extends SherlockMapActivity {
 		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
+			if(dlg == null){
+				return;
+			}
 			if (error_code.equals(ERROR.DIRECTIONS)) {
 				dlg.setPositiveButton(activity.getString(R.string.ok),
 						new DialogInterface.OnClickListener() {

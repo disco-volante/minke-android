@@ -2,6 +2,8 @@ package za.ac.sun.cs.hons.minke.gui.maps;
 
 import java.util.ArrayList;
 
+import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -36,9 +38,10 @@ public class BasicOverlay extends ItemizedOverlay<OverlayItem> {
 	@Override
 	protected boolean onTap(int index) {
 		OverlayItem item = mOverlays.get(index);
-		AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
-		dialog.setTitle(item.getTitle());
-		dialog.setMessage(item.getSnippet());
+		AlertDialog.Builder dialog = DialogUtils.getOverlayDialog(mContext, item);
+		if(dialog == null){
+			return false;
+		}
 		dialog.show();
 		return true;
 	}

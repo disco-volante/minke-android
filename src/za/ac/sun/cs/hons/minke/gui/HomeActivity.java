@@ -13,7 +13,6 @@ import za.ac.sun.cs.hons.minke.gui.scan.NewBranchFragment;
 import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.TabInfo;
 import za.ac.sun.cs.hons.minke.gui.utils.TabsAdapter;
-import za.ac.sun.cs.hons.minke.gui.utils.TextErrorWatcher;
 import za.ac.sun.cs.hons.minke.services.IUpdateService;
 import za.ac.sun.cs.hons.minke.services.UpdateService;
 import za.ac.sun.cs.hons.minke.tasks.ProgressTask;
@@ -52,11 +51,8 @@ import android.os.RemoteException;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -192,7 +188,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (params == null || params.length != 2) {
 					params = new Object[2];
 				}
-				params[0] = EntityUtils.getBranchProduct(getApplicationContext(),
+				params[0] = EntityUtils.getBranchProduct(
+						getApplicationContext(),
 						savedInstanceState.getLong("BP_ID"));
 				params[1] = EntityUtils.getProduct(getApplicationContext(),
 						savedInstanceState.getLong("PRODUCT_ID"));
@@ -246,7 +243,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		switch (item.getItemId()) {
 		case R.id.menu_item_info:
 			Builder dlg = DialogUtils.getInfoDialog(this);
-			dlg.show();
+			if (dlg != null) {
+				dlg.show();
+			}
 			return true;
 		case R.id.menu_item_settings:
 			startActivity(IntentUtils.getSettingsIntent(this));
@@ -360,7 +359,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 	 * @param price
 	 *            the product's new price.
 	 */
-	private void updateProduct(final BranchProduct found, final int price) {
+	public void updateProduct(final BranchProduct found, final int price) {
+		updating = false;
 		curTask = new UpdateProductTask(this, found, price);
 		curTask.execute();
 	}
@@ -391,6 +391,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 	private void scanFail() {
 		AlertDialog.Builder failed = DialogUtils.getErrorDialog(this,
 				ERROR.SCAN);
+		if (failed == null) {
+			return;
+		}
 		failed.setPositiveButton(getString(R.string.retry),
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -421,8 +424,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 			names[i++] = b.toString();
 		}
 		names[size] = getString(R.string.other);
-		AlertDialog.Builder location = new AlertDialog.Builder(this);
-		location.setTitle(getString(R.string.confirm_location));
+		AlertDialog.Builder location = DialogUtils.getBranchesDialog(this);
+		if (location == null) {
+			return;
+		}
 		location.setSingleChoiceItems(names, 0, new OnClickListener() {
 
 			@Override
@@ -476,37 +481,11 @@ public class HomeActivity extends SherlockFragmentActivity {
 	 */
 	private void updatePrice(final BranchProduct found, final Product product) {
 		updating = true;
-		LayoutInflater factory = LayoutInflater.from(this);
-		final View updateView = factory.inflate(R.layout.dialog_update, null);
-		final TextView productText = (TextView) updateView
-				.findViewById(R.id.lbl_product);
-		final EditText updatePriceText = (EditText) updateView
-				.findViewById(R.id.text_price);
-		if (found != null && found.getDatePrice() != null) {
-			updatePriceText.setText(found.getDatePrice()._getFormattedPrice());
+		AlertDialog.Builder dlg = DialogUtils.getUpdateDialog(this, found,
+				product);
+		if (dlg != null) {
+			dlg.show();
 		}
-		updatePriceText.addTextChangedListener(new TextErrorWatcher(this,
-				updatePriceText, true));
-		productText.setText(product.toString());
-		AlertDialog.Builder success = new AlertDialog.Builder(this);
-		success.setTitle(getString(R.string.product_found));
-		success.setView(updateView);
-		success.setPositiveButton(getString(R.string.update),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton) {
-						if (updatePriceText.getError() == null) {
-							updating = false;
-							int price = (int) (Double
-									.parseDouble(updatePriceText.getText()
-											.toString()) * 100);
-							updateProduct(found, price);
-							dialog.cancel();
-						}
-					}
-				});
-		success.show();
-
 	}
 
 	/**
@@ -551,6 +530,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		str = _str;
 		params = _params;
 		Builder dlg = DialogUtils.getErrorDialog(this, errorCode);
+		if (dlg == null) {
+			return;
+		}
 		if (str != -1) {
 			dlg.setPositiveButton(getString(str),
 					new DialogInterface.OnClickListener() {
@@ -617,9 +599,11 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected void failure(ERROR code) {
 			if (code == ERROR.NOT_FOUND) {
 				if (ScanUtils.getProduct() != null) {
-					ScanUtils.setBranchProduct(activity.getApplicationContext(), new BranchProduct(0L,
-							ScanUtils.getProduct().getId(), MapUtils
-									.getUserBranch().getId(), 0L));
+					ScanUtils.setBranchProduct(
+							activity.getApplicationContext(),
+							new BranchProduct(0L, ScanUtils.getProduct()
+									.getId(), MapUtils.getUserBranch().getId(),
+									0L));
 					((HomeActivity) activity).updatePrice(
 							ScanUtils.getBranchProduct(),
 							ScanUtils.getProduct());
@@ -638,8 +622,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 		protected ERROR retrieve() {
 			ScanUtils.setProduct(null);
 			ScanUtils.setBranchProduct(activity, null);
-			Product p = EntityUtils.retrieveProduct(activity.getApplicationContext(),
-					ScanUtils.getBarCode());
+			Product p = EntityUtils.retrieveProduct(
+					activity.getApplicationContext(), ScanUtils.getBarCode());
 			if (p == null) {
 				if (!PreferencesUtils.checkServer()) {
 					return ERROR.NOT_FOUND;
@@ -647,15 +631,17 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				p = EntityUtils.retrieveProductServer(activity.getApplicationContext(),
+				p = EntityUtils.retrieveProductServer(
+						activity.getApplicationContext(),
 						ScanUtils.getBarCode());
 				if (p == null) {
 					return ERROR.NOT_FOUND;
 				}
 			}
 			ScanUtils.setProduct(p);
-			BranchProduct bp = EntityUtils.retrieveBranchProduct(activity.getApplicationContext(),
-					ScanUtils.getBarCode(), MapUtils.getUserBranch().getId());
+			BranchProduct bp = EntityUtils.retrieveBranchProduct(
+					activity.getApplicationContext(), ScanUtils.getBarCode(),
+					MapUtils.getUserBranch().getId());
 			if (bp == null) {
 				if (!PreferencesUtils.checkServer()) {
 					return ERROR.NOT_FOUND;
@@ -663,9 +649,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 				if (!isNetworkAvailable()) {
 					return ERROR.NOT_FOUND;
 				}
-				bp = EntityUtils.retrieveBranchProductServer(activity.getApplicationContext(),
-						ScanUtils.getBarCode(), MapUtils.getUserBranch()
-								.getId());
+				bp = EntityUtils.retrieveBranchProductServer(activity
+						.getApplicationContext(), ScanUtils.getBarCode(),
+						MapUtils.getUserBranch().getId());
 				if (bp == null) {
 					return ERROR.NOT_FOUND;
 				}
@@ -686,7 +672,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 		BranchProduct bp;
 		private int price;
 
-		public UpdateProductTask(Activity activity, BranchProduct _bp, int _price) {
+		public UpdateProductTask(Activity activity, BranchProduct _bp,
+				int _price) {
 			super(activity, activity.getString(R.string.updating) + "...",
 					activity.getString(R.string.updating_product_msg));
 			bp = _bp;
@@ -701,7 +688,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 			if (RPCUtils.startServer() == ERROR.SERVER) {
 				return ERROR.SERVER;
 			}
-			return RPCUtils.updateBranchProduct(activity.getApplicationContext(), bp, price);
+			return RPCUtils.updateBranchProduct(
+					activity.getApplicationContext(), bp, price);
 		}
 
 		@Override
@@ -733,6 +721,9 @@ public class HomeActivity extends SherlockFragmentActivity {
 		@Override
 		protected void failure(final ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
+			if (dlg == null) {
+				return;
+			}
 			dlg.setPositiveButton(activity.getString(R.string.retry),
 					new OnClickListener() {
 						@Override
