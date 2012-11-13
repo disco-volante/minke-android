@@ -1,9 +1,11 @@
 package za.ac.sun.cs.hons.minke.utils.constants;
 
+import java.util.regex.Pattern;
+
 public class REGEX {
-	public static final String DECIMALS_0 = "([1-9][0-9]*)+(\\.[0-9]{1,2}+)?";
-	public static final String DECIMALS_1 = "[0-9]+(\\.[0-9][1-9])";
-	public static final String DECIMALS_2 = "[0-9]+(\\.[1-9][0-9]?)";
-	public static final String INTS = "([1-9][0-9]*)";
-	public static final String STRING = "[a-zA-ZäöüßÄÖÜ\\s'-,]+";
+	public static final Pattern DECIMALS_0 = Pattern.compile("([1-9][0-9]*)+(\\.[0-9]{1,2}+)?");
+	public static final Pattern DECIMALS_1 = Pattern.compile("[0-9]+(\\.[0-9][1-9])");
+	public static final Pattern DECIMALS_2 = Pattern.compile("[0-9]+(\\.[1-9][0-9]?)");
+	public static final Pattern INTS = Pattern.compile("([1-9][0-9]*)");
+	public static final Pattern STRING = Pattern.compile("[a-zA-ZäöüßÄÖÜ\\s'\\-,]+");
 }

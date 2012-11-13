@@ -162,7 +162,6 @@ public class TimelineChart {
 				SeriesSelection seriesSelection = view
 						.getCurrentSeriesAndPoint();
 				if (seriesSelection != null) {
-					//if (added.contains(titles[seriesSelection.getSeriesIndex()])) {
 						Date date = new Date();
 						date.setTime((long) seriesSelection.getXValue());
 						AlertDialog.Builder dialog = DialogUtils
@@ -173,8 +172,6 @@ public class TimelineChart {
 						if (dialog != null) {
 							dialog.show();
 						}
-
-					//}
 				}
 			}
 		});

@@ -23,11 +23,11 @@ public class TextErrorWatcher implements TextWatcher {
 	public void afterTextChanged(Editable s) {
 		if (s == null || s.toString() == null || s.toString().length() == 0) {
 			view.setError(context.getString(R.string.str_input));
-		} else if (numeric && !s.toString().matches(REGEX.DECIMALS_0)
-				&& !s.toString().matches(REGEX.DECIMALS_1)
-				&& !s.toString().matches(REGEX.DECIMALS_2)) {
+		} else if (numeric && !REGEX.DECIMALS_0.matcher(s.toString()).matches()
+				&& !REGEX.DECIMALS_1.matcher(s.toString()).matches()
+				&& !REGEX.DECIMALS_2.matcher(s.toString()).matches()) {
 			view.setError(context.getString(R.string.str_input_numeric));
-		} else if(!numeric && !s.toString().matches(REGEX.STRING)){
+		} else if(!numeric && !REGEX.STRING.matcher(s.toString()).matches()){
 			view.setError(context.getString(R.string.str_input_chars));
 		}else{
 			view.setError(null);

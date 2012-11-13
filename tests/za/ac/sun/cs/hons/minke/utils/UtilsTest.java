@@ -1,6 +1,8 @@
 package za.ac.sun.cs.hons.minke.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,7 @@ import org.junit.Test;
 
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.DatePrice;
+import za.ac.sun.cs.hons.minke.utils.constants.REGEX;
 import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 
 public class UtilsTest {
@@ -85,6 +88,28 @@ public class UtilsTest {
 		Collections.shuffle(all);
 		Collections.shuffle(latest);
 		Collections.sort(latest);
+	}
+	@Test
+	public void regexTest(){
+		assertFalse(REGEX.DECIMALS_0.matcher("0").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("0.0").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("0  asds").matches());
+		assertTrue(REGEX.DECIMALS_0.matcher("9990").matches());
+		assertTrue(REGEX.DECIMALS_0.matcher("90.00").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("-0.0").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("-10.0").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher(".10").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("032.0").matches());
+		assertFalse(REGEX.DECIMALS_0.matcher("90.099").matches());
+		assertTrue(REGEX.DECIMALS_1.matcher("0.01").matches());
+		assertFalse(REGEX.DECIMALS_1.matcher("0.010").matches());
+		assertTrue(REGEX.DECIMALS_2.matcher("0.10").matches());
+		assertFalse(REGEX.DECIMALS_2.matcher("0.00").matches());
+		assertTrue(REGEX.STRING.matcher("g--a''g  AA a'a,a-Baa s").matches());
+		assertFalse(REGEX.STRING.matcher("12a").matches());
+		assertFalse(REGEX.STRING.matcher("12  ").matches());
+		assertFalse(REGEX.STRING.matcher("?  ").matches());
+
 	}
 
 }

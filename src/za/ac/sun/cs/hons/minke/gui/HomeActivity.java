@@ -48,7 +48,6 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
@@ -78,11 +77,6 @@ public class HomeActivity extends SherlockFragmentActivity {
 		EntityUtils.getDatePrices(this, 0);
 		if (DEBUG.ON) {
 			Log.v(TAGS.STATE, "HomeActivity started");
-			StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-					.detectDiskReads().detectDiskWrites().detectNetwork()
-					.penaltyLog().build());
-			StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-					.detectAll().build());
 		}
 		initGUI();
 		getSavedState(savedInstanceState);
