@@ -1,11 +1,11 @@
 package za.ac.sun.cs.hons.minke.gui.chart;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import org.achartengine.ChartFactory;
@@ -27,9 +27,9 @@ import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
 import za.ac.sun.cs.hons.minke.utils.constants.TIME;
 import android.app.AlertDialog;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class TimelineChart {
 
@@ -40,13 +40,21 @@ public class TimelineChart {
 	private String[] titles;
 	private HashMap<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
 	private HashMap<String, SimpleSeriesRenderer> rendererMap = new HashMap<String, SimpleSeriesRenderer>();
-
+	List<Integer> colours = new ArrayList<Integer>(Arrays.asList( new Integer[] { 0xFFFFB300, 0xFF803E75, 0xFFFF6800,
+			0xFFA6BDD7, 0xFFC10020, 0xFFCEA262, 0xFF817066, 0xFF007D34,
+			0xFFF6768E, 0xFF00538A, 0xFFFF7A5C, 0xFF53377A, 0xFFFF8E00,
+			0xFFB32851, 0xFFF4C800, 0xFF7F180D, 0xFF93AA00, 0xFF593315,
+			0xFFF13A13, 0xFF232C16 }));
+	private HashSet<Integer> usedColours = new HashSet<Integer>();
 	private HashSet<String> added, removed;
 	private int numItems;
 	private double maxY, minY, maxX, minX;
 
 	public TimelineChart(ChartActivity _activity, int _numItems) {
 		activity = _activity;
+		if(_numItems > colours.size()){
+			_numItems = colours.size();
+		}
 		numItems = _numItems;
 	}
 
@@ -61,34 +69,17 @@ public class TimelineChart {
 		PointStyle[] styles = PointStyle.values();
 		List<double[]> prices = new ArrayList<double[]>();
 		List<Date[]> dates = new ArrayList<Date[]>();
-		Random rCol = new Random();
 		maxY = 0;
 		minY = Double.MAX_VALUE;
 		maxX = 0;
 		minX = Double.MAX_VALUE;
 		Set<String> titleSet = new HashSet<String>();
-		Set<Integer> colourSet = new HashSet<Integer>();
 		for (BranchProduct bp : bps) {
 			String title = bp.getProduct().toString() + " ("
 					+ bp.getBranch().toString() + ")";
 			if (!titleSet.add(title)) {
 				continue;
 			}
-			int colour = 0x000000;
-			int attempts = 0;
-			while (colourSet.contains(colour)) {
-				while (!darkEnough(colour) && attempts < 50) {
-					colour = Color.argb(255, rCol.nextInt(255),
-							rCol.nextInt(255), rCol.nextInt(255));
-					attempts++;
-				}
-				float[] hsv = new float[3];
-				Color.RGBToHSV(Color.red(colour), Color.green(colour),
-						Color.blue(colour), hsv);
-				hsv[2] = 0.5f * (1f + hsv[2]);
-				colour = Color.HSVToColor(hsv);
-			}
-			colourSet.add(colour);
 			ArrayList<DatePrice> hist = EntityUtils.getDatePrices(activity,
 					bp.getId());
 			double[] p = new double[hist.size()];
@@ -106,7 +97,7 @@ public class TimelineChart {
 		}
 		minX -= TIME.DAY;
 		maxX += TIME.DAY;
-		renderer = buildRenderer(colourSet, styles);
+		renderer = buildRenderer(titleSet.size(), styles);
 		setChartSettings(renderer, activity.getString(R.string.chart_title),
 				activity.getString(R.string.chart_xaxis),
 				activity.getString(R.string.chart_yaxis));
@@ -120,6 +111,8 @@ public class TimelineChart {
 		dataset = buildDataset(titles, dates, prices);
 		loaded = true;
 	}
+
+
 
 	private void getData(ArrayList<DatePrice> hist, double[] p, Date[] d,
 			boolean setExtremes) {
@@ -162,16 +155,14 @@ public class TimelineChart {
 				SeriesSelection seriesSelection = view
 						.getCurrentSeriesAndPoint();
 				if (seriesSelection != null) {
-						Date date = new Date();
-						date.setTime((long) seriesSelection.getXValue());
-						AlertDialog.Builder dialog = DialogUtils
-								.getGraphDialog(
-										activity,
-										titles[seriesSelection.getSeriesIndex()],
-										date, seriesSelection.getValue());
-						if (dialog != null) {
-							dialog.show();
-						}
+					Date date = new Date();
+					date.setTime((long) seriesSelection.getXValue());
+					AlertDialog.Builder dialog = DialogUtils.getGraphDialog(
+							activity, titles[seriesSelection.getSeriesIndex()],
+							date, seriesSelection.getValue());
+					if (dialog != null) {
+						dialog.show();
+					}
 				}
 			}
 		});
@@ -196,13 +187,14 @@ public class TimelineChart {
 			seriesMap.put(titles[i], series);
 			if (i < numItems) {
 				added.add(titles[i]);
+				usedColours.add(colours.get(0));
+				rendererMap.get(titles[i]).setColor(colours.remove(0));
 				dataset.addSeries(series);
 			} else {
 				removed.add(titles[i]);
 			}
 
 		}
-		System.out.println(renderer.getSeriesRendererCount());
 		for (String r : removed) {
 			renderer.removeSeriesRenderer(rendererMap.get(r));
 		}
@@ -214,15 +206,25 @@ public class TimelineChart {
 		removed.add(title);
 		dataset.removeSeries(seriesMap.get(title));
 		renderer.removeSeriesRenderer(rendererMap.get(title));
+		usedColours.remove(rendererMap.get(title).getColor());
+		colours.add(rendererMap.get(title).getColor());
+
 	}
 
 	private void addSeries(String title) {
+		if(colours.size() == 0){
+			Toast.makeText(activity, activity.getString(R.string.chart_full), Toast.LENGTH_SHORT).show();
+			return;
+		}
 		added.add(title);
 		removed.remove(title);
 		TimeSeries series = seriesMap.get(title);
 		dataset.addSeries(series);
+		usedColours.add(colours.get(0));
+		rendererMap.get(title).setColor(colours.remove(0));
 		renderer.addSeriesRenderer(rendererMap.get(title));
 		getExtremes(series);
+
 	}
 
 	private void getExtremes(TimeSeries series) {
@@ -237,7 +239,7 @@ public class TimelineChart {
 		}
 		if (series.getMinY() < minY) {
 			minY = series.getMinY();
-		}		
+		}
 	}
 
 	public void addSeries(Set<String> changed) {
@@ -251,7 +253,7 @@ public class TimelineChart {
 		for (String s : changed) {
 			removeSeries(s);
 		}
-		for(String s : added) {
+		for (String s : added) {
 			getExtremes(seriesMap.get(s));
 		}
 		showExtremes();
@@ -263,7 +265,7 @@ public class TimelineChart {
 		renderer.setXAxisMax(maxX);
 		renderer.setYAxisMin(minY);
 		renderer.setYAxisMax(maxY);
-		renderer.setInitialRange(new double[] { minX, maxX, minY, maxY });		
+		renderer.setInitialRange(new double[] { minX, maxX, minY, maxY });
 	}
 
 	/**
@@ -275,8 +277,7 @@ public class TimelineChart {
 	 *            the series point styles
 	 * @return the XY multiple series renderers
 	 */
-	protected XYMultipleSeriesRenderer buildRenderer(Set<Integer> colours,
-			PointStyle[] styles) {
+	protected XYMultipleSeriesRenderer buildRenderer(int size, PointStyle[] styles) {
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		renderer.setAxisTitleTextSize(20);
 		renderer.setChartTitleTextSize(40);
@@ -286,10 +287,9 @@ public class TimelineChart {
 		renderer.setFitLegend(true);
 		renderer.setMargins(new int[] { 50, 50, 60, 10 });
 		int stylePos = 0;
-		for (int col : colours) {
+		for (int i = 0; i < size; i ++) {
 			XYSeriesRenderer r = new XYSeriesRenderer();
 			r.setLineWidth(3f);
-			r.setColor(col);
 			r.setPointStyle(styles[stylePos++]);
 			if (stylePos == styles.length) {
 				stylePos = 0;
@@ -362,12 +362,6 @@ public class TimelineChart {
 
 	public HashSet<String> getRemoved() {
 		return removed;
-	}
-
-	private static boolean darkEnough(int colour) {
-		return Math.sqrt(Color.red(colour) * Color.red(colour) * .241
-				+ Color.green(colour) * Color.green(colour) * .691
-				+ Color.blue(colour) * Color.blue(colour) * .068) > 130;
 	}
 
 }
