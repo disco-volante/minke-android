@@ -21,6 +21,7 @@ import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
 import za.ac.sun.cs.hons.minke.utils.constants.Constants;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
+import za.ac.sun.cs.hons.minke.utils.constants.NAMES;
 import za.ac.sun.cs.hons.minke.utils.constants.VIEW;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -220,6 +221,9 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
+
+		AlertDialog.Builder update = new AlertDialog.Builder(activity);
+		update.setTitle(activity.getString(R.string.product_found));
 		LayoutInflater factory = LayoutInflater.from(activity);
 		final View updateView = factory.inflate(R.layout.dialog_update, null);
 		final TextView productText = (TextView) updateView
@@ -228,15 +232,22 @@ public class DialogUtils {
 				.findViewById(R.id.text_price);
 		if (found != null && found.getDatePrice() != null) {
 			updatePriceText.setText(found.getDatePrice()._getFormattedPrice());
+			update.setNeutralButton(activity.getString(R.string.skip),
+					new OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							((HomeActivity) activity).changeTab(VIEW.SCAN,
+									NAMES.BROWSE);
+							dialog.cancel();
+						}
+					});
 		}
 		updatePriceText.addTextChangedListener(new TextErrorWatcher(activity,
 				updatePriceText, true));
 		productText.setText(product.toString());
-		AlertDialog.Builder update = new AlertDialog.Builder(activity);
-		update.setTitle(activity.getString(R.string.product_found));
 		update.setView(updateView);
 		update.setPositiveButton(activity.getString(R.string.update),
-				new DialogInterface.OnClickListener() {
+				new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						if (updatePriceText.getError() == null) {
@@ -385,7 +396,8 @@ public class DialogUtils {
 		return builder;
 	}
 
-	public static Builder getQuantityDialog(Activity activity, final ViewHolder holder, final Product product) {
+	public static Builder getQuantityDialog(Activity activity,
+			final ViewHolder holder, final Product product) {
 		if (showing) {
 			return null;
 		}
@@ -434,11 +446,9 @@ public class DialogUtils {
 		}
 		AlertDialog.Builder dlg = new AlertDialog.Builder(activity);
 		dlg.setTitle(product);
-		dlg.setMessage(activity.getString(R.string.date)+ ": "+ DateFormat.getDateInstance(
-						DateFormat.MEDIUM).format(date)
-				+ "\n"
-				+ activity.getString(R.string.price)
-				+ ": R " + price);
+		dlg.setMessage(activity.getString(R.string.date) + ": "
+				+ DateFormat.getDateInstance(DateFormat.MEDIUM).format(date)
+				+ "\n" + activity.getString(R.string.price) + ": R " + price);
 		dlg.setOnCancelListener(new OnCancelListener() {
 
 			@Override
