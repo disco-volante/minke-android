@@ -14,7 +14,7 @@ public class Constants {
 	public static final int DAILY = 2;
 	public static final int WEEKLY = 3;
 	public static final int NEVER = 4;
-	public static final String WEBSITE = "https://github.com/pieterjordaan/minke-android";
+	public static final String WEBSITE = "http://pieterjordaan.github.com/minke-android/";
 	public static final int FULL = 0;
 	public static final int STANDARD = 1;
 	public static final int NONE = 2;
