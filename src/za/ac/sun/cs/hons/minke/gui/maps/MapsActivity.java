@@ -317,7 +317,6 @@ public class MapsActivity extends SherlockMapActivity {
 			try {
 				Route route = MapUtils.directions();
 				routeOverlay = new RouteOverlay(route, Color.BLUE);
-				MapUtils.addDirections(activity);
 				return ERROR.SUCCESS;
 			} catch (Exception e) {
 				if (e != null && e.getMessage() != null) {

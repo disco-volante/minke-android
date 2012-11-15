@@ -3,7 +3,6 @@ package za.ac.sun.cs.hons.minke.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
@@ -129,59 +128,8 @@ public class MapUtils {
 		parser = new GoogleParser(sBuf.toString());
 		r = parser.parse();
 		directions = r.getSegments();
-		return r;
-	}
-
-	private static String getDist(int length) {
-		if (length > 1000) {
-			double actual = ((double) length) / 1000;
-			return actual + "km.\n";
-		} else {
-			return length + "m.\n";
-		}
-	}
-
-	public static void addDirections(Context context) {
-		if (locsChanged && directions != null && directions.size() > 0) {
-			int i = 0;
-			double prev = 0.0;
-			for (Segment s : directions) {
-				i++;
-				StringBuilder msg = new StringBuilder();
-				msg.append(i);
-				msg.append(") ");
-				msg.append(prev + " -> " + s.getDistance());
-				msg.append(" km : ");
-				msg.append(s.getInstruction());
-				msg.append(context.getString(R.string.str_continue));
-				msg.append(getDist(s.getLength()));
-				prev = s.getDistance();
-				while (true) {
-					int pos = getMistakes(msg.toString().toCharArray());
-					if (pos == msg.length()) {
-						break;
-					}
-					msg.insert(pos, ". ");
-				}
-				s.setMessage(msg.toString());
-			}
-		}
 		locsChanged = false;
-	}
-
-	private static int getMistakes(char[] chars) {
-		char c0 = ' ';
-		int pos = 0;
-		for (char c1 : chars) {
-			if (c0 != ' '
-					&& (Character.isLowerCase(c0) && Character.isUpperCase(c1))
-					|| (Character.isDigit(c0) && Character.isUpperCase(c1))) {
-				return pos;
-			}
-			c0 = c1;
-			pos++;
-		}
-		return chars.length;
+		return r;
 	}
 
 	public static City changeCity(Context context){
