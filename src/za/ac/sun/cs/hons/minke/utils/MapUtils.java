@@ -17,10 +17,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
-import com.routing.Route;
-import com.routing.Segment;
-import com.routing.parser.GoogleParser;
 import com.routing.parser.RouteParser;
+import com.routing.route.Route;
+import com.routing.route.Segment;
 
 public class MapUtils {
 
@@ -125,7 +124,7 @@ public class MapUtils {
 		sBuf.append(',');
 		sBuf.append(dest.getLongitudeE6() / 1E6);
 		sBuf.append("&sensor=true&mode=driving");
-		parser = new GoogleParser(sBuf.toString());
+		parser = new RouteParser(sBuf.toString());
 		r = parser.parse();
 		directions = r.getSegments();
 		locsChanged = false;

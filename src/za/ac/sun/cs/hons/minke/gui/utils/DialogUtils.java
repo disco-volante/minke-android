@@ -28,7 +28,6 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.net.Uri;
@@ -41,31 +40,15 @@ import android.widget.TextView;
 import com.google.android.maps.OverlayItem;
 
 public class DialogUtils {
-	private static boolean showing = false;
+	static boolean showing = false;
 
 	public static Builder getErrorDialog(Context context, ERROR notLoaded) {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder errorDlg = new AlertDialog.Builder(context);
-		errorDlg.setTitle(ErrorUtils.getErrorTitle(notLoaded, context));
-		errorDlg.setIcon(R.drawable.error);
-		errorDlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		errorDlg.setNegativeButton(context.getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		errorDlg.setMessage(ErrorUtils.getErrorMessage(notLoaded, context));
-		showing = true;
+		AlertDialog.Builder errorDlg = new DefaultBuilder(context,
+				ErrorUtils.getErrorTitle(notLoaded, context), R.drawable.error,
+				ErrorUtils.getErrorMessage(notLoaded, context));
 		return errorDlg;
 	}
 
@@ -73,24 +56,10 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder infoDlg = new AlertDialog.Builder(context);
-		infoDlg.setTitle(context.getString(R.string.app_name));
-		infoDlg.setIcon(R.drawable.info);
-		infoDlg.setPositiveButton(context.getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		infoDlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		infoDlg.setNegativeButton(context.getString(R.string.website),
+		AlertDialog.Builder infoDlg = new DefaultBuilder(context,
+				context.getString(R.string.app_name), R.drawable.info,
+				context.getString(R.string.dlg_info));
+		infoDlg.setPositiveButton(context.getString(R.string.website),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
@@ -100,8 +69,6 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		infoDlg.setMessage(context.getString(R.string.dlg_info));
-		showing = true;
 		return infoDlg;
 	}
 
@@ -109,24 +76,8 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
-		dlg.setTitle(context.getString(R.string.edit_chart));
-		dlg.setIcon(R.drawable.chart);
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		dlg.setNegativeButton(context.getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		showing = true;
+		AlertDialog.Builder dlg = new DefaultBuilder(context,
+				context.getString(R.string.edit_chart), R.drawable.chart, null);
 		return dlg;
 	}
 
@@ -134,24 +85,9 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder dlg = new AlertDialog.Builder(context);
-		dlg.setTitle(context.getString(R.string.directions));
-		dlg.setIcon(R.drawable.directions);
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		dlg.setPositiveButton(context.getString(R.string.ok),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		showing = true;
+		AlertDialog.Builder dlg = new DefaultBuilder(context,
+				context.getString(R.string.directions), R.drawable.directions,
+				null);
 		return dlg;
 	}
 
@@ -176,25 +112,9 @@ public class DialogUtils {
 				+ item.getProduct().getMeasure());
 		price.setText(item.getDatePrice().getFormattedPrice());
 		date.setText(item.getDatePrice().getFormattedDate());
-		AlertDialog.Builder dlg = new AlertDialog.Builder(activity);
-		dlg.setTitle(item.getProduct().toString());
+		AlertDialog.Builder dlg = new DefaultBuilder(activity, item
+				.getProduct().toString(), R.drawable.product, null);
 		dlg.setView(infoView);
-		dlg.setIcon(R.drawable.info);
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		dlg.setNegativeButton(activity.getString(R.string.close),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-		showing = true;
 		return dlg;
 	}
 
@@ -202,16 +122,9 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder location = new AlertDialog.Builder(activity);
-		location.setTitle(activity.getString(R.string.confirm_location));
-		location.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
+		AlertDialog.Builder location = new DefaultBuilder(activity,
+				activity.getString(R.string.confirm_location),
+				R.drawable.directions, null);
 		return location;
 
 	}
@@ -222,8 +135,9 @@ public class DialogUtils {
 			return null;
 		}
 
-		AlertDialog.Builder update = new AlertDialog.Builder(activity);
-		update.setTitle(activity.getString(R.string.product_found));
+		AlertDialog.Builder update = new DefaultBuilder(activity,
+				activity.getString(R.string.product_found),
+				R.drawable.settings, null);
 		LayoutInflater factory = LayoutInflater.from(activity);
 		final View updateView = factory.inflate(R.layout.dialog_update, null);
 		final TextView productText = (TextView) updateView
@@ -232,7 +146,7 @@ public class DialogUtils {
 				.findViewById(R.id.text_price);
 		if (found != null && found.getDatePrice() != null) {
 			updatePriceText.setText(found.getDatePrice()._getFormattedPrice());
-			update.setNeutralButton(activity.getString(R.string.skip),
+			update.setNegativeButton(activity.getString(R.string.skip),
 					new OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
@@ -260,14 +174,6 @@ public class DialogUtils {
 						}
 					}
 				});
-		update.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
 		return update;
 
 	}
@@ -276,17 +182,8 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
-		dialog.setTitle(item.getTitle());
-		dialog.setMessage(item.getSnippet());
-		dialog.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
+		AlertDialog.Builder dialog = new DefaultBuilder(mContext,
+				item.getTitle(), -1, item.getSnippet());
 		return dialog;
 	}
 
@@ -310,8 +207,9 @@ public class DialogUtils {
 			}
 			names[i++] = p.toString();
 		}
-		AlertDialog.Builder dlg = new AlertDialog.Builder(activity);
-		dlg.setTitle(activity.getString(R.string.str_province));
+		AlertDialog.Builder dlg = new DefaultBuilder(activity,
+				activity.getString(R.string.str_province),
+				R.drawable.directions, null);
 		dlg.setSingleChoiceItems(names, 0,
 				new android.content.DialogInterface.OnClickListener() {
 
@@ -330,22 +228,15 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
 		dlg.setNegativeButton(activity.getString(R.string.cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
 						((HomeActivity) activity).changeTab(VIEW.SCAN,
 								ScanFragment.class.getName());
 					}
 				});
-		showing = true;
 		return dlg;
 	}
 
@@ -360,8 +251,9 @@ public class DialogUtils {
 		for (ShopList sl : ShopUtils.getShopLists()) {
 			names[i++] = sl.toString();
 		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-		builder.setTitle(activity.getString(R.string.str_directions));
+		AlertDialog.Builder builder = new DefaultBuilder(activity,
+				activity.getString(R.string.str_directions),
+				R.drawable.directions, null);
 		builder.setSingleChoiceItems(names, 0, new OnClickListener() {
 
 			@Override
@@ -378,21 +270,6 @@ public class DialogUtils {
 								activity.getApplicationContext(), true));
 					}
 				});
-		builder.setNegativeButton(activity.getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		builder.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
 		return builder;
 	}
 
@@ -403,20 +280,13 @@ public class DialogUtils {
 		}
 		LayoutInflater factory = LayoutInflater.from(activity);
 
-		AlertDialog.Builder dlg = new AlertDialog.Builder(activity);
+		AlertDialog.Builder dlg = new DefaultBuilder(activity,
+				activity.getString(R.string.str_quantity), R.drawable.settings,
+				null);
 		View quantityView = factory.inflate(R.layout.dialog_quantity, null);
 		final NumberPicker quantityPicker = (NumberPicker) quantityView
 				.findViewById(R.id.picker_quantity);
 		quantityPicker.setCurrent(1);
-		dlg.setTitle(activity.getString(R.string.str_quantity));
-		dlg.setIcon(R.drawable.settings);
-		dlg.setPositiveButton(activity.getString(R.string.cancel),
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
 		dlg.setView(quantityView);
 		dlg.setPositiveButton(activity.getString(R.string.change),
 				new DialogInterface.OnClickListener() {
@@ -428,14 +298,6 @@ public class DialogUtils {
 						dialog.cancel();
 					}
 				});
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
 		return dlg;
 	}
 
@@ -444,19 +306,11 @@ public class DialogUtils {
 		if (showing) {
 			return null;
 		}
-		AlertDialog.Builder dlg = new AlertDialog.Builder(activity);
-		dlg.setTitle(product);
-		dlg.setMessage(activity.getString(R.string.date) + ": "
+		String msg = activity.getString(R.string.date) + ": "
 				+ DateFormat.getDateInstance(DateFormat.MEDIUM).format(date)
-				+ "\n" + activity.getString(R.string.price) + ": R " + price);
-		dlg.setOnCancelListener(new OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				showing = false;
-			}
-		});
-		showing = true;
+				+ "\n" + activity.getString(R.string.price) + ": R " + price;
+		AlertDialog.Builder dlg = new DefaultBuilder(activity, product,
+				R.drawable.chart, msg);
 		return dlg;
 	}
 

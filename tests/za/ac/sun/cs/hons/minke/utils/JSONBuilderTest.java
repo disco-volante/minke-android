@@ -1,6 +1,6 @@
 package za.ac.sun.cs.hons.minke.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.json.JSONException;
 import org.json.JSONObject;

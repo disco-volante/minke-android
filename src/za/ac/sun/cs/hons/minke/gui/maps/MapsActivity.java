@@ -38,8 +38,9 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-import com.routing.Route;
-import com.routing.RouteOverlay;
+import com.routing.overlay.RouteOverlay;
+import com.routing.route.Route;
+
 
 public class MapsActivity extends SherlockMapActivity {
 	private MapView mapView;

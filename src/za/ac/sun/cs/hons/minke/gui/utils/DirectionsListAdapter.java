@@ -11,7 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.routing.Segment;
+import com.routing.route.Segment;
+
 
 public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 	private MapsActivity activity;
