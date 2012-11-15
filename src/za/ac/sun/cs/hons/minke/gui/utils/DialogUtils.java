@@ -9,12 +9,12 @@ import za.ac.sun.cs.hons.minke.entities.location.Province;
 import za.ac.sun.cs.hons.minke.entities.product.BranchProduct;
 import za.ac.sun.cs.hons.minke.entities.product.Product;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
+import za.ac.sun.cs.hons.minke.gui.maps.MapsActivity;
 import za.ac.sun.cs.hons.minke.gui.scan.NewBranchFragment;
 import za.ac.sun.cs.hons.minke.gui.scan.ScanFragment;
 import za.ac.sun.cs.hons.minke.gui.utils.ProductListAdapter.ViewHolder;
 import za.ac.sun.cs.hons.minke.utils.EntityUtils;
 import za.ac.sun.cs.hons.minke.utils.ErrorUtils;
-import za.ac.sun.cs.hons.minke.utils.IntentUtils;
 import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.ScanUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
@@ -266,8 +266,8 @@ public class DialogUtils {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						activity.startActivity(IntentUtils.getMapIntent(
-								activity.getApplicationContext(), true));
+						dialog.cancel();
+						((MapsActivity) activity).buildMap();
 					}
 				});
 		return builder;

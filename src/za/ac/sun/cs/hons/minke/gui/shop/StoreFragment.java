@@ -5,15 +5,10 @@ import java.util.ArrayList;
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
 import za.ac.sun.cs.hons.minke.gui.HomeActivity;
-import za.ac.sun.cs.hons.minke.gui.utils.DialogUtils;
 import za.ac.sun.cs.hons.minke.gui.utils.ShopListAdapter;
 import za.ac.sun.cs.hons.minke.utils.IntentUtils;
-import za.ac.sun.cs.hons.minke.utils.MapUtils;
 import za.ac.sun.cs.hons.minke.utils.ShopList;
 import za.ac.sun.cs.hons.minke.utils.ShopUtils;
-import android.app.AlertDialog.Builder;
-import android.content.Context;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,17 +66,8 @@ public class StoreFragment extends SherlockFragment {
 	}
 
 	public void showDirections() {
-		MapUtils.refreshLocation((LocationManager) getActivity()
-				.getSystemService(Context.LOCATION_SERVICE));
-		if (ShopUtils.getShopLists().size() == 1) {
-			MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
-			startActivity(IntentUtils.getMapIntent(getActivity().getApplicationContext(), true));
-		} else {
-			Builder builder = DialogUtils.getMapBranchesDialog(getActivity());
-			if(builder != null){
-				builder.show();
-			}
-		}
+		getActivity().startActivity(IntentUtils.getMapIntent(
+				getActivity().getApplicationContext(), true));
 	}
 
 }
