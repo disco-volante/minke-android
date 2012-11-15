@@ -40,7 +40,7 @@ import android.widget.TextView;
 import com.google.android.maps.OverlayItem;
 
 public class DialogUtils {
-	static boolean showing = false;
+	public static boolean showing = false;
 
 	public static Builder getErrorDialog(Context context, ERROR notLoaded) {
 		if (showing) {

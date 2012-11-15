@@ -33,10 +33,8 @@ public class MapUtils {
 	public static void setDestination(CityLocation cl) {
 		dest = cl.getGeoPoint();
 		if (DEBUG.ON) {
-			Log.v(TAGS.MAP, "latitude = "
-					+ cl.getLat()
-					+ " longitude = "
-					+ cl.getLon());
+			Log.v(TAGS.MAP,
+					"latitude = " + cl.getLat() + " longitude = " + cl.getLon());
 		}
 		locsChanged = true;
 	}
@@ -90,7 +88,7 @@ public class MapUtils {
 	public static void setUserLocation(double lat, double lon) {
 		user = new GeoPoint((int) (lat * 1E6), (int) (lon * 1E6));
 		locsChanged = true;
-		
+
 	}
 
 	public static double rad(double x) {
@@ -131,7 +129,7 @@ public class MapUtils {
 		return r;
 	}
 
-	public static City changeCity(Context context){
+	public static City changeCity(Context context) {
 		City city = null;
 		ArrayList<Branch> branches = EntityUtils.getBranches(context);
 		if (branches == null || branches.size() == 0) {
@@ -156,6 +154,5 @@ public class MapUtils {
 		prefs.edit().putLong("cityID", city.getId()).commit();
 		return city;
 	}
-	
 
 }

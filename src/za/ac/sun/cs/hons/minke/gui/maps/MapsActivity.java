@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.location.LocationManager;
@@ -41,7 +42,6 @@ import com.google.android.maps.OverlayItem;
 import com.routing.overlay.RouteOverlay;
 import com.routing.route.Route;
 
-
 public class MapsActivity extends SherlockMapActivity {
 	private MapView mapView;
 	private MapController mapController;
@@ -54,27 +54,27 @@ public class MapsActivity extends SherlockMapActivity {
 		super.onCreate(savedInstanceState);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		determineActions();
-		
+
 	}
-	
+
 	private void determineActions() {
 		Bundle extras = getIntent().getExtras();
-		if(extras == null){
+		if (extras == null) {
 			home();
 		}
 		shop = extras.getBoolean(NAMES.SHOP);
-		if(!shop && !extras.getBoolean(NAMES.BROWSE)){
+		if (!shop && !extras.getBoolean(NAMES.BROWSE)) {
 			home();
 		}
-		if(shop && (ShopUtils.getShopLists() == null || ShopUtils.getShopLists()
-				.size() == 0)){
+		if (shop
+				&& (ShopUtils.getShopLists() == null || ShopUtils
+						.getShopLists().size() == 0)) {
 			home();
-		}
-		else if (!shop && (BrowseUtils.getCurrent() == null)) {
+		} else if (!shop && (BrowseUtils.getCurrent() == null)) {
 			home();
 		} else {
-			changeDestination();
-		}		
+			changeDestination(false);
+		}
 	}
 
 	@Override
@@ -108,26 +108,39 @@ public class MapsActivity extends SherlockMapActivity {
 			onBackPressed();
 			return true;
 		case R.id.menu_item_edit:
-			changeDestination();
+			changeDestination(true);
 			return true;
 		}
 		return false;
 	}
 
-	private void changeDestination() {
+	private void changeDestination(boolean edit) {
 		MapUtils.refreshLocation((LocationManager) getSystemService(Context.LOCATION_SERVICE));
 		if (!shop || ShopUtils.getShopLists().size() == 1) {
-			if(shop){
-				MapUtils.setDestination(ShopUtils.getShopLists().get(0).getBranch().getCityLocation());
+			if (shop) {
+				MapUtils.setDestination(ShopUtils.getShopLists().get(0)
+						.getBranch().getCityLocation());
 			}
 			buildMap();
 		} else {
 			Builder builder = DialogUtils.getMapBranchesDialog(this);
-			if(builder != null){
+			if (builder != null) {
+				if(!edit){
+					builder.setOnCancelListener(new OnCancelListener() {
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							DialogUtils.showing = false;
+							MapUtils.setDestination(ShopUtils.getShopLists().get(0)
+									.getBranch().getCityLocation());
+							buildMap();
+						}
+					});
+				}
 				builder.show();
 			}
-		}		
+		}
 	}
+
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
@@ -144,7 +157,7 @@ public class MapsActivity extends SherlockMapActivity {
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
-		if (curTask.getStatus().equals(Status.FINISHED)) {
+		if (curTask == null || curTask.getStatus().equals(Status.FINISHED)) {
 			return null;
 		}
 		curTask.detach();
@@ -167,7 +180,7 @@ public class MapsActivity extends SherlockMapActivity {
 		}
 		if (error != null && !error.equals(ERROR.SUCCESS)) {
 			Builder dialog = DialogUtils.getErrorDialog(this, error);
-			if(dialog != null){
+			if (dialog != null) {
 				dialog.setNegativeButton(R.string.ok, new OnClickListener() {
 
 					@Override
@@ -179,9 +192,9 @@ public class MapsActivity extends SherlockMapActivity {
 				dialog.show();
 			}
 		} else {
-			if(mapView == null){
+			if (mapView == null) {
 				createMap();
-			}else{
+			} else {
 				mapView.getOverlays().clear();
 			}
 			mapController = mapView.getController();
@@ -217,22 +230,20 @@ public class MapsActivity extends SherlockMapActivity {
 		} else {
 			itemOverlay = new BasicOverlay(this.getResources().getDrawable(
 					R.drawable.product), this);
-			itemOverlay
-					.addOverlay(new OverlayItem(BrowseUtils.getCurrent()
-							.getBranch().getCityLocation().getGeoPoint(),
-							BrowseUtils.getCurrent().toString(),
-							BrowseUtils.getCurrent().getBranch().toString()
-									+ "\n"
-									+ BrowseUtils.getCurrent().getBranch()
-											.getCityLocation().getCity()
-											.toString()));
+			itemOverlay.addOverlay(new OverlayItem(BrowseUtils.getCurrent()
+					.getBranch().getCityLocation().getGeoPoint(), BrowseUtils
+					.getCurrent().toString(), BrowseUtils.getCurrent()
+					.getBranch().toString()
+					+ "\n"
+					+ BrowseUtils.getCurrent().getBranch().getCityLocation()
+							.getCity().toString()));
 		}
 		BasicOverlay iconOverlay = new BasicOverlay(this.getResources()
 				.getDrawable(R.drawable.user), this);
 		iconOverlay.addOverlay(new OverlayItem(MapUtils.getUserLocation(),
 				getString(R.string.you), getString(R.string.str_you)));
 		mapView.getOverlays().add(itemOverlay);
-		mapView.getOverlays().add(iconOverlay);		
+		mapView.getOverlays().add(iconOverlay);
 	}
 
 	private void createMap() {
@@ -245,7 +256,7 @@ public class MapsActivity extends SherlockMapActivity {
 		}
 		mapView.setClickable(true);
 		mapView.setBuiltInZoomControls(true);
-		holder.addView(mapView);		
+		holder.addView(mapView);
 	}
 
 	private void getDirections() {
@@ -261,7 +272,7 @@ public class MapsActivity extends SherlockMapActivity {
 	public void showDirections() {
 		if (MapUtils.directions != null && MapUtils.directions.size() > 0) {
 			Builder dlg = DialogUtils.getDirectionsDialog(this);
-			if(dlg == null){
+			if (dlg == null) {
 				return;
 			}
 			LayoutInflater factory = LayoutInflater.from(this);
@@ -310,7 +321,7 @@ public class MapsActivity extends SherlockMapActivity {
 		@Override
 		protected void failure(ERROR error_code) {
 			Builder dlg = DialogUtils.getErrorDialog(activity, error_code);
-			if(dlg == null){
+			if (dlg == null) {
 				return;
 			}
 			if (error_code.equals(ERROR.DIRECTIONS)) {
