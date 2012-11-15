@@ -71,8 +71,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						shareItem(item);
 						dialog.cancel();
+						shareItem(item);
 					}
 
 				});
@@ -81,8 +81,8 @@ public class BPListAdapter extends ArrayAdapter<BranchProduct> {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						showMap(item);
 						dialog.cancel();
+						showMap(item);
 					}
 
 				});

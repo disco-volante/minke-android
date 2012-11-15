@@ -135,8 +135,8 @@ public class ShopFragment extends SherlockFragment {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							((ShopFragment) fragment).findStores();
 							dialog.cancel();
+							((ShopFragment) fragment).findStores();
 						}
 					});
 			dlg.show();

@@ -4,13 +4,14 @@ import java.util.ArrayList;
 
 import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.gui.maps.MapsActivity;
-import za.ac.sun.cs.hons.minke.gui.maps.Segment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.routing.Segment;
 
 public class DirectionsListAdapter extends ArrayAdapter<Segment> {
 	private MapsActivity activity;

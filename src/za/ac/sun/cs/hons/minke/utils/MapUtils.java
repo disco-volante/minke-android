@@ -7,10 +7,6 @@ import za.ac.sun.cs.hons.minke.R;
 import za.ac.sun.cs.hons.minke.entities.location.City;
 import za.ac.sun.cs.hons.minke.entities.location.CityLocation;
 import za.ac.sun.cs.hons.minke.entities.store.Branch;
-import za.ac.sun.cs.hons.minke.gui.maps.GoogleParser;
-import za.ac.sun.cs.hons.minke.gui.maps.Route;
-import za.ac.sun.cs.hons.minke.gui.maps.RouteParser;
-import za.ac.sun.cs.hons.minke.gui.maps.Segment;
 import za.ac.sun.cs.hons.minke.utils.constants.DEBUG;
 import za.ac.sun.cs.hons.minke.utils.constants.ERROR;
 import za.ac.sun.cs.hons.minke.utils.constants.TAGS;
@@ -22,6 +18,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
+import com.routing.Route;
+import com.routing.Segment;
+import com.routing.parser.GoogleParser;
+import com.routing.parser.RouteParser;
 
 public class MapUtils {
 

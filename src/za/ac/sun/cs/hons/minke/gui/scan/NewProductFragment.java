@@ -255,17 +255,17 @@ public class NewProductFragment extends SherlockFragment {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							createProduct();
 							dialog.cancel();
+							createProduct();
 						}
 					});
 			dlg.setNegativeButton(getString(R.string.cancel),
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
 							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 									ScanFragment.class.getName());
-							dialog.cancel();
 						}
 					});
 			dlg.show();

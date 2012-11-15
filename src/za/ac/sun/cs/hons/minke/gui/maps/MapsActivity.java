@@ -38,6 +38,8 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.routing.Route;
+import com.routing.RouteOverlay;
 
 public class MapsActivity extends SherlockMapActivity {
 	private MapView mapView;
@@ -65,6 +67,14 @@ public class MapsActivity extends SherlockMapActivity {
 		else if (!shop && (BrowseUtils.getCurrent() == null)) {
 			home();
 		} else {
+			createMap();
+		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(mapView == null){
 			createMap();
 		}
 	}
@@ -140,6 +150,7 @@ public class MapsActivity extends SherlockMapActivity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();
 						home();
 					}
 				});
@@ -282,8 +293,8 @@ public class MapsActivity extends SherlockMapActivity {
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int id) {
-								((MapsActivity) activity).getDirections();
 								dialog.cancel();
+								((MapsActivity) activity).getDirections();
 							}
 						});
 				dlg.setNegativeButton(activity.getString(R.string.cancel),

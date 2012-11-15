@@ -139,8 +139,8 @@ public class ChartActivity extends SherlockActivity {
 		dlg.setPositiveButton(btn, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				editItems(changed, add);
 				dialog.cancel();
+				editItems(changed, add);
 			}
 		});
 		dlg.show();

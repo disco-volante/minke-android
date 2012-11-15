@@ -319,10 +319,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 
 								@Override
 								public void onClick(View arg0) {
+									dialog.cancel();
 									downloading = false;
 									onActivityResult(Activity.RESULT_CANCELED,
 											0, null);
-									dialog.cancel();
 								}
 
 							});
@@ -392,8 +392,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						scan(null);
 						dialog.cancel();
+						scan(null);
 					}
 				});
 		failed.show();
@@ -433,8 +433,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						choosing = false;
 						dialog.cancel();
+						choosing = false;
 						if (selectedBranch == size) {
 							MapUtils.setUserBranch(null);
 							editLocation();
@@ -448,8 +448,8 @@ public class HomeActivity extends SherlockFragmentActivity {
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {
-						choosing = false;
 						dialog.cancel();
+						choosing = false;
 					}
 				});
 		location.show();
@@ -532,10 +532,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
 							if (cmd != null) {
 								cmd.execute(HomeActivity.this, params);
 							}
-							dialog.cancel();
 							errorShowing = false;
 						}
 					});
@@ -722,10 +722,10 @@ public class HomeActivity extends SherlockFragmentActivity {
 					new OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dlg, int arg1) {
+							dlg.cancel();
 							((HomeActivity) activity).showError(
 									((HomeActivity) activity).new UpdateData(),
 									error_code, R.string.retry);
-							dlg.cancel();
 						}
 
 					});

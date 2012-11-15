@@ -230,8 +230,8 @@ public class NewBranchFragment extends SherlockFragment {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
-							createLocation();
 							dialog.cancel();
+							createLocation();
 						}
 					});
 			dlg.setNegativeButton(
@@ -239,9 +239,9 @@ public class NewBranchFragment extends SherlockFragment {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int id) {
+							dialog.cancel();
 							((HomeActivity) getActivity()).changeTab(VIEW.SCAN,
 									ScanFragment.class.getName());
-							dialog.cancel();
 						}
 					});
 			dlg.show();
