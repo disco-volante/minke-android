@@ -125,13 +125,16 @@ public class MapsActivity extends SherlockMapActivity {
 		} else {
 			Builder builder = DialogUtils.getMapBranchesDialog(this);
 			if (builder != null) {
-				if(!edit){
+				if (!edit) {
 					builder.setOnCancelListener(new OnCancelListener() {
 						@Override
 						public void onCancel(DialogInterface dialog) {
 							DialogUtils.showing = false;
-							MapUtils.setDestination(ShopUtils.getShopLists().get(0)
-									.getBranch().getCityLocation());
+							if (MapUtils.getDestination() == null) {
+								MapUtils.setDestination(ShopUtils
+										.getShopLists().get(0).getBranch()
+										.getCityLocation());
+							}
 							buildMap();
 						}
 					});
@@ -140,7 +143,6 @@ public class MapsActivity extends SherlockMapActivity {
 			}
 		}
 	}
-
 
 	@Override
 	public void onSaveInstanceState(Bundle args) {
